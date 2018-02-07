@@ -8,8 +8,16 @@ import org.storage.Storage;
 import java.time.LocalDate;
 
 
+/**
+ * A command class for a check-out query
+ * The output is the result of the check-out, which may be either successful or rejected for some reason
+ */
 public class CheckoutCommand implements  Command {
 
+    /**
+     * @param userCard the patron who checks out
+     * @param title of the item checked out
+     */
     public CheckoutCommand(Storage storage, int userCard, String title) {
         this.patronCard = userCard;
         this.bookName = title;
@@ -61,7 +69,7 @@ public class CheckoutCommand implements  Command {
         return "Sorry, the book is not found in the library.";
     }
 
-    Storage storage;
-    int patronCard;
-    String bookName;
+    private Storage storage;
+    private int patronCard;
+    private String bookName;
 }

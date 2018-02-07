@@ -5,8 +5,15 @@ import org.resources.CheckoutInfo;
 import org.resources.User;
 import org.storage.Storage;
 
+
+/**
+ * Output some information about the system state
+ */
 public class ShowCommand implements Command {
 
+    /**
+     * @param what part of the system data to be shown
+     */
     public ShowCommand(Storage storage, String what) {
         this.storage = storage;
         this.whatToShow = what;

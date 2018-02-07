@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 
 
-
+/**
+ * TODO: Find an item in the storage by specified search attributes
+ */
 public class SearchCommand implements Command {
 
     public SearchCommand(Storage storage, List<String> args) {
