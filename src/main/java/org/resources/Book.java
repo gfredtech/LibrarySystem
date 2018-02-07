@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 
-
+/**
+ * Data structure representing a book
+ */
 public class Book {
 
     Book() {}

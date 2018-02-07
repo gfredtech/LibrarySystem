@@ -1,5 +1,10 @@
 package org.resources;
 
+
+/**
+ * Data structure representing a user record in the system
+ */
+
 public class User {
 
     public User(int cardNumber, String name, String type, String subtype) {

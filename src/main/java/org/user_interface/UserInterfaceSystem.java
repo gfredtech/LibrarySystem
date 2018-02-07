@@ -2,6 +2,7 @@ package org.user_interface;
 
 
 import org.resources.BookFactory;
+import org.resources.CheckoutInfo;
 import org.resources.User;
 import org.storage.Storage;
 import org.user_interface.command.*;
@@ -9,6 +10,7 @@ import org.user_interface.command.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -45,22 +47,32 @@ public class UserInterfaceSystem {
         reader.close();
     }
 
-    Command parseInput() {
+    /**
+     * Parses a line from stdin, producing an initialized command
+     * @return command corresponding to the user request
+     */
+    private Command parseInput() {
         Command c;
         switch(reader.next()) {
             case "exit":
-                c = new ExitCommand();
+                c = new ExitCommand(storage);
                 break;
+
             case "find":
                 List<String> args = new LinkedList<>();
 
                 c = new SearchCommand(storage, Arrays.asList(reader.nextLine().split(" ")));
                 break;
+
             case "checkout":
-                int cardNumber = reader.nextInt();
-                String bookName = reader.nextLine().trim();
-                System.out.println("Attempt to checkout '"+bookName+"'");
-                c = new CheckoutCommand(storage, cardNumber, bookName);
+                try {
+                    int cardNumber = reader.nextInt();
+                    String bookName = reader.nextLine().trim();
+                    System.out.println("Attempt to checkout '"+bookName+"'");
+                    c = new CheckoutCommand(storage, cardNumber, bookName);
+                } catch(InputMismatchException e) {
+                    c = new MessageCommand("The first argument should be an integer!");
+                }
                 break;
 
             case "show":
@@ -73,6 +85,13 @@ public class UserInterfaceSystem {
         return c;
     }
 
+
+
+    /**
+     * TODO: Establishes connection to a database
+     * ! Temporary solution:
+     * Reads users, books and checkouts from text files in the project root
+     */
     private void initializeStorage(String userName, String userPassword) {
         storage = new Storage("library", userName, userPassword);
         try(Scanner s = new Scanner(new File("users"))) {
@@ -140,6 +159,25 @@ public class UserInterfaceSystem {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try(Scanner s = new Scanner(new File("checkouts"))) {
+            while (s.hasNext()) {
+                String title = s.nextLine();
+                int userCard = s.nextInt();
+                s.nextLine();
+                LocalDate overdue = LocalDate.parse(s.nextLine());
+                s.nextLine();
+
+                CheckoutInfo c = new CheckoutInfo();
+                c.patron = storage.users.stream().filter(u -> u.getCardNumber() == userCard).findFirst().get();
+                c.item = storage.books.stream().filter(b -> b.getTitle().equals(title)).findFirst().get();
+                c.overdue = overdue;
+                storage.checkouts.add(c);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private Storage storage;

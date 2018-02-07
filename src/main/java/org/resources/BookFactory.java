@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 
+/**
+ * A factory intended to create instances of the Book class
+ */
 public class BookFactory {
 
     public Book build() {
