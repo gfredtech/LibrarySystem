@@ -14,12 +14,21 @@ public class User {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return String.format("User{name: %s, id: %s, type: %s}", name, cardNumber, type);
+    }
+
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getName() {
@@ -46,7 +55,12 @@ public class User {
         return address;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
     private String name;
+    private String login;
     private String type;
     private String subtype;
     private int cardNumber;

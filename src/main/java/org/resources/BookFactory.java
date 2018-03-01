@@ -16,7 +16,7 @@ public class BookFactory {
         book.copiesNum = copiesNum;
         book.keywords = keywords;
         book.price = price;
-        book.publicationYear = publicationYear;
+        book.publicationDate = publicationDate;
         book.reference = reference;
         book.bestseller = bestseller;
         book.publisher = publisher;
@@ -40,8 +40,8 @@ public class BookFactory {
         this.keywords = keywords;
     }
 
-    public void setPublicationYear(LocalDate publicationYear) {
-        this.publicationYear = publicationYear;
+    public void setPublicationDate(LocalDate publicationDate) {
+        this.publicationDate = publicationDate;
     }
 
     public void setPublisher(String publisher) {
@@ -71,7 +71,7 @@ public class BookFactory {
     private String title;
     private List<String> authors;
     private String publisher;
-    private LocalDate publicationYear;
+    private LocalDate publicationDate;
     private int copiesNum = 1;
     private boolean reference = false;
     private boolean bestseller = false;

@@ -1,94 +1,45 @@
 package org.storage;
 
-import org.resources.Book;
-import org.resources.CheckoutInfo;
-import org.resources.User;
+import org.resources.*;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.*;
-import java.util.LinkedList;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 /**
- * This class encapsulates the communication between the database and the system
+ * Represents an abstract storage of library materials and records (both user and checkout)
  */
-public class Storage {
+public interface Storage {
 
-    /**
-     * Checks if JDBS driver is found and memorizes database and user data needed to open a connection
-     * @param databaseName
-     * @param userName
-     * @param userPassword
-     */
-    public Storage(String databaseName, String userName, String userPassword) {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        this.databaseName = databaseName;
-        this.userName = userName;
-        this.userPassword = userPassword;
+    List<User> findUsers(Map<String, String> searchParameters);
+    Optional<User> getUser(int id);
 
-        // temporary solution
-        this.books = new LinkedList<>();
-        this.users = new LinkedList<>();
-        this.checkouts = new LinkedList<>();
-    }
+    List<Book> findBooks(Map<String, String> searchParameters);
+    Optional<Book> getBook(int id);
 
+    List<JournalArticle> findArticles(Map<String, String> searchParameters);
+    Optional<JournalArticle> getArticle(int id);
 
-    /**
-     * TODO This method is being developed and is not ready yet
-     */
-    public String searchForItem(String itemType, List<String> searchParameters) {
-        assert false;
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM ");
-        query.append(itemType);
-        query.append(";");
+    List<AvMaterial> findAvMaterial(Map<String, String> searchParameters);
+    Optional<AvMaterial> getAvMaterial(int id);
 
-        StringBuilder result = new StringBuilder();
-        try(Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/"+databaseName,
-                        userName, userPassword)) {
-            Statement stmt = connection.createStatement();
-            ResultSet s = stmt.executeQuery(query.toString());
-            for(int i = 1; i <= s.getMetaData().getColumnCount(); i++) {
-                result.append(s.getString(1));
-                result.append("\n");
-            }
-            stmt.close();
-            connection.close();
+    int getNumOfCheckouts(int item_id);
+    List<CheckoutRecord> getCheckoutRecordsFor(int user_id);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result.toString();
-    }
+    int addUser(User user);
+    int addBook(Book book);
+    void addJournalArticle(JournalArticle article);
+    int addJournal(JournalIssue journal);
+    int addAvMaterial(AvMaterial material);
+    void addCheckoutRecord(CheckoutRecord record);
 
-    // temporary solution!
-    public void saveCheckouts() {
-        try(FileWriter w = new FileWriter("checkouts")) {
-            for(CheckoutInfo c: checkouts) {
-                w.write(c.item.getTitle());
-                w.write("\n");
-                w.write(String.valueOf(c.patron.getCardNumber()));
-                w.write("\n");
-                w.write(c.overdue.toString());
-                w.write("\n\n");
-            }
+    void removeUser(int user_id);
+    void removeBook(int book_id);
+    void removeJournalArticle(int article_id);
+    void removeJournal(int journal_id);
+    void removeAvMaterial(int material_id);
+    void removeCheckoutRecord(int item_id, int user_id, String item_type, LocalDate dueDate);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // temporary solution!
-    public List<Book> books;
-    public List<User> users;
-    public List<CheckoutInfo> checkouts;
-
-    private String databaseName, userName, userPassword;
 }

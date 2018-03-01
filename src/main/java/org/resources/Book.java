@@ -1,43 +1,36 @@
 package org.resources;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 
 /**
  * Data structure representing a book
  */
-public class Book {
+public class Book extends Item {
 
     Book() {}
 
-    public List<String> getAuthors() {
-        return authors;
+    @Override
+    public String toString() {
+        return String.format("Book{title: %s, authors: %s, publisher: %s}", title, authors, publisher);
     }
 
-    public String getTitle() {
-        return title;
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public List<String> getAuthors() {
+        return authors;
     }
 
     public String getPublisher() {
         return publisher;
     }
 
-    public LocalDate getPublicationYear() {
-        return publicationYear;
-    }
-
-    public List<String> getKeywords() {
-        return keywords;
-    }
-
-    public int getCopiesNum() {
-        return copiesNum;
-    }
-
-    public int getPrice() {
-        return price;
+    public LocalDate getPublicationDate() {
+        return publicationDate;
     }
 
     public boolean isReference() {
@@ -48,13 +41,9 @@ public class Book {
         return bestseller;
     }
 
-    String title;
     List<String> authors;
     String publisher;
-    LocalDate publicationYear;
-    int copiesNum;
-    boolean reference;
+    LocalDate publicationDate;
     boolean bestseller;
-    int price;
-    List<String> keywords;
+    static final String type = "book";
 }
