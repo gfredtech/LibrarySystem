@@ -99,12 +99,33 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
 
     @Override
+    public List<JournalIssue> findJournals(Map<String, String> searchParameters) {
+        List<JournalIssue> result = new LinkedList<>();
+
+        assert false: "TODO";
+
+        return result;
+    }
+
+    @Override
     public Optional<Book> getBook(int id) {
         Map<String, String> params = new HashMap<>();
         params.put("book_id", String.valueOf(id));
         List<Book> books = findBooks(params);
         if(!books.isEmpty()) {
             return Optional.of(books.get(0));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<JournalIssue> getJournal(int id) {
+        Map<String, String> params = new HashMap<>();
+        params.put("book_id", String.valueOf(id));
+        List<JournalIssue> journals = findJournals(params);
+        if(!journals.isEmpty()) {
+            return Optional.of(journals.get(0));
         } else {
             return Optional.empty();
         }

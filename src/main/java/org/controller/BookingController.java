@@ -15,8 +15,6 @@ public class BookingController {
     }
 
     public void checkOut(int user_id, String item_type, int item_id) {
-        CheckoutRecord checkout = new CheckoutRecord();
-
         User u = storage.getUser(user_id).get();
 
         if(u == null) {
@@ -28,6 +26,12 @@ public class BookingController {
             case "book":
                 item = storage.getBook(item_id).get();
                 break;
+            case "journal_issue":
+                item = storage.getJournal(item_id).get();
+                break;
+            case "av_material":
+                item = storage.getAvMaterial(item_id).get();
+                break;
             default:
                 throw new RuntimeException();
         }
@@ -38,19 +42,21 @@ public class BookingController {
         if(item.isReference()) {
             throw new CheckoutException("A reference item cannot be checked out: "+item.getTitle());
         }
-        CheckoutRecord c = new CheckoutRecord();
-        c.item = item;
-        c.patron = u;
+        LocalDate overdue;
         if(item_type.equals("book")) {
             Book b = (Book)item;
             if(b.isBestseller()) {
-                c.overdue = LocalDate.now().plusWeeks(2);
+                overdue = LocalDate.now().plusWeeks(2);
             } else if (u.getSubtype().equals("Faculty")) {
-                c.overdue = LocalDate.now().plusWeeks(4);
+                overdue = LocalDate.now().plusWeeks(4);
             } else {
-                c.overdue = LocalDate.now().plusWeeks(3);
+                overdue = LocalDate.now().plusWeeks(3);
             }
+        } else {
+            overdue = LocalDate.now().plusWeeks(2);
         }
+        CheckoutRecord c = new CheckoutRecord(u, item, overdue);
+
         storage.addCheckoutRecord(c);
     }
 

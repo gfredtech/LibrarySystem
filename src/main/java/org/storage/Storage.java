@@ -25,6 +25,9 @@ public interface Storage {
     List<AvMaterial> findAvMaterial(Map<String, String> searchParameters);
     Optional<AvMaterial> getAvMaterial(int id);
 
+    List<JournalIssue> findJournals(Map<String, String> searchParameters);
+    Optional<JournalIssue> getJournal(int id);
+
     int getNumOfCheckouts(int item_id);
     List<CheckoutRecord> getCheckoutRecordsFor(int user_id);
 

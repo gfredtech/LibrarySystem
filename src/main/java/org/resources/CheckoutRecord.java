@@ -8,6 +8,12 @@ import java.time.LocalDate;
  */
 public class CheckoutRecord {
 
+    public CheckoutRecord(User patron, Item item, LocalDate date) {
+        this.patron = patron;
+        this.item = item;
+        this.overdue = date;
+    }
+
     public User patron;
     public LocalDate overdue;
     public Item item;
