@@ -50,6 +50,7 @@ public class Bot extends TelegramLongPollingBot {
                     command = new LoginCommand(message.getFrom(), message.getChat());
 
                     try {
+                        command.run().setReplyMarkup(new ReplyKeyboardRemove()); // hides keyboard in case it's showing already
                         execute(command.run());
                         previous = "/login";
 
@@ -61,6 +62,7 @@ public class Bot extends TelegramLongPollingBot {
                 case "/signup":
                     command = new SignUpCommand(message.getFrom(), message.getChat());
                     try {
+                        command.run().setReplyMarkup(new ReplyKeyboardRemove()); // hides keyboard in case it's showing already
                         execute(command.run());
                         previous = "/signup";
                     } catch (TelegramApiException ex) {
@@ -69,14 +71,14 @@ public class Bot extends TelegramLongPollingBot {
                     break;
 
                 default:
-                    if(previous.equals("/signup")) {
+                    if(previous!= null && previous.equals("/signup")) {
 
                         signUpName = message.getText();
                         sendMessage(message.getChatId(), "Enter your e-mail address");
                         previous = "/signup_name";
 
                     } else
-                    if(previous.equals("/signup_name")) {
+                    if(previous!= null && previous.equals("/signup_name")) {
                         signUpEmail = message.getText();
                         sendMessage(message.getChatId(), "Enter your phone number");
                         previous = "/signup_email";
@@ -84,13 +86,13 @@ public class Bot extends TelegramLongPollingBot {
 
 
 
-                    } else if(previous.equals("/signup_email")) {
+                    } else if(previous!= null && previous.equals("/signup_email")) {
                         signUpPhone = message.getText();
 
                         sendMessage(message.getChatId(), "Set a password for your account");
                         previous = "/signup_done";
 
-                    } else if(previous.equals("/signup_done")) {
+                    } else if(previous!= null && previous.equals("/signup_done")) {
                         signUpPassword = message.getText();
                         System.out.println(signUpName + " " + signUpEmail + " " + signUpPhone + " " + signUpPassword);
                         String accountDetails = "Name: " + signUpName +
@@ -100,12 +102,12 @@ public class Bot extends TelegramLongPollingBot {
 
                     }
 
-                    else if (previous.equals("/login")) {
+                    else if (previous!= null && previous.equals("/login")) {
                         username = message.getText();
                         sendMessage(message.getChatId(), "Enter password");
                         previous = "/username";
 
-                    } else if (previous.equals("/username")) {
+                    } else if (previous!= null && previous.equals("/username")) {
                         password = message.getText();
                         if (username.equals("admin") && password.equals("root")) {
                             showKeyboard(message.getChatId());
@@ -116,15 +118,15 @@ public class Bot extends TelegramLongPollingBot {
                             previous = "/start";
                         }
 
-                    } else {
+                    } else
                         if(message.getText().equals("Checkout document")) {
-                            if (previous.equals("/menu")) {
+                            if (previous!= null && previous.equals("/menu")) {
                                 sendMessage(message.getChatId(), "Enter the name of the document you want to check out");
                             } else {
                                 sendMessage(message.getChatId(), "Please /login or /signup first before you can execute this command.");
                             }
                         }
-                    }
+                break;
 
             }
 
