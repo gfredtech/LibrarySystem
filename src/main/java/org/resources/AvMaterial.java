@@ -7,8 +7,6 @@ import java.util.List;
  */
 public class AvMaterial extends Item {
 
-    AvMaterial() {}
-
     public List<String> getAuthors() {
         return authors;
     }
@@ -20,6 +18,6 @@ public class AvMaterial extends Item {
 
     List<String> authors;
 
-    static final String type = "journal_issue";
+    static final String type = "av_material";
 
 }

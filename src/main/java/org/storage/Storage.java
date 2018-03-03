@@ -4,7 +4,6 @@ import org.resources.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -13,29 +12,29 @@ import java.util.Optional;
  */
 public interface Storage {
 
-    List<User> findUsers(Map<String, String> searchParameters);
+    List<User> findUsers(QueryParameters searchParameters);
     Optional<User> getUser(int id);
 
-    List<Book> findBooks(Map<String, String> searchParameters);
+    List<Book> findBooks(QueryParameters searchParameters);
     Optional<Book> getBook(int id);
 
-    List<JournalArticle> findArticles(Map<String, String> searchParameters);
+    List<JournalArticle> findArticles(QueryParameters searchParameters);
     Optional<JournalArticle> getArticle(int id);
 
-    List<AvMaterial> findAvMaterial(Map<String, String> searchParameters);
+    List<AvMaterial> findAvMaterials(QueryParameters searchParameters);
     Optional<AvMaterial> getAvMaterial(int id);
 
-    List<JournalIssue> findJournals(Map<String, String> searchParameters);
+    List<JournalIssue> findJournals(QueryParameters searchParameters);
     Optional<JournalIssue> getJournal(int id);
 
     int getNumOfCheckouts(int item_id);
     List<CheckoutRecord> getCheckoutRecordsFor(int user_id);
 
-    int addUser(User user);
-    int addBook(Book book);
-    void addJournalArticle(JournalArticle article);
-    int addJournal(JournalIssue journal);
-    int addAvMaterial(AvMaterial material);
+    User addUser(User user);
+    Book addBook(BookFactory book);
+    JournalArticle addJournalArticle(JournalArticleFactory article);
+    JournalIssue addJournal(JournalIssueFactory journal);
+    AvMaterial addAvMaterial(AvMaterialFactory material);
     void addCheckoutRecord(CheckoutRecord record);
 
     void removeUser(int user_id);
@@ -43,6 +42,6 @@ public interface Storage {
     void removeJournalArticle(int article_id);
     void removeJournal(int journal_id);
     void removeAvMaterial(int material_id);
-    void removeCheckoutRecord(int item_id, int user_id, String item_type, LocalDate dueDate);
+    void removeCheckoutRecord(CheckoutRecord record);
 
 }

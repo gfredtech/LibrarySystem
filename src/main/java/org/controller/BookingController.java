@@ -7,6 +7,9 @@ import org.resources.User;
 import org.storage.Storage;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
+
+
 
 public class BookingController {
 
@@ -15,25 +18,31 @@ public class BookingController {
     }
 
     public void checkOut(int user_id, String item_type, int item_id) {
+
         User u = storage.getUser(user_id).get();
 
-        if(u == null) {
-            throw new IllegalArgumentException("User with id " + String.valueOf(user_id) + " not found.");
-        }
-
         Item item;
-        switch(item_type) {
-            case "book":
-                item = storage.getBook(item_id).get();
-                break;
-            case "journal_issue":
-                item = storage.getJournal(item_id).get();
-                break;
-            case "av_material":
-                item = storage.getAvMaterial(item_id).get();
-                break;
-            default:
-                throw new RuntimeException();
+        try{
+            switch(item_type) {
+                case "book":
+                    item = storage.getBook(item_id).get();
+                    break;
+                case "article":
+                    item_type = "journal_issue";
+                    item_id = storage.getArticle(item_id).get()
+                            .getJournal().getId();
+
+                case "journal_issue":
+                    item = storage.getJournal(item_id).get();
+                    break;
+                case "av_material":
+                    item = storage.getAvMaterial(item_id).get();
+                    break;
+                default:
+                    throw new RuntimeException();
+            }
+        } catch (NoSuchElementException e) {
+            throw new CheckoutException(e);
         }
         int checkoutNum = storage.getNumOfCheckouts(item_id);
         if(checkoutNum >= item.getCopiesNum()) {
@@ -62,6 +71,9 @@ public class BookingController {
 
     public class CheckoutException extends RuntimeException {
         public CheckoutException(String cause) {
+            super(cause);
+        }
+        public CheckoutException(Throwable cause) {
             super(cause);
         }
     }

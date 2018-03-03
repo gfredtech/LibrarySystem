@@ -11,10 +11,10 @@ public class CheckoutRecord {
     public CheckoutRecord(User patron, Item item, LocalDate date) {
         this.patron = patron;
         this.item = item;
-        this.overdue = date;
+        this.dueDate = date;
     }
 
     public User patron;
-    public LocalDate overdue;
+    public LocalDate dueDate;
     public Item item;
 }

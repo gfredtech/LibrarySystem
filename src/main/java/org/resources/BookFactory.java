@@ -8,74 +8,30 @@ import java.util.List;
 /**
  * A factory intended to create instances of the Book class
  */
-public class BookFactory {
+public class BookFactory extends ItemFactory<Book> {
 
-    public Book build() {
-        Book book = new Book();
-        book.authors = authors;
-        book.copiesNum = copiesNum;
-        book.keywords = keywords;
-        book.price = price;
-        book.publicationDate = publicationDate;
-        book.reference = reference;
-        book.bestseller = bestseller;
-        book.publisher = publisher;
-        book.title = title;
-        return book;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public BookFactory() {
+        super(new Book());
     }
 
     public void setAuthors(List<String> authors) {
-        this.authors = authors;
-    }
-
-    public void setCopiesNum(int copiesNum) {
-        this.copiesNum = copiesNum;
-    }
-
-    public void setKeywords(List<String> keywords) {
-        this.keywords = keywords;
+        item.authors = authors;
     }
 
     public void setPublicationDate(LocalDate publicationDate) {
-        this.publicationDate = publicationDate;
+        item.publicationDate = publicationDate;
     }
 
     public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public void setAsReference() {
-        this.reference = true;
-    }
-
-    public void setAsNonReference() {
-        this.reference = false;
+        item.publisher = publisher;
     }
 
     public void setAsBestseller() {
-        this.bestseller = true;
+        item.bestseller = true;
     }
 
     public void setAsNonBestseller() {
-        this.bestseller = false;
+        item.bestseller = false;
     }
-
-    private String title;
-    private List<String> authors;
-    private String publisher;
-    private LocalDate publicationDate;
-    private int copiesNum = 1;
-    private boolean reference = false;
-    private boolean bestseller = false;
-    private int price;
-    private List<String> keywords = new LinkedList<>();
 }
 

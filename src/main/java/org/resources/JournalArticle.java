@@ -4,15 +4,7 @@ import java.util.List;
 
 
 
-public class JournalArticle {
-
-    public String getTitle() {
-        return title;
-    }
-
-    public List<String> getKeywords() {
-        return keywords;
-    }
+public class JournalArticle extends Item {
 
     public JournalIssue getJournal() {
         return journal;
@@ -22,8 +14,34 @@ public class JournalArticle {
         return authors;
     }
 
-    String title;
-    List<String> keywords;
+    @Override
+    public int getCopiesNum() {
+        return journal.getCopiesNum();
+    }
+
+    @Override
+    public boolean isReference() {
+        return journal.isReference();
+    }
+
+    @Override
+    public int getPrice() {
+        return journal.getPrice();
+    }
+
+    @Override
+    public String getType() {
+        return "article";
+    }
+
+    public void initializeJournal(JournalIssue issue) {
+        if(journal == null) {
+            journal = issue;
+        } else {
+            throw new RuntimeException("Journal is already initialized");
+        }
+    }
+
     List<String> authors;
     JournalIssue journal;
 }

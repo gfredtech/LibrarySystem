@@ -4,6 +4,9 @@ import java.util.List;
 
 public abstract class Item {
 
+    public int getId() {
+        return id;
+    }
     public String getTitle() {
         return title;
     }
@@ -26,11 +29,10 @@ public abstract class Item {
         return String.format("Item{title: %s}", title);
     }
 
-
     String title;
     int copiesNum;
     boolean reference;
     int price;
     List<String> keywords;
-
+    int id;
 }
