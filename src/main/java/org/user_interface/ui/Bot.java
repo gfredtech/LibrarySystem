@@ -1,7 +1,10 @@
 package org.user_interface.ui;
 
+import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.user_interface.commands.Command;
 import org.user_interface.commands.LoginCommand;
+import org.user_interface.commands.SignUpCommand;
 import org.user_interface.commands.StartCommand;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -47,6 +50,7 @@ public class Bot extends TelegramLongPollingBot {
                     command = new LoginCommand(message.getFrom(), message.getChat());
 
                     try {
+                        command.run().setReplyMarkup(new ReplyKeyboardRemove()); // hides keyboard in case it's showing already
                         execute(command.run());
                         previous = "/login";
 
@@ -55,13 +59,55 @@ public class Bot extends TelegramLongPollingBot {
                     }
                     break;
 
+                case "/signup":
+                    command = new SignUpCommand(message.getFrom(), message.getChat());
+                    try {
+                        command.run().setReplyMarkup(new ReplyKeyboardRemove()); // hides keyboard in case it's showing already
+                        execute(command.run());
+                        previous = "/signup";
+                    } catch (TelegramApiException ex) {
+                        ex.printStackTrace();
+                    }
+                    break;
+
                 default:
-                    if (previous.equals("/login")) {
+                    if(previous!= null && previous.equals("/signup")) {
+
+                        signUpName = message.getText();
+                        sendMessage(message.getChatId(), "Enter your e-mail address");
+                        previous = "/signup_name";
+
+                    } else
+                    if(previous!= null && previous.equals("/signup_name")) {
+                        signUpEmail = message.getText();
+                        sendMessage(message.getChatId(), "Enter your phone number");
+                        previous = "/signup_email";
+
+
+
+
+                    } else if(previous!= null && previous.equals("/signup_email")) {
+                        signUpPhone = message.getText();
+
+                        sendMessage(message.getChatId(), "Set a password for your account");
+                        previous = "/signup_done";
+
+                    } else if(previous!= null && previous.equals("/signup_done")) {
+                        signUpPassword = message.getText();
+                        System.out.println(signUpName + " " + signUpEmail + " " + signUpPhone + " " + signUpPassword);
+                        String accountDetails = "Name: " + signUpName +
+                                "\nEmail: " + signUpEmail + "\nPhone Number: " + signUpPhone;
+                        setInlineKeyBoard(message.getChatId(), accountDetails);
+
+
+                    }
+
+                    else if (previous!= null && previous.equals("/login")) {
                         username = message.getText();
                         sendMessage(message.getChatId(), "Enter password");
                         previous = "/username";
 
-                    } else if (previous.equals("/username")) {
+                    } else if (previous!= null && previous.equals("/username")) {
                         password = message.getText();
                         if (username.equals("admin") && password.equals("root")) {
                             showKeyboard(message.getChatId());
@@ -72,17 +118,30 @@ public class Bot extends TelegramLongPollingBot {
                             previous = "/start";
                         }
 
-                    } else {
+                    } else
                         if(message.getText().equals("Checkout document")) {
-                            if (previous.equals("/menu")) {
+                            if (previous!= null && previous.equals("/menu")) {
                                 sendMessage(message.getChatId(), "Enter the name of the document you want to check out");
                             } else {
                                 sendMessage(message.getChatId(), "Please /login or /signup first before you can execute this command.");
                             }
                         }
-                    }
+                break;
+
             }
 
+        } else if(update.hasCallbackQuery()) {
+            String call_data = update.getCallbackQuery().getData();
+            Long ChatId =  update.getCallbackQuery().getMessage().getChatId();
+
+            if(call_data.equals("confirm")) {
+                createAccount(signUpName, signUpEmail, signUpPhone);
+                sendMessage(ChatId,
+                        "Account created successfully! Use /login to login to your account");
+            } else if(call_data.equals("cancel")) {
+                sendMessage(ChatId,
+                        "Signup cancelled. Use /login, or /signup again if you want to create an account");
+            }
         }
     }
 
@@ -139,5 +198,37 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    void createAccount(String signUpName, String signUpEmail, String signUpPhone) {
+        //TODO: add account to database
+    }
+
+    void setInlineKeyBoard(Long ChatId, String message) {
+        SendMessage msg = new SendMessage();
+        msg.setText(message);
+        msg.setChatId(ChatId);
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        row.add(new InlineKeyboardButton().
+                setText("Confirm").setCallbackData("confirm"));
+        row.add(new InlineKeyboardButton()
+                .setText("Cancel").setCallbackData("cancel"));
+
+        rows.add(row);
+        markup.setKeyboard(rows);
+        msg.setReplyMarkup(markup);
+
+        try {
+            execute(msg);
+        }catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
     String previous;
+
+    String signUpName, signUpEmail, signUpPhone, signUpPassword;
 }
+

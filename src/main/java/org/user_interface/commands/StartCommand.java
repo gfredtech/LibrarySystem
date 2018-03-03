@@ -19,7 +19,8 @@ public class StartCommand implements Command {
 
         SendMessage welcome = new SendMessage();
         welcome.setChatId(chat.getId());
-        welcome.setText("Hello " + user.getFirstName() + ". Welcome to Inno Library. Please type /login to login to the system");
+        welcome.setText("Hello " + user.getFirstName() + ". Welcome to Inno Library. Please type /login to login to the system." +
+                "If you don't have an account yet, use /signup");
         return welcome;
 
     }
