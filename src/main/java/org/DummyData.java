@@ -151,6 +151,7 @@ return new ArrayList<Book>(){{
         factory.setPrice(400);
         factory.setAsNonReference();
         AvMaterial linearAlgebra = factory.build(5);
+        System.out.println("AV material " + linearAlgebra.getTitle());
 
         factory = new AvMaterialFactory();
         factory.setTitle("Calculus");
@@ -164,11 +165,109 @@ return new ArrayList<Book>(){{
         factory.setPrice(400);
         factory.setAsNonReference();
         factory.setCopiesNum(5);
-        AvMaterial calculus = factory.build(5);
+        AvMaterial calculus = factory.build(6);
+
+        System.out.println("AV material " + calculus.getTitle());
 
         return new ArrayList<AvMaterial>() {{
             add(calculus);
             add(linearAlgebra);
+        }};
+    }
+
+    public ArrayList<JournalIssue> createJournalIssue(){
+        JournalIssueFactory factory = new JournalIssueFactory();
+        factory.setEditors(new ArrayList<String>(){{
+            add("Carlos de Mesa");
+            add("Luis Quintana");
+        }});
+        factory.setPublicationDate(LocalDate.of(2018, 3, 4));
+        factory.setPublisher("La Hoguera");
+        factory.setAsNonReference();
+        factory.setCopiesNum(20);
+        factory.setTitle("Scientific Relations");
+        factory.setPrice(200);
+        factory.setKeywords(new ArrayList<String>(){{
+            add("Science");
+            add("Relations");
+            add("Sientific");
+        }});
+        JournalIssue scientificRelations = factory.build(111);
+
+
+        factory = new JournalIssueFactory();
+        factory.setEditors(new ArrayList<String>(){{
+            add("Carlos de Mesa");
+            add("Luis Quintana");
+        }});
+        factory.setPublicationDate(LocalDate.of(2018, 3, 3));
+        factory.setPublisher("La Hoguera");
+        factory.setAsNonReference();
+        factory.setCopiesNum(25);
+        factory.setTitle("World of Coding");
+        factory.setPrice(250);
+        factory.setKeywords(new ArrayList<String>(){{
+            add("programming");
+            add("world");
+            add("coding");
+        }});
+        JournalIssue worldOfCoding = factory.build(222);
+
+        return new ArrayList<JournalIssue>(){{
+            add(scientificRelations);
+            add(worldOfCoding);
+        }};
+
+    }
+
+    public ArrayList<JournalArticle> createJournalArticle(){
+
+        ArrayList<JournalIssue> journalIssues = createJournalIssue();
+
+        JournalArticleFactory factory = new JournalArticleFactory();
+        factory.setTitle("Science in History");
+        factory.setKeywords(new ArrayList<String>(){{
+            add("History");
+            add("Science");
+            add("Scientific");
+        }});
+        //factory.setPrice(300);
+        //factory.setAsNonReference();
+        //factory.setCopiesNum(20);
+        factory.setAuthors(new ArrayList<String>(){{
+            add("Carlos Quintana");
+            add("Jose Perales");
+        }});
+
+        factory.setJournalIssue(journalIssues.get(1));
+        JournalArticle scienceInHistory = factory.build(1112);
+
+
+
+        factory = new JournalArticleFactory();
+        factory.setTitle("The discovery of coding");
+        factory.setKeywords(new ArrayList<String>(){{
+            add("discovery");
+            add("coding");
+            add("timeline of programming");
+        }});
+        //factory.setPrice(300);
+        //factory.setAsNonReference();
+        //factory.setCopiesNum(20);
+
+        factory.setAuthors(new ArrayList<String>(){{
+            add("Carlos Quintana");
+            add("Jose Luis Morales");
+        }});
+
+        factory.setJournalIssue(journalIssues.get(0));
+
+        JournalArticle discoveryOfCoding = factory.build(1113);
+
+
+        return new ArrayList<JournalArticle>(){{
+            add(scienceInHistory);
+            add(discoveryOfCoding);
         }};
     }
 

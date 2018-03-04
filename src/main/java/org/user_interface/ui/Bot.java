@@ -60,7 +60,7 @@ public class Bot extends TelegramLongPollingBot {
                     try {
 
                         execute(login);
-                        previous.put(chatId, "/login");
+                        previous.put(chatId, "/username");
 
                     } catch (TelegramApiException ex) {
                         ex.printStackTrace();
@@ -75,7 +75,7 @@ public class Bot extends TelegramLongPollingBot {
                     try {
 
                         execute(signup);
-                        previous.put(chatId, "/signup");
+                        previous.put(chatId, "/signup_name");
                     } catch (TelegramApiException ex) {
                         ex.printStackTrace();
                     }
@@ -99,6 +99,18 @@ public class Bot extends TelegramLongPollingBot {
                     }
 
                     break;
+
+                case "Return Document":
+                    sendMessage(chatId, "Select the type of document you want to return");
+                    setInlineKeyBoard(chatId, "Types:",
+                            new ArrayList<String>() {{
+                                add("Return Book");
+                                add("Return Av Material");
+                                add("Return Journal Issue");
+
+                            }});
+                    previous.put(chatId, "/return_document_list");
+                    break;
                 case "Edit":
                     showCRUDkeyboard(chatId);
                     previous.put(chatId, "/edit");
@@ -110,6 +122,18 @@ public class Bot extends TelegramLongPollingBot {
                     previous.put(chatId, "/add_document_title");
                     break;
 
+                case "Modify Document":
+                    sendMessage(chatId, "Select the type of document you want to edit");
+                    setInlineKeyBoard(chatId, "Types:",
+                            new ArrayList<String>() {{
+                                add("Edit Book");
+                                add("Edit Av Material");
+                                add("Edit Journal Issue");
+                                add("Edit Journal Article");
+                            }});
+                    previous.put(chatId, "/modify_document");
+                    break;
+
 
 
 
@@ -117,37 +141,37 @@ public class Bot extends TelegramLongPollingBot {
                     String input = previous.get(chatId);
                     if (input != null) {
                         switch (input) {
-                            case "/signup":
+                            case "/signup_name":
 
                                 signUpName = message.getText();
                                 sendMessage(chatId, "Enter your e-mail address");
 
-                                previous.put(chatId, "/signup_name");
-                                break;
-
-                            case "/signup_name":
-                                signUpEmail = message.getText();
-                                sendMessage(chatId, "Enter your phone number");
                                 previous.put(chatId, "/signup_email");
                                 break;
 
                             case "/signup_email":
-                                signUpPhone = message.getText();
-                                sendMessage(chatId, "Set a login code for your account");
+                                signUpEmail = message.getText();
+                                sendMessage(chatId, "Enter your phone number");
                                 previous.put(chatId, "/signup_passcode");
                                 break;
 
                             case "/signup_passcode":
+                                signUpPhone = message.getText();
+                                sendMessage(chatId, "Set a login code for your account");
+                                previous.put(chatId, "/signup_type");
+                                break;
+
+                            case "/signup_type":
                                 signUpPassword = message.getText();
                                 setInlineKeyBoard(chatId, "Are you a Librarian, student or Faculty member?",
                                         new ArrayList<String>() {{
                                             add("Student");
                                             add("Faculty");
                                         }});
-                                previous.put(chatId, "signup_done");
+                                previous.put(chatId, "signup_confirm");
 
 
-                            case "/signup_done":
+                            case "/signup_confirm":
 
                                 System.out.println(signUpName + " " + signUpEmail + " " + signUpPhone + " " + signUpPassword);
                                 String accountDetails = "Name: " + signUpName +
@@ -160,15 +184,16 @@ public class Bot extends TelegramLongPollingBot {
                                 break;
 
 
-                            case "/login":
+                            case "/username":
                                 username = message.getText();
                                 sendMessage(chatId, "Enter password");
-                                previous.put(chatId, "/username");
+                                previous.put(chatId, "/password");
                                 break;
 
-                            case "/username":
+                            case "/password":
                                 password = message.getText();
                                 if (username.equals("admin") && password.equals("root")) {
+                                    //TODO: get if user is librarian, then set isLibrarian parameter to correct value.
                                     showMainMenuKeyboard(chatId, true, "Success");
                                     previous.put(chatId, "/menu");
 
@@ -196,7 +221,7 @@ public class Bot extends TelegramLongPollingBot {
 
                                 if (bookSelected != null) {
                                     showBookDetails(chatId, bookSelected);
-                                    currrentBookCheckout.put(chatId, bookSelected);
+                                    bookCursor.put(chatId, bookSelected);
                                 }
                                 break;
 
@@ -216,12 +241,14 @@ public class Bot extends TelegramLongPollingBot {
                                 if(selected != null) {
                                     showAvMaterialDetails(chatId, selected);
 
-                                    currentAvMaterialCheckout.put(chatId, selected);
+                                    avMaterialCursor.put(chatId, selected);
                                 }
 
                                 break;
 
                             case "select_journalarticle":
+                                //TODO: to be done
+                                break;
 
 
 
@@ -246,6 +273,7 @@ public class Bot extends TelegramLongPollingBot {
 
                             case "/add_document_copies":
                                 factory.setCopiesNum(Integer.parseInt(x));
+
                                 setInlineKeyBoard(chatId, "What type of document is it?",
                                         new ArrayList<String>() {{
                                             add("Add Book");
@@ -253,12 +281,32 @@ public class Bot extends TelegramLongPollingBot {
                                             add("Add Journal Article");
                                             add("Add Journal Issue");
                                         }});
+                                previous.put(chatId, "/add_document_complete");
+                                break;
+
+                            case "/return_book_index_number":
+                                Book returnSelected = null;
+
+                                try {
+                                    position = Integer.parseInt(x);
+                                }catch (NumberFormatException e) {
+                                    sendMessage(chatId, "Not a number");
+                                    e.printStackTrace();
+                                    return;
+                                }
+
+                                //TODO: get book position and point book cursor to book object
+                                // returnSelected = bookAtIndexEntered();
+                                //returnBook(returnSelected);
+                                showMainMenuKeyboard(chatId, false, returnSelected.getTitle() + " returned successfully");
+                                pre
 
 
 
 
+                                }
 
-                        }
+
                         }
 
                         break;
@@ -298,97 +346,152 @@ public class Bot extends TelegramLongPollingBot {
                     break;
 
                 case "Book":
-                    StringBuilder builder = new StringBuilder();
-                    dummyBookList = new DummyData().createBooks();
-                    for(int i = 0; i < dummyBookList.size(); i++) {
-
-                        String name = dummyBookList.get(i).getTitle();
-                        System.out.println(name);
-                        builder.append((i+1) + ". " + name + "\n\n");
-                    }
                     sendMessage(chatId, "Here's a " +
-                            "list of all books in the library. Enter the number of the book you want:");
-                    sendMessage(chatId, builder.toString());
+                            "list of all Books in the library. Enter the number of the book you want:");
+                    listBooks(chatId);
                     previous.put(chatId, "/select_book");
                     break;
 
                 case "AV Material":
-                    StringBuilder builder1 = new StringBuilder();
-                    dummyAvMaterialList = new DummyData().createAVMaterial();
-                    for(int i = 0; i < dummyAvMaterialList.size(); i++) {
-                        String name = dummyBookList.get(i).getTitle();
-                        builder1.append((i+1) + ". " + name + "\n\n");
-                        }
-
-                        sendMessage(chatId, "Here's a list of all AV Materials in the library. Enter" +
-                                "the number of the AV material you want");
-                    sendMessage(chatId, builder1.toString());
+                    sendMessage(chatId, "Here's a list of all AV Materials in the library. Enter" +
+                            "the number of the AV material you want");
+                    listAvMaterials(chatId);
                     previous.put(chatId, "/select_avmaterial");
                     break;
 
                 case "Journal Article":
                     //TODO: idee fixe
                     StringBuilder builder2 = new StringBuilder();
-                   // dummyJournalArticleList = new DummyData().
+                    // dummyJournalArticleList = new DummyData().
 
                     break;
 
                 case "Journal Issue":
-                        //TODO: idee fixe
+                    //TODO: idee fixe
                     break;
 
 
-                case "Checkout":
+                case "Checkout Book":
                     //TODO: checkout book
 
-                    showMainMenuKeyboard(chatId, false,
-                            currrentBookCheckout.get(chatId).getTitle() + " Checked out successfully.");
+                    showMainMenuKeyboard(chatId, true,
+                            bookCursor.get(chatId).getTitle() + " Checked out successfully.");
+                    break;
+
+                case "Checkout Av Material":
+                    showMainMenuKeyboard(chatId, true, avMaterialCursor.get(chatId).getTitle() + " checked out successfully!");
                     break;
 
                 case "Cancel Checkout":
-                   showMainMenuKeyboard(chatId, false,
-                           "Operation Cancelled");
-                   break;
+                    showMainMenuKeyboard(chatId, false,
+                            "Operation Cancelled");
+                    break;
 
-                   //TODO: Add document to its appropriate category
+                //TODO: Add document to its appropriate category
                 case "Add Book":
-                    showMainMenuKeyboard(chatId, true, "Book added successfully!");
-                    previous.put(chatId, "/menu");
+                    if (previous.get(chatId).equals("/add_document_complete")) {
+                        showMainMenuKeyboard(chatId, true, "Book added successfully!");
+                        previous.put(chatId, "/menu");
+                    }
                     break;
 
                 case "Add Av Material":
-                    showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
-                    previous.put(chatId, "/menu");
+                    if(previous.get(chatId).equals("/add_document_complete")) {
+                        showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
+                        previous.put(chatId, "/menu");
+                    }
                     break;
 
                 case "Add Journal Article":
-                    showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
-                    previous.put(chatId, "/menu");
+                    if(previous.get(chatId).equals("/add_document_complete")) {
+                        showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
+                        previous.put(chatId, "/menu");
+                    }
                     break;
 
                 case "Add Journal Issue":
-                    showMainMenuKeyboard(chatId, true, "Journal Issue Added Successfully");
-                    previous.put(chatId, "/menu");
+                    if(previous.get(chatId).equals("/add_document_complete")) {
+                        showMainMenuKeyboard(chatId, true, "Journal Issue Added Successfully");
+                        previous.put(chatId, "/menu");
+                    }
                     break;
 
+                case "Edit Book":
+                    if(previous.get(chatId).equals("/modify_document")) {
+                        sendMessage(chatId, "Select the Book that you want to edit:");
+                        listBooks(chatId);
+                        previous.put(chatId, "/edit_book");
+                    }
+                    break;
+
+                case "Edit Av Material":
+                    if(previous.get(chatId).equals("/modify_document")) {
+                        sendMessage(chatId, "Select the Av Material you want to edit");
+                        listAvMaterials(chatId);
+                        previous.put(chatId, "/edit_avmaterial");
+                    }
+                    break;
+
+                case "Return Book":
+                    sendMessage(chatId, "This is the list of current books checked out by you");
+                    /** TODO: return list of Books checked out by user
+                     * But first check e.g.
+                     * if the person has some books currently checked out, send as message
+                     * else
+                     * showMainMenuKeyboard(chatId, false, "You currently have no Books Checked out");
+                     * previous.put(chatId, "/menu");
+                     * else {
+                    **/
+
+                    previous.put(chatId, "/return_book_index_number");
 
 
 
+                    break;
 
+                case "Return Av Material":
+                    sendMessage(chatId, "This is the list of current Av Materials checked out by you");
+                    /** TODO: return list of Books checked out by user
+                     * But first check e.g.
+                     * if the person has some  Av Materials currently checked out, send as message
+                     * else
+                     * showMainMenuKeyboard(chatId, false, "You currently have no AV Materials Checked out");
+                     * previous.put(chatId, "/menu");
+                     * else {
+                     **/
 
+                    previous.put(chatId, "/return_avmaterial_index_number");
 
-            }
+                    break;
+
+                case "Return Journal Issue":
+                    sendMessage(chatId, "This is the list of current Journal Issues checked out by you");
+                    /** TODO: return list of Books checked out by user
+                     * But first check e.g.
+                     * if the person has some Journal Issues currently checked out, send as message
+                     * else
+                     * showMainMenuKeyboard(chatId, false, "You currently have no Journal issues Checked out");
+                     * previous.put(chatId, "/menu");
+                     * else {
+                     **/
+
+                    previous.put(chatId, "/return_journal_index_number");
+                    break;
+
+                    }
         }
     }
 
     @Override
     public String getBotUsername() {
-        return "konyvtar_bot";
+        return "getfreecourses_bot";
+        //return "konyvtar_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
+        return "453567691:AAG-05UGHvE4f_CDS1EFq2U0wj0w7x4Ho-o";
+       // return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
     }
 
     void showMainMenuKeyboard(Long chatId, boolean isLibrarian, String msg) {
@@ -401,6 +504,10 @@ public class Bot extends TelegramLongPollingBot {
         keyboard.add(row);
 
         row = new KeyboardRow();
+        row.add("Return Document");
+        keyboard.add(row);
+
+        row = new KeyboardRow();
         row.add("Search");
         keyboard.add(row);
 
@@ -410,6 +517,7 @@ public class Bot extends TelegramLongPollingBot {
             keyboard.add(row);
         }
 
+        /**
         row = new KeyboardRow();
         row.add("️Settings");
         keyboard.add(row);
@@ -417,6 +525,7 @@ public class Bot extends TelegramLongPollingBot {
         row = new KeyboardRow();
         row.add("Logout");
         keyboard.add(row);
+         **/
 
         keyboardMarkup.setKeyboard(keyboard);
 
@@ -447,7 +556,7 @@ public class Bot extends TelegramLongPollingBot {
         user.setPhoneNumber(signUpPhone);
         user.setAddress(signUpEmail);
 
-        dummyUserList = new DummyData().createUsers();
+
         dummyUserList.add(user);
 
         //TODO: add account to database
@@ -484,7 +593,7 @@ public class Bot extends TelegramLongPollingBot {
         String bookDetails = book.toString() +
                  "\nCopies: " + book.getCopiesNum();
         setInlineKeyBoard(chatId, bookDetails, new ArrayList<String>(){{
-            add("Checkout");
+            add("Checkout Book");
             add("Cancel Checkout");
         }});
         previous.put(chatId, "/book_checkout");
@@ -494,7 +603,7 @@ public class Bot extends TelegramLongPollingBot {
         String details = selected.toString() +
                 "\nCopies: " + selected.getCopiesNum();
         setInlineKeyBoard(chatId, details, new ArrayList<String>() {{
-            add("Checkout");
+            add("Checkout Av Material");
             add("Cancel Checkout");
 
         }});
@@ -529,16 +638,43 @@ public class Bot extends TelegramLongPollingBot {
 
     }
 
+    void listBooks(Long chatId) {
+        StringBuilder builder = new StringBuilder();
+        dummyBookList = new DummyData().createBooks();
+        for (int i = 0; i < dummyBookList.size(); i++) {
+            String name = dummyBookList.get(i).getTitle();
+            System.out.println(name);
+            builder.append((i + 1) + ". " + name + "\n\n");
+        }
+
+        sendMessage(chatId, builder.toString());
+
+
+    }
+    void listAvMaterials(Long chatId) {
+        dummyAvMaterialList = new DummyData().createAVMaterial();
+        System.out.println(dummyAvMaterialList == null);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < dummyAvMaterialList.size(); i++) {
+            String name = dummyAvMaterialList.get(i).getTitle();
+            builder.append((i + 1) + ". " + name + "\n\n");
+        }
+
+        sendMessage(chatId, builder.toString());
+
+    }
+
+
     HashMap<Long, String> previous = new HashMap<>();
 
     // tracks the current book that's about to be checked out by a user
-    HashMap<Long, Book>  currrentBookCheckout = new HashMap<>();
-    HashMap<Long, AvMaterial> currentAvMaterialCheckout = new HashMap<>();
+    HashMap<Long, Book>  bookCursor = new HashMap<>();
+    HashMap<Long, AvMaterial> avMaterialCursor = new HashMap<>();
 
     //TODO: will be removed. for testing purposes
     ArrayList<Book> dummyBookList;
-    ArrayList<User> dummyUserList;
-    ArrayList<AvMaterial> dummyAvMaterialList;
+    ArrayList<User> dummyUserList  = new DummyData().createUsers();
+    ArrayList<AvMaterial> dummyAvMaterialList = new DummyData().createAVMaterial();
     ArrayList<JournalArticle> dummyJournalArticleList;
     ArrayList<JournalIssue> dummyJournalIssue;
 
