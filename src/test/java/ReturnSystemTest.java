@@ -1,14 +1,12 @@
-import org.controller.BookingController;
 import org.controller.ReturnController;
 import org.junit.Test;
 import org.resources.Book;
-import org.resources.CheckoutRecord;
 import org.resources.User;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
+
 
 
 public class ReturnSystemTest {
@@ -20,13 +18,12 @@ public class ReturnSystemTest {
         ReturnController controller = new ReturnController(s);
         Book b = s.findBooks(new QueryParameters().add("title", "The Lord of The Rings")).get(0);
         User u  = s.findUsers(new QueryParameters().add("login", "harrm")).get(0);
-        CheckoutRecord r = (CheckoutRecord)s.getCheckoutRecordsFor(u.getCardNumber()).stream().filter(i -> i.item.getId() == b.getId()).toArray()[0];
 
         try{
-            s.removeCheckoutRecord(r);
+            controller.returnItem(u.getCardNumber(), "book", b.getId());
 
         } catch (RuntimeException e) {
-            System.out.println(s.getNumOfCheckouts(17));
+            System.out.println(s.getNumOfCheckouts(b.getId()));
             e.printStackTrace();
         }
         s.closeConnection();

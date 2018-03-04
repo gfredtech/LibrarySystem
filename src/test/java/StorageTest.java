@@ -69,6 +69,13 @@ public class StorageTest {
         storage.addJournalArticle(j);
     }
 
+    @Test
+    public void updateArticle() {
+        JournalArticle a = storage.findArticles(
+                new QueryParameters().add("title", "Some bright article about gamedev")).get(0);
+        storage.updateJournalArticle(a.getId(), a);
+    }
+
     @After
     public void finalize() {
         try {
