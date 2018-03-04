@@ -1,6 +1,7 @@
 package org.user_interface.ui;
 
-import org.storage.SearchParameters;
+import org.DummyData;
+import org.resources.*;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.user_interface.commands.Command;
@@ -16,13 +17,11 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Bot extends TelegramLongPollingBot {
 
-    String username, password;
+
 
     // entry point of bot
     @Override
@@ -82,105 +81,302 @@ public class Bot extends TelegramLongPollingBot {
                     }
                     break;
 
-                default:
-                    if(previous.get(chatId).equals("/signup")) {
+                case "Checkout Document":
+                    if (previous.get(chatId) != null && previous.get(chatId).equals("/menu")) {
 
-                        signUpName = message.getText();
-                        sendMessage(chatId, "Enter your e-mail address");
-                        previous.put(chatId, "/signup_name");
-
-                    } else
-                    if(previous.get(chatId).equals("/signup_name")) {
-                        signUpEmail = message.getText();
-                        sendMessage(chatId, "Enter your phone number");
-                        previous.put(chatId, "/signup_email");
-
-
-
-
-                    } else if(previous.get(chatId).equals("/signup_email")) {
-                        signUpPhone = message.getText();
-
-                        sendMessage(chatId, "Set a password for your account");
-                        previous.put(chatId, "/signup_done");
-
-                    } else if(previous.get(chatId).equals("/signup_done")) {
-                        signUpPassword = message.getText();
-                        System.out.println(signUpName + " " + signUpEmail + " " + signUpPhone + " " + signUpPassword);
-                        String accountDetails = "Name: " + signUpName +
-                                "\n\nEmail: " + signUpEmail + "\n\nPhone Number: " + signUpPhone;
-                        setInlineKeyBoard(chatId, accountDetails, new ArrayList<String>() {{
-                            add("Confirm");
-                            add("Cancel");
-                        }});
-
-
+                        setInlineKeyBoard(chatId,
+                                "Select the kind of document you want to checkout:", new
+                                        ArrayList<String>() {{
+                                            add("Book");
+                                            add("AV Material");
+                                            add("Journal Article");
+                                            add("Journal Issue");
+                                        }});
+                        previous.put(chatId, "/checkout");
+                    } else {
+                        sendMessage(chatId, "Please /login or /signup first before you can execute this command.");
+                        previous.put(chatId, "/fail");
                     }
 
-                    else if (previous.get(chatId).equals("/login")) {
-                        username = message.getText();
-                        sendMessage(chatId, "Enter password");
-                        previous.put(chatId, "/username");
+                    break;
+                case "Edit":
+                    showCRUDkeyboard(chatId);
+                    previous.put(chatId, "/edit");
 
-                    } else if (previous.get(chatId).equals("/username")) {
-                        password = message.getText();
-                        if (username.equals("admin") && password.equals("root")) {
-                            showMainMenuKeyboard(chatId, true);
-                            previous.put(chatId, "/menu");
+                    break;
 
-                        } else {
-                            sendMessage(chatId, "Unsuccessful. Please try again.");
-                            previous.put(chatId, "/start");
-                            
+                case "Add Document":
+                    sendMessage(chatId, "Enter the title of document to be added");
+                    previous.put(chatId, "/add_document_title");
+                    break;
+
+
+
+
+                default:
+                    String input = previous.get(chatId);
+                    if (input != null) {
+                        switch (input) {
+                            case "/signup":
+
+                                signUpName = message.getText();
+                                sendMessage(chatId, "Enter your e-mail address");
+
+                                previous.put(chatId, "/signup_name");
+                                break;
+
+                            case "/signup_name":
+                                signUpEmail = message.getText();
+                                sendMessage(chatId, "Enter your phone number");
+                                previous.put(chatId, "/signup_email");
+                                break;
+
+                            case "/signup_email":
+                                signUpPhone = message.getText();
+                                sendMessage(chatId, "Set a login code for your account");
+                                previous.put(chatId, "/signup_passcode");
+                                break;
+
+                            case "/signup_passcode":
+                                signUpPassword = message.getText();
+                                setInlineKeyBoard(chatId, "Are you a Librarian, student or Faculty member?",
+                                        new ArrayList<String>() {{
+                                            add("Student");
+                                            add("Faculty");
+                                        }});
+                                previous.put(chatId, "signup_done");
+
+
+                            case "/signup_done":
+
+                                System.out.println(signUpName + " " + signUpEmail + " " + signUpPhone + " " + signUpPassword);
+                                String accountDetails = "Name: " + signUpName +
+                                        "\n\nEmail: " + signUpEmail + "\n\nPhone Number: " + signUpPhone;
+                                setInlineKeyBoard(chatId, accountDetails, new ArrayList<String>() {{
+                                    add("Confirm");
+                                    add("Cancel");
+                                }});
+
+                                break;
+
+
+                            case "/login":
+                                username = message.getText();
+                                sendMessage(chatId, "Enter password");
+                                previous.put(chatId, "/username");
+                                break;
+
+                            case "/username":
+                                password = message.getText();
+                                if (username.equals("admin") && password.equals("root")) {
+                                    showMainMenuKeyboard(chatId, true, "Success");
+                                    previous.put(chatId, "/menu");
+
+                                } else {
+                                    sendMessage(chatId, "Unsuccessful. Please try again.");
+                                    previous.put(chatId, "/start");
+
+                                }
+
+                                break;
+
+                            case "/select_book":
+                                Book bookSelected = null;
+                                String msg = message.getText();
+                                int position;
+                                try {
+                                    position = Integer.parseInt(msg);
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
+                                    sendMessage(chatId, "Input is not a number");
+                                    return;
+                                }
+
+                                bookSelected = dummyBookList.get(position - 1);
+
+                                if (bookSelected != null) {
+                                    showBookDetails(chatId, bookSelected);
+                                    currrentBookCheckout.put(chatId, bookSelected);
+                                }
+                                break;
+
+                            case "/select_avmaterial":
+                                AvMaterial selected = null;
+                                String msg1 = x;
+                                int position1;
+                                try {
+                                    position1 = Integer.parseInt(msg1);
+                                }catch (NumberFormatException e) {
+                                    e.printStackTrace();
+                                    sendMessage(chatId, "Input is not a number.");
+                                    return;
+                                }
+                                selected = dummyAvMaterialList.get(position1 - 1);
+
+                                if(selected != null) {
+                                    showAvMaterialDetails(chatId, selected);
+
+                                    currentAvMaterialCheckout.put(chatId, selected);
+                                }
+
+                                break;
+
+                            case "select_journalarticle":
+
+
+
+                            case "/add_document_title":
+                                factory.setTitle(x);
+                                sendMessage(chatId, "Enter the name of the authors, separate by comma(,)");
+                                previous.put(chatId, "/add_document_authors");
+                                break;
+
+                            case "/add_document_authors":
+                                String [] authors = x.split(",");
+                                factory.setAuthors(Arrays.asList(authors));
+                                sendMessage(chatId, "Enter the name of the publisher");
+                                previous.put(chatId, "/add_document_publisher");
+                                break;
+
+                            case "/add_document_publisher":
+                                factory.setPublisher(x);
+                                sendMessage(chatId, "Enter the number of copies you want to add to the library");
+                                previous.put(chatId, "/add_document_copies");
+                                break;
+
+                            case "/add_document_copies":
+                                factory.setCopiesNum(Integer.parseInt(x));
+                                setInlineKeyBoard(chatId, "What type of document is it?",
+                                        new ArrayList<String>() {{
+                                            add("Add Book");
+                                            add("Add Av Material");
+                                            add("Add Journal Article");
+                                            add("Add Journal Issue");
+                                        }});
+
+
+
+
+
+                        }
                         }
 
-                    } else if(previous.get(chatId).equals("/checkout")) {
-                        String bookName = message.getText();
-                        //TODO: search for book. return list of books that are similar to the book being searched for
-                        previous.put(chatId, "book_list");
-
-
-                    }
-                    else if(message.getText().equals("Checkout document")) {
-                            if (previous.get(chatId).equals("/menu")) {
-                                sendMessage(chatId, "Enter the name of the document you want to check out");
-                                previous.put(chatId, "/checkout");
-                            } else {
-                                sendMessage(chatId, "Please /login or /signup first before you can execute this command.");
-                                previous.put(chatId, "/fail");
-                            }
-                        } else if(previous.get(chatId).equals("/checkout")) {
-
-                    } else if(message.getText().equals("Edit")) {
-                       showCRUDkeyboard(chatId);
-                       previous.put(chatId, "/edit");
-                    } else if(message.getText().equals("Edit/Modify Document")) {
-                        //TODO: Edit, modify, delete document
-
-                    } else if(message.getText().equals("Edit/Modify User")) {
-
-                    }
-
-                break;
-
+                        break;
             }
 
         } else if(update.hasCallbackQuery()) {
             String call_data = update.getCallbackQuery().getData();
-            Long ChatId =  update.getCallbackQuery().getMessage().getChatId();
+            Long chatId =  update.getCallbackQuery().getMessage().getChatId();
 
-            if(call_data.equals("Confirm")) {
-                createAccount(signUpName, signUpEmail, signUpPhone);
-                previous.put(ChatId, "/Confirm");
-                sendMessage(ChatId,
-                        "Account created successfully! Use /login to login to your account");
-            } else if(call_data.equals("Cancel")) {
-                if(previous.get(ChatId).equals("/Confirm")) {
-                    sendMessage(ChatId, "Already signed up");
-                } else {
-                sendMessage(ChatId,
-                        "Signup cancelled. Use /login, or /signup again if you want to create an account");
-            }
+            switch (call_data) {
+                case "Confirm":
+                    createAccount(signUpName, signUpEmail, signUpPhone);
+                    previous.put(chatId, "/Confirm");
+                    sendMessage(chatId,
+                            "Account created successfully! Use /login to login to your account");
+                    break;
+
+
+                case "Cancel":
+                    if (previous != null && previous.get(chatId).equals("/Confirm")) {
+                        sendMessage(chatId, "Already signed up");
+                    } else {
+                        sendMessage(chatId,
+                                "Signup cancelled. Use /login, or /signup again if you want to create an account");
+                    }
+                    break;
+
+                case "Student":
+                    signUpType = "Patron";
+                    signUpSubType = "Student";
+                    break;
+
+
+                case "FacultyMember":
+                    signUpType = "Patron";
+                    signUpSubType = "Faculty";
+                    break;
+
+                case "Book":
+                    StringBuilder builder = new StringBuilder();
+                    dummyBookList = new DummyData().createBooks();
+                    for(int i = 0; i < dummyBookList.size(); i++) {
+
+                        String name = dummyBookList.get(i).getTitle();
+                        System.out.println(name);
+                        builder.append((i+1) + ". " + name + "\n\n");
+                    }
+                    sendMessage(chatId, "Here's a " +
+                            "list of all books in the library. Enter the number of the book you want:");
+                    sendMessage(chatId, builder.toString());
+                    previous.put(chatId, "/select_book");
+                    break;
+
+                case "AV Material":
+                    StringBuilder builder1 = new StringBuilder();
+                    dummyAvMaterialList = new DummyData().createAVMaterial();
+                    for(int i = 0; i < dummyAvMaterialList.size(); i++) {
+                        String name = dummyBookList.get(i).getTitle();
+                        builder1.append((i+1) + ". " + name + "\n\n");
+                        }
+
+                        sendMessage(chatId, "Here's a list of all AV Materials in the library. Enter" +
+                                "the number of the AV material you want");
+                    sendMessage(chatId, builder1.toString());
+                    previous.put(chatId, "/select_avmaterial");
+                    break;
+
+                case "Journal Article":
+                    //TODO: idee fixe
+                    StringBuilder builder2 = new StringBuilder();
+                   // dummyJournalArticleList = new DummyData().
+
+                    break;
+
+                case "Journal Issue":
+                        //TODO: idee fixe
+                    break;
+
+
+                case "Checkout":
+                    //TODO: checkout book
+
+                    showMainMenuKeyboard(chatId, false,
+                            currrentBookCheckout.get(chatId).getTitle() + " Checked out successfully.");
+                    break;
+
+                case "Cancel Checkout":
+                   showMainMenuKeyboard(chatId, false,
+                           "Operation Cancelled");
+                   break;
+
+                   //TODO: Add document to its appropriate category
+                case "Add Book":
+                    showMainMenuKeyboard(chatId, true, "Book added successfully!");
+                    previous.put(chatId, "/menu");
+                    break;
+
+                case "Add Av Material":
+                    showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
+                    previous.put(chatId, "/menu");
+                    break;
+
+                case "Add Journal Article":
+                    showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
+                    previous.put(chatId, "/menu");
+                    break;
+
+                case "Add Journal Issue":
+                    showMainMenuKeyboard(chatId, true, "Journal Issue Added Successfully");
+                    previous.put(chatId, "/menu");
+                    break;
+
+
+
+
+
+
+
             }
         }
     }
@@ -195,17 +391,17 @@ public class Bot extends TelegramLongPollingBot {
         return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
     }
 
-    void showMainMenuKeyboard(Long chatId, boolean isLibrarian) {
+    void showMainMenuKeyboard(Long chatId, boolean isLibrarian, String msg) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("\uD83D\uDE80Checkout document");
+        row.add("Checkout Document");
         keyboard.add(row);
 
         row = new KeyboardRow();
-        row.add("\uD83D\uDD0ESearch");
+        row.add("Search");
         keyboard.add(row);
 
         if(isLibrarian) {
@@ -215,7 +411,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
         row = new KeyboardRow();
-        row.add("⚙️Settings");
+        row.add("️Settings");
         keyboard.add(row);
 
         row = new KeyboardRow();
@@ -224,7 +420,7 @@ public class Bot extends TelegramLongPollingBot {
 
         keyboardMarkup.setKeyboard(keyboard);
 
-        SendMessage message = new SendMessage().setChatId(chatId).setText("Success!");
+        SendMessage message = new SendMessage().setChatId(chatId).setText(msg);
         message.setReplyMarkup(keyboardMarkup);
         try {
             execute(message);
@@ -238,19 +434,28 @@ public class Bot extends TelegramLongPollingBot {
     void sendMessage(Long chatId, String message) {
         try {
             execute(new SendMessage().
-                    setChatId(chatId).setText(message));
+                    setChatId(chatId).setText(message).setReplyMarkup(new ReplyKeyboardRemove()));
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
     void createAccount(String signUpName, String signUpEmail, String signUpPhone) {
+
+        User user = new User(1001, signUpName, signUpType, signUpSubType);
+        user.setLogin(signUpPassword);
+        user.setPhoneNumber(signUpPhone);
+        user.setAddress(signUpEmail);
+
+        dummyUserList = new DummyData().createUsers();
+        dummyUserList.add(user);
+
         //TODO: add account to database
     }
 
     void setInlineKeyBoard(Long ChatId, String message, List<String> commands) {
         SendMessage msg = new SendMessage();
-        msg.setChatId(ChatId);
+
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
@@ -260,10 +465,12 @@ public class Bot extends TelegramLongPollingBot {
             rows.add(row);
             row = new ArrayList<>();
         }
-        markup.setKeyboard(rows);
-        msg.setReplyMarkup(markup);
         msg.setChatId(ChatId);
         msg.setText(message);
+
+        markup.setKeyboard(rows);
+        msg.setReplyMarkup(markup);
+
         try {
             execute(msg);
         }catch (TelegramApiException e) {
@@ -273,22 +480,46 @@ public class Bot extends TelegramLongPollingBot {
 
     }
 
+    void showBookDetails(Long chatId, Book book) {
+        String bookDetails = book.toString() +
+                 "\nCopies: " + book.getCopiesNum();
+        setInlineKeyBoard(chatId, bookDetails, new ArrayList<String>(){{
+            add("Checkout");
+            add("Cancel Checkout");
+        }});
+        previous.put(chatId, "/book_checkout");
+    }
+
+    void showAvMaterialDetails(Long chatId, AvMaterial selected) {
+        String details = selected.toString() +
+                "\nCopies: " + selected.getCopiesNum();
+        setInlineKeyBoard(chatId, details, new ArrayList<String>() {{
+            add("Checkout");
+            add("Cancel Checkout");
+
+        }});
+        previous.put(chatId, "/avmaterial_checkout");
+
+    }
+
     void showCRUDkeyboard(Long ChatId) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Edit/Modify Document");
+        row.add("Add Document");
+        row.add("Modify Document");
         keyboard.add(row);
 
         row = new KeyboardRow();
-        row.add("Edit/Modify User");
-        keyboard.add(row);
+        row.add("Add User");
+        row.add("Modify User");
+       keyboard.add(row);
 
         keyboardMarkup.setKeyboard(keyboard);
 
-        SendMessage message = new SendMessage().setChatId(ChatId).setText("Success!");
+        SendMessage message = new SendMessage().setChatId(ChatId).setText("Choose an option");
         message.setReplyMarkup(keyboardMarkup);
         try {
             execute(message);
@@ -300,6 +531,22 @@ public class Bot extends TelegramLongPollingBot {
 
     HashMap<Long, String> previous = new HashMap<>();
 
-    String signUpName, signUpEmail, signUpPhone, signUpPassword;
+    // tracks the current book that's about to be checked out by a user
+    HashMap<Long, Book>  currrentBookCheckout = new HashMap<>();
+    HashMap<Long, AvMaterial> currentAvMaterialCheckout = new HashMap<>();
+
+    //TODO: will be removed. for testing purposes
+    ArrayList<Book> dummyBookList;
+    ArrayList<User> dummyUserList;
+    ArrayList<AvMaterial> dummyAvMaterialList;
+    ArrayList<JournalArticle> dummyJournalArticleList;
+    ArrayList<JournalIssue> dummyJournalIssue;
+
+
+    BookFactory factory = new BookFactory();
+
+    String username, password;
+
+    String signUpName, signUpEmail, signUpPhone, signUpPassword, signUpType, signUpSubType;
 }
 

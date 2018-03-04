@@ -14,7 +14,7 @@ public class LoginCommand implements Command {
     public SendMessage run() {
         SendMessage loginMessage = new SendMessage();
         loginMessage.setChatId(chat.getId());
-        loginMessage.setText("Enter your username");
+        loginMessage.setText("Enter your Library card number");
         return loginMessage;
     }
 
