@@ -299,7 +299,7 @@ public class Bot extends TelegramLongPollingBot {
                                 // returnSelected = bookAtIndexEntered();
                                 //returnBook(returnSelected);
                                 showMainMenuKeyboard(chatId, false, returnSelected.getTitle() + " returned successfully");
-                                pre
+                                previous.put(chatId, "/menu");
 
 
 
@@ -484,14 +484,14 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "getfreecourses_bot";
-        //return "konyvtar_bot";
+
+        return "konyvtar_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "453567691:AAG-05UGHvE4f_CDS1EFq2U0wj0w7x4Ho-o";
-       // return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
+
+       return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
     }
 
     void showMainMenuKeyboard(Long chatId, boolean isLibrarian, String msg) {
@@ -517,7 +517,7 @@ public class Bot extends TelegramLongPollingBot {
             keyboard.add(row);
         }
 
-        /**
+
         row = new KeyboardRow();
         row.add("️Settings");
         keyboard.add(row);
@@ -525,7 +525,7 @@ public class Bot extends TelegramLongPollingBot {
         row = new KeyboardRow();
         row.add("Logout");
         keyboard.add(row);
-         **/
+        
 
         keyboardMarkup.setKeyboard(keyboard);
 
