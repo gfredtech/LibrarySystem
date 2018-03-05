@@ -372,7 +372,8 @@ public class Bot extends TelegramLongPollingBot {
 
                 case "Checkout Book":
                     try {
-                        new BookingController(SqlStorage.getInstance()).checkOut(currentUser.get(chatId).getCardNumber(), "book", bookCursor.get(chatId).getId());
+                        new BookingController(SqlStorage.getInstance())
+                                .checkOut(currentUser.get(chatId).getCardNumber(), "book", bookCursor.get(chatId).getId());
                         showMainMenuKeyboard(chatId,
                                 bookCursor.get(chatId).getTitle() + " Checked out successfully.");
                     } catch (BookingController.CheckoutException e) {
@@ -382,7 +383,14 @@ public class Bot extends TelegramLongPollingBot {
                     break;
 
                 case "Checkout Av Material":
-                    showMainMenuKeyboard(chatId, avMaterialCursor.get(chatId).getTitle() + " checked out successfully!");
+                    try {
+                        new BookingController(SqlStorage.getInstance())
+                                .checkOut(currentUser.get(chatId).getCardNumber(), "avmaterial", avMaterialCursor.get(chatId).getId());
+                        showMainMenuKeyboard(chatId, avMaterialCursor.get(chatId).getTitle() + " checked out successfully!");
+                    }catch (BookingController.CheckoutException e) {
+                        showMainMenuKeyboard(chatId,
+                                "Sorry, but you cannot check out this item now.");
+                    }
                     break;
 
                 case "Cancel Checkout":

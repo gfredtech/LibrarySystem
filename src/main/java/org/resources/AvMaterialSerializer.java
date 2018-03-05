@@ -13,7 +13,8 @@ public class AvMaterialSerializer extends ItemSerializer<AvMaterial>  {
 
     @Override
     public QueryParameters toQueryParameters(AvMaterial material) {
-        return new QueryParameters()
+        return new QueryParameters().
+                add("av_material_id", material.getId())
                 .add("price", material.getPrice())
                 .add("title", material.getTitle())
                 .add("keywords", material.getKeywords())
