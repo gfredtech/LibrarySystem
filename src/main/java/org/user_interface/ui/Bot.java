@@ -525,7 +525,7 @@ public class Bot extends TelegramLongPollingBot {
         row = new KeyboardRow();
         row.add("Logout");
         keyboard.add(row);
-        
+
 
         keyboardMarkup.setKeyboard(keyboard);
 
