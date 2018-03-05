@@ -7,11 +7,31 @@ package org.resources;
 
 public class User {
 
+    public User(int cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
     public User(int cardNumber, String name, String type, String subtype) {
         this.cardNumber = cardNumber;
         this.type = type;
         this.subtype = subtype;
         this.name = name;
+    }
+
+    public void setCardNumber(int cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setSubtype(String subtype) {
+        this.subtype = subtype;
     }
 
     @Override

@@ -108,8 +108,21 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
     @Override
     public List<JournalArticle> findArticles(QueryParameters searchParameters) {
-        return findItems("article", searchParameters,
+        List<JournalArticle> items = findItems("article", searchParameters,
                 new JournalArticleSerializer());
+        for(JournalArticle item: items) {
+            try{
+                ResultSet rs = select("article",
+                        new QueryParameters().add("article_id", item.getId()),
+                        Arrays.asList("journal_id"));
+                rs.next();
+                JournalIssue j = getJournal(rs.getInt("journal_id")).get();
+                item.initializeJournal(j);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return items;
     }
 
     @Override
@@ -206,7 +219,26 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
     @Override
     public User addUser(User user) {
-        return user;
+        try {
+            QueryParameters p = new QueryParameters();
+            p.add("login", user.getLogin());
+            p.add("password_hash", user.getPasswordHash());
+            p.add("name", user.getName());
+            p.add("address", user.getAddress());
+            p.add("phone_number", user.getPhoneNumber());
+            p.add("type", user.getType());
+            p.add("subtype", user.getSubtype());
+            insert("user_card", p);
+            ResultSet rs = select("user_card",
+                    new QueryParameters().add("login",
+                            user.getLogin()));
+            rs.next();
+            user.setCardNumber(rs.getInt("user_id"));
+            return user;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
