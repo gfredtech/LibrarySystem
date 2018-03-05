@@ -392,6 +392,7 @@ public class Bot extends TelegramLongPollingBot {
                 //TODO: Add document to its appropriate category
                 case "Add Book":
                     if (previous.get(chatId).equals("/add_document_complete")) {
+                        SqlStorage.getInstance().addBook(factory);
                         showMainMenuKeyboard(chatId, "Book added successfully!");
                         previous.put(chatId, "/menu");
                     }
@@ -406,7 +407,7 @@ public class Bot extends TelegramLongPollingBot {
 
                 case "Add Journal Article":
                     if(previous.get(chatId).equals("/add_document_complete")) {
-                        showMainMenuKeyboard(chatId, "AV Material added successfully!");
+                        showMainMenuKeyboard(chatId, "Journal Article added successfully!");
                         previous.put(chatId, "/menu");
                     }
                     break;
@@ -723,6 +724,7 @@ public class Bot extends TelegramLongPollingBot {
     Map<Long, User> currentUser = new HashMap<>();
 
     BookFactory factory = new BookFactory();
+    AvMaterialFactory avMaterialFactory = new AvMaterialFactory();
 
     String signUpName, signUpEmail, signUpPhone, signUpPassword, signUpType, signUpSubType;
 }
