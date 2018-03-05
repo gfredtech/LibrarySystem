@@ -49,8 +49,14 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
                 String type = rs.getString("type");
                 String subType = rs.getString("subtype");
                 String login = rs.getString("login");
+                String phoneNumber = rs.getString("phone_number");
+                String address = rs.getString("address");
+                int passwordHash = rs.getInt("password_hash");
                 User u = new User(id, name, type, subType);
                 u.setLogin(login);
+                u.setAddress(address);
+                u.setPhoneNumber(phoneNumber);
+                u.setPasswordHash(passwordHash);
                 result.add(u);
             }
         } catch (SQLException e) {
@@ -258,8 +264,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
     public AvMaterial addAvMaterial(AvMaterialFactory material) {
         try {
             insert("av_material",
-                    new AvMaterialSerializer().toQueryParameters(
-                            (AvMaterial)material.getCarcass()));
+                    new AvMaterialSerializer().toQueryParameters(material.getCarcass()));
             ResultSet rs = select("av_material",
                     new QueryParameters().add("title",
                             material.getCarcass().getTitle()));
@@ -354,6 +359,71 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
         .add("due_date", c.dueDate);
         try{
             deleteOne("checkout", parameters);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    @Override
+    public void updateUser(int user_id, User data) {
+        QueryParameters p = new QueryParameters();
+        p.add("name", data.getName());
+        p.add("phone_number", data.getPhoneNumber());
+        p.add("address", data.getAddress());
+        p.add("login", data.getLogin());
+        p.add("type", data.getType());
+        p.add("subtype", data.getSubtype());
+        p.add("password_hash", data.getPasswordHash());
+        try {
+            update("user_card", p);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public void updateBook(int book_id, Book book) {
+        QueryParameters p = new BookSerializer().toQueryParameters(book);
+        p.remove("book_id");
+        try {
+            update("book", p);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public void updateJournalArticle(int article_id, JournalArticle article) {
+        QueryParameters p = new JournalArticleSerializer().toQueryParameters(article);
+        p.remove("article_id");
+        try {
+            update("article", p);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateJournal(int journal_id, JournalIssue journal) {
+        QueryParameters p = new JournalIssueSerializer().toQueryParameters(journal);
+        p.remove("journal_issue_id");
+        try {
+            update("journal_issue", p);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateAvMaterial(int material_id, AvMaterial material) {
+        QueryParameters p = new AvMaterialSerializer().toQueryParameters(material);
+        p.remove("av_material_id");
+        try {
+            update("av_material", p);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

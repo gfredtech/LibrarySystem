@@ -31,6 +31,14 @@ public class User {
         this.login = login;
     }
 
+    public void setPassword(String password) {
+        this.passwordHash = password.hashCode();
+    }
+
+    public void setPasswordHash(int passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     public String getName() {
         return name;
     }
@@ -59,6 +67,8 @@ public class User {
         return login;
     }
 
+    public int getPasswordHash() { return passwordHash; }
+
     private String name;
     private String login;
     private String type;
@@ -66,5 +76,6 @@ public class User {
     private int cardNumber;
     private String phoneNumber;
     private String address;
+    private int passwordHash;
 
 }

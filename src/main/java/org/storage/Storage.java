@@ -44,4 +44,10 @@ public interface Storage {
     void removeAvMaterial(int material_id);
     void removeCheckoutRecord(CheckoutRecord record);
 
+    void updateUser(int user_id, User data);
+    void updateBook(int book_id, Book data);
+    void updateJournalArticle(int article_id, JournalArticle article);
+    void updateJournal(int journal_id, JournalIssue journal);
+    void updateAvMaterial(int material_id, AvMaterial material);
+
 }

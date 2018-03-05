@@ -1,7 +1,10 @@
 package org.user_interface.ui;
 
 import org.DummyData;
+import org.controller.BookingController;
 import org.resources.*;
+import org.storage.QueryParameters;
+import org.storage.SqlStorage;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.user_interface.commands.Command;
@@ -82,7 +85,7 @@ public class Bot extends TelegramLongPollingBot {
                     break;
 
                 case "Checkout Document":
-                    if (previous.get(chatId) != null && previous.get(chatId).equals("/menu")) {
+                    if (currentUser.containsKey(chatId)) {
 
                         setInlineKeyBoard(chatId,
                                 "Select the kind of document you want to checkout:", new
@@ -185,22 +188,32 @@ public class Bot extends TelegramLongPollingBot {
 
 
                             case "/username":
-                                username = message.getText();
-                                sendMessage(chatId, "Enter password");
-                                previous.put(chatId, "/password");
+                                String username = message.getText();
+                                try {
+                                    currentUser.put(chatId, SqlStorage.getInstance().findUsers(new QueryParameters().add("login", username)).get(0));
+                                    sendMessage(chatId, "Enter password");
+                                    previous.put(chatId, "/password");
+                                } catch (NoSuchElementException e) {
+                                    sendMessage(chatId, "User not found");
+                                    previous.put(chatId, "/start");
+                                }
+
                                 break;
 
                             case "/password":
-                                password = message.getText();
-                                if (username.equals("admin") && password.equals("root")) {
-                                    //TODO: get if user is librarian, then set isLibrarian parameter to correct value.
-                                    showMainMenuKeyboard(chatId, true, "Success");
+                                String password = message.getText();
+
+                                if (password.hashCode() == currentUser.get(chatId).getPasswordHash()) {
+                                    if(currentUser.get(chatId).getType().equals("Librarian")) {
+                                        showMainMenuKeyboard(chatId, "Success");
+                                    } else {
+                                        showMainMenuKeyboard(chatId, "Success");
+                                    }
                                     previous.put(chatId, "/menu");
 
                                 } else {
-                                    sendMessage(chatId, "Unsuccessful. Please try again.");
+                                    sendMessage(chatId, "Password is incorrect. Please try again.");
                                     previous.put(chatId, "/start");
-
                                 }
 
                                 break;
@@ -217,7 +230,7 @@ public class Bot extends TelegramLongPollingBot {
                                     return;
                                 }
 
-                                bookSelected = dummyBookList.get(position - 1);
+                                bookSelected = SqlStorage.getInstance().findBooks(new QueryParameters()).get(position - 1);
 
                                 if (bookSelected != null) {
                                     showBookDetails(chatId, bookSelected);
@@ -231,12 +244,12 @@ public class Bot extends TelegramLongPollingBot {
                                 int position1;
                                 try {
                                     position1 = Integer.parseInt(msg1);
-                                }catch (NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     e.printStackTrace();
                                     sendMessage(chatId, "Input is not a number.");
                                     return;
                                 }
-                                selected = dummyAvMaterialList.get(position1 - 1);
+                                selected = SqlStorage.getInstance().findAvMaterials(new QueryParameters()).get(position1-1);
 
                                 if(selected != null) {
                                     showAvMaterialDetails(chatId, selected);
@@ -298,15 +311,10 @@ public class Bot extends TelegramLongPollingBot {
                                 //TODO: get book position and point book cursor to book object
                                 // returnSelected = bookAtIndexEntered();
                                 //returnBook(returnSelected);
-                                showMainMenuKeyboard(chatId, false, returnSelected.getTitle() + " returned successfully");
+                                showMainMenuKeyboard(chatId, returnSelected.getTitle() + " returned successfully");
                                 previous.put(chatId, "/menu");
 
-
-
-
                                 }
-
-
                         }
 
                         break;
@@ -372,46 +380,49 @@ public class Bot extends TelegramLongPollingBot {
 
 
                 case "Checkout Book":
-                    //TODO: checkout book
-
-                    showMainMenuKeyboard(chatId, true,
-                            bookCursor.get(chatId).getTitle() + " Checked out successfully.");
+                    try {
+                        new BookingController(SqlStorage.getInstance()).checkOut(currentUser.get(chatId).getCardNumber(), "book", bookCursor.get(chatId).getId());
+                        showMainMenuKeyboard(chatId,
+                                bookCursor.get(chatId).getTitle() + " Checked out successfully.");
+                    } catch (BookingController.CheckoutException e) {
+                        showMainMenuKeyboard(chatId,
+                                "Sorry, but you cannot check out the item now.");
+                    }
                     break;
 
                 case "Checkout Av Material":
-                    showMainMenuKeyboard(chatId, true, avMaterialCursor.get(chatId).getTitle() + " checked out successfully!");
+                    showMainMenuKeyboard(chatId, avMaterialCursor.get(chatId).getTitle() + " checked out successfully!");
                     break;
 
                 case "Cancel Checkout":
-                    showMainMenuKeyboard(chatId, false,
-                            "Operation Cancelled");
+                    showMainMenuKeyboard(chatId, "Operation Cancelled");
                     break;
 
                 //TODO: Add document to its appropriate category
                 case "Add Book":
                     if (previous.get(chatId).equals("/add_document_complete")) {
-                        showMainMenuKeyboard(chatId, true, "Book added successfully!");
+                        showMainMenuKeyboard(chatId, "Book added successfully!");
                         previous.put(chatId, "/menu");
                     }
                     break;
 
                 case "Add Av Material":
                     if(previous.get(chatId).equals("/add_document_complete")) {
-                        showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
+                        showMainMenuKeyboard(chatId, "AV Material added successfully!");
                         previous.put(chatId, "/menu");
                     }
                     break;
 
                 case "Add Journal Article":
                     if(previous.get(chatId).equals("/add_document_complete")) {
-                        showMainMenuKeyboard(chatId, true, "AV Material added successfully!");
+                        showMainMenuKeyboard(chatId, "AV Material added successfully!");
                         previous.put(chatId, "/menu");
                     }
                     break;
 
                 case "Add Journal Issue":
                     if(previous.get(chatId).equals("/add_document_complete")) {
-                        showMainMenuKeyboard(chatId, true, "Journal Issue Added Successfully");
+                        showMainMenuKeyboard(chatId, "Journal Issue Added Successfully");
                         previous.put(chatId, "/menu");
                     }
                     break;
@@ -433,7 +444,26 @@ public class Bot extends TelegramLongPollingBot {
                     break;
 
                 case "Return Book":
-                    sendMessage(chatId, "This is the list of current books checked out by you");
+                    List<CheckoutRecord> checkedOut =
+                            SqlStorage.getInstance().getCheckoutRecordsFor(currentUser.get(chatId).getCardNumber());
+                    System.out.println(currentUser.get(chatId).getCardNumber());
+                    StringBuilder books = new StringBuilder();
+                    for(CheckoutRecord c: checkedOut) {
+                        if(c.item.getType().equals("book")) {
+                            Book b = SqlStorage.getInstance().getBook(c.item.getId()).get();
+                            books.append(b.getTitle());
+                            books.append(" by ");
+                            books.append(b.getAuthors());
+                            books.append("\n");
+                        }
+                    }
+                    if(books.length() > 0) {
+                        sendMessage(chatId,
+                                "This is the list of current books checked out by you:\n"+books.toString());
+                    } else {
+                        sendMessage(chatId, "You have no books checked out");
+                    }
+
                     /** TODO: return list of Books checked out by user
                      * But first check e.g.
                      * if the person has some books currently checked out, send as message
@@ -494,7 +524,7 @@ public class Bot extends TelegramLongPollingBot {
        return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
     }
 
-    void showMainMenuKeyboard(Long chatId, boolean isLibrarian, String msg) {
+    void showMainMenuKeyboard(Long chatId, String msg) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
@@ -511,7 +541,7 @@ public class Bot extends TelegramLongPollingBot {
         row.add("Search");
         keyboard.add(row);
 
-        if(isLibrarian) {
+        if(currentUser.get(chatId).getType().equals("Librarian")) {
             row = new KeyboardRow();
             row.add("Edit");
             keyboard.add(row);
@@ -556,10 +586,7 @@ public class Bot extends TelegramLongPollingBot {
         user.setPhoneNumber(signUpPhone);
         user.setAddress(signUpEmail);
 
-
-        dummyUserList.add(user);
-
-        //TODO: add account to database
+        SqlStorage.getInstance().addUser(user);
     }
 
     void setInlineKeyBoard(Long ChatId, String message, List<String> commands) {
@@ -640,9 +667,9 @@ public class Bot extends TelegramLongPollingBot {
 
     void listBooks(Long chatId) {
         StringBuilder builder = new StringBuilder();
-        dummyBookList = new DummyData().createBooks();
-        for (int i = 0; i < dummyBookList.size(); i++) {
-            String name = dummyBookList.get(i).getTitle();
+        List<Book> books = SqlStorage.getInstance().findBooks(new QueryParameters());
+        for (int i = 0; i < books.size(); i++) {
+            String name = books.get(i).getTitle();
             System.out.println(name);
             builder.append((i + 1) + ". " + name + "\n\n");
         }
@@ -652,11 +679,10 @@ public class Bot extends TelegramLongPollingBot {
 
     }
     void listAvMaterials(Long chatId) {
-        dummyAvMaterialList = new DummyData().createAVMaterial();
-        System.out.println(dummyAvMaterialList == null);
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < dummyAvMaterialList.size(); i++) {
-            String name = dummyAvMaterialList.get(i).getTitle();
+        List<AvMaterial> avMaterials = SqlStorage.getInstance().findAvMaterials(new QueryParameters());
+        for (int i = 0; i < avMaterials.size(); i++) {
+            String name = avMaterials.get(i).getTitle();
             builder.append((i + 1) + ". " + name + "\n\n");
         }
 
@@ -668,20 +694,11 @@ public class Bot extends TelegramLongPollingBot {
     HashMap<Long, String> previous = new HashMap<>();
 
     // tracks the current book that's about to be checked out by a user
-    HashMap<Long, Book>  bookCursor = new HashMap<>();
-    HashMap<Long, AvMaterial> avMaterialCursor = new HashMap<>();
-
-    //TODO: will be removed. for testing purposes
-    ArrayList<Book> dummyBookList;
-    ArrayList<User> dummyUserList  = new DummyData().createUsers();
-    ArrayList<AvMaterial> dummyAvMaterialList = new DummyData().createAVMaterial();
-    ArrayList<JournalArticle> dummyJournalArticleList;
-    ArrayList<JournalIssue> dummyJournalIssue;
-
+    Map<Long, Book>  bookCursor = new HashMap<>();
+    Map<Long, AvMaterial> avMaterialCursor = new HashMap<>();
+    Map<Long, User> currentUser = new HashMap<>();
 
     BookFactory factory = new BookFactory();
-
-    String username, password;
 
     String signUpName, signUpEmail, signUpPhone, signUpPassword, signUpType, signUpSubType;
 }

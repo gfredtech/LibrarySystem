@@ -45,6 +45,10 @@ public class QueryParameters {
         return this;
     }
 
+    public void remove(String key) {
+        params.remove(key);
+    }
+
     public boolean isEmpty() {
         return params.isEmpty();
     }

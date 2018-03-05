@@ -36,11 +36,23 @@ class SqlQueryExecutor {
         query.append(tableName);
         if(!searchParameters.isEmpty()) {
             query.append(" WHERE ");
+            query.append(searchParameters.toWhereCondition());
         }
-        query.append(searchParameters.toWhereCondition());
         query.append(";");
 
         return statement.executeQuery(query.toString());
+    }
+
+
+
+    void update(String tableName, QueryParameters parameters) throws SQLException {
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE ");
+        query.append(tableName);
+        query.append(" SET ");
+        query.append(parameters.toInsertParameters());
+        query.append(";");
+        statement.executeUpdate(query.toString());
     }
 
 
