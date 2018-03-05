@@ -171,21 +171,8 @@ public class Bot extends TelegramLongPollingBot {
                                             add("Student");
                                             add("Faculty");
                                         }});
-                                previous.put(chatId, "signup_confirm");
-
-
-                            case "/signup_confirm":
-
-                                System.out.println(signUpName + " " + signUpEmail + " " + signUpPhone + " " + signUpPassword);
-                                String accountDetails = "Name: " + signUpName +
-                                        "\n\nEmail: " + signUpEmail + "\n\nPhone Number: " + signUpPhone;
-                                setInlineKeyBoard(chatId, accountDetails, new ArrayList<String>() {{
-                                    add("Confirm");
-                                    add("Cancel");
-                                }});
 
                                 break;
-
 
                             case "/username":
                                 String username = message.getText();
@@ -203,6 +190,8 @@ public class Bot extends TelegramLongPollingBot {
                             case "/password":
                                 String password = message.getText();
 
+                                System.out.println(password.hashCode());
+                                System.out.println(currentUser.get(chatId).getPasswordHash());
                                 if (password.hashCode() == currentUser.get(chatId).getPasswordHash()) {
                                     if(currentUser.get(chatId).getType().equals("Librarian")) {
                                         showMainMenuKeyboard(chatId, "Success");
@@ -213,7 +202,7 @@ public class Bot extends TelegramLongPollingBot {
 
                                 } else {
                                     sendMessage(chatId, "Password is incorrect. Please try again.");
-                                    previous.put(chatId, "/start");
+                                    previous.put(chatId, "/password");
                                 }
 
                                 break;
@@ -345,12 +334,14 @@ public class Bot extends TelegramLongPollingBot {
                 case "Student":
                     signUpType = "Patron";
                     signUpSubType = "Student";
+                    signUpConfirm(chatId);
                     break;
 
 
                 case "FacultyMember":
                     signUpType = "Patron";
                     signUpSubType = "Faculty";
+                    previous.put(chatId, "signup_confirm");
                     break;
 
                 case "Book":
@@ -448,64 +439,86 @@ public class Bot extends TelegramLongPollingBot {
                             SqlStorage.getInstance().getCheckoutRecordsFor(currentUser.get(chatId).getCardNumber());
                     System.out.println(currentUser.get(chatId).getCardNumber());
                     StringBuilder books = new StringBuilder();
+                    int i = 1;
                     for(CheckoutRecord c: checkedOut) {
                         if(c.item.getType().equals("book")) {
                             Book b = SqlStorage.getInstance().getBook(c.item.getId()).get();
+                            books.append(i);
+                            books.append(". ");
                             books.append(b.getTitle());
                             books.append(" by ");
                             books.append(b.getAuthors());
                             books.append("\n");
+                            i += 1;
                         }
                     }
                     if(books.length() > 0) {
                         sendMessage(chatId,
                                 "This is the list of current books checked out by you:\n"+books.toString());
+                        previous.put(chatId, "/return_book_index_number");
                     } else {
                         sendMessage(chatId, "You have no books checked out");
+                        previous.put(chatId, "/menu");
                     }
-
-                    /** TODO: return list of Books checked out by user
-                     * But first check e.g.
-                     * if the person has some books currently checked out, send as message
-                     * else
-                     * showMainMenuKeyboard(chatId, false, "You currently have no Books Checked out");
-                     * previous.put(chatId, "/menu");
-                     * else {
-                    **/
-
-                    previous.put(chatId, "/return_book_index_number");
-
-
-
                     break;
 
                 case "Return Av Material":
-                    sendMessage(chatId, "This is the list of current Av Materials checked out by you");
-                    /** TODO: return list of Books checked out by user
-                     * But first check e.g.
-                     * if the person has some  Av Materials currently checked out, send as message
-                     * else
-                     * showMainMenuKeyboard(chatId, false, "You currently have no AV Materials Checked out");
-                     * previous.put(chatId, "/menu");
-                     * else {
-                     **/
+                    List<CheckoutRecord> checkedOutAvMaterials =
+                            SqlStorage.getInstance().getCheckoutRecordsFor(currentUser.get(chatId).getCardNumber());
+                    StringBuilder avmaterials = new StringBuilder();
+                    i = 1;
+                    for (CheckoutRecord c: checkedOutAvMaterials) {
+                        if (c.item.getType().equals("avmaterial")) {
+                            AvMaterial a = SqlStorage.getInstance().getAvMaterial(c.item.getId()).get();
+                            avmaterials.append(i);
+                            avmaterials.append(". ");
+                            avmaterials.append(a.getTitle());
+                            avmaterials.append(" by ");
+                            avmaterials.append(a.getAuthors());
+                            avmaterials.append("\n");
+                            i += 1;
+                        }
+                    }
 
-                    previous.put(chatId, "/return_avmaterial_index_number");
+                    if(avmaterials.length() > 0) {
+                        sendMessage(chatId, "This is the list of current AV materials checked out by you:\n"
+                        + avmaterials.toString());
+                        previous.put(chatId, "/return_avmaterial_index_number");
+                    } else {
+                        showMainMenuKeyboard(chatId, "You have no AV materials checked out.");
+                        previous.put(chatId, "/menu");
+                    }
+
 
                     break;
 
                 case "Return Journal Issue":
-                    sendMessage(chatId, "This is the list of current Journal Issues checked out by you");
-                    /** TODO: return list of Books checked out by user
-                     * But first check e.g.
-                     * if the person has some Journal Issues currently checked out, send as message
-                     * else
-                     * showMainMenuKeyboard(chatId, false, "You currently have no Journal issues Checked out");
-                     * previous.put(chatId, "/menu");
-                     * else {
-                     **/
+                   List<CheckoutRecord> checkedOutJournals =
+                           SqlStorage.getInstance().getCheckoutRecordsFor(currentUser.get(chatId).getCardNumber());
+                   StringBuilder journals = new StringBuilder();
+                   i = 1;
+                   for(CheckoutRecord c: checkedOutJournals) {
+                       if(c.item.getType().equals("journal")) {
+                           JournalIssue j = SqlStorage.getInstance().getJournal(c.item.getId()).get();
+                           journals.append(i);
+                           journals.append(". ");
+                           journals.append(j.getTitle());
+                           journals.append(" by ");
+                           journals.append(j.getPublisher());
+                           journals.append("\n");
+                           i+= 1;
+                       }
+                   }
+                   if (journals.length() > 0) {
+                       sendMessage(chatId, "This is the list of current journals checked out by you:\n"
+                       + journals.toString());
+                       previous.put(chatId, "/return_journal_index_number");
+                       } else {
+                       showMainMenuKeyboard(chatId, "You currently have no AV materials checked out");
+                       previous.put(chatId, "/menu");
+                   }
 
-                    previous.put(chatId, "/return_journal_index_number");
+
                     break;
 
                     }
@@ -514,14 +527,14 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-
-        return "konyvtar_bot";
+        return " getfreecourses_bot";
+        //return "konyvtar_bot";
     }
 
     @Override
     public String getBotToken() {
-
-       return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
+        return "453567691:AAG-05UGHvE4f_CDS1EFq2U0wj0w7x4Ho-o";
+       // return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";
     }
 
     void showMainMenuKeyboard(Long chatId, String msg) {
@@ -583,8 +596,10 @@ public class Bot extends TelegramLongPollingBot {
 
         User user = new User(1001, signUpName, signUpType, signUpSubType);
         user.setLogin(signUpPassword);
+        user.setPassword(signUpPassword);
         user.setPhoneNumber(signUpPhone);
         user.setAddress(signUpEmail);
+        System.out.println(user.toString());
 
         SqlStorage.getInstance().addUser(user);
     }
@@ -688,6 +703,15 @@ public class Bot extends TelegramLongPollingBot {
 
         sendMessage(chatId, builder.toString());
 
+    }
+
+    void signUpConfirm(Long chatId) {
+        String accountDetails = "Name: " + signUpName +
+                "\n\nEmail: " + signUpEmail + "\n\nPhone Number: " + signUpPhone;
+        setInlineKeyBoard(chatId, accountDetails, new ArrayList<String>() {{
+            add("Confirm");
+            add("Cancel");
+        }});
     }
 
 

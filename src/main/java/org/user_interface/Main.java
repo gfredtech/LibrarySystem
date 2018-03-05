@@ -13,7 +13,7 @@ public class Main {
         TelegramBotsApi botsApi = new TelegramBotsApi();
 
         try {
-            SqlStorage.connect("library", "librarian", "tabula_rasa");
+            SqlStorage.connect("postgres", "postgres", "minerva");
             botsApi.registerBot(new Bot());
 
         } catch (TelegramApiException|ClassNotFoundException e) {
