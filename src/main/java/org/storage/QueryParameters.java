@@ -103,20 +103,6 @@ public class QueryParameters {
         return params.isEmpty();
     }
 
-    public String toInsertParameters() {
-        StringBuilder sqlRow = new StringBuilder();
-
-        sqlRow.append("(");
-
-        for(Pair<Integer, ?> p: params.values()) {
-            sqlRow.append(toSqlEntity(p.getKey(), p.getValue()));
-            sqlRow.append(", ");
-        }
-        sqlRow.deleteCharAt(sqlRow.length()-2);
-        sqlRow.append(")");
-        return sqlRow.toString();
-    }
-
     public String getKeys() {
         StringBuilder sqlRow = new StringBuilder();
 
@@ -140,7 +126,9 @@ public class QueryParameters {
         StringBuilder condition = new StringBuilder();
         for(Map.Entry<String, Pair<Integer, ?>>
                 p: params.entrySet()) {
+            condition.append("\"");
             condition.append(p.getKey());
+            condition.append("\"");
             condition.append(" = ");
             Pair<Integer, ?> value = p.getValue();
             condition.append(toSqlEntity(value.getKey(), value.getValue()));
@@ -153,10 +141,22 @@ public class QueryParameters {
     /**
      * converts query parameter to string to be
      * executed as an SQL statement
-     * @param type
-     * @param value
      * @return
      */
+    public String toInsertParameters() {
+        StringBuilder params = new StringBuilder();
+        params.append("(");
+        for(Map.Entry<String, Pair<Integer, ?>>
+                p: this.params.entrySet()) {
+            Pair<Integer, ?> value = p.getValue();
+            params.append(toSqlEntity(value.getKey(), value.getValue()));
+            params.append(",");
+        }
+        params.deleteCharAt(params.length()-1);
+        params.append(")");
+        return params.toString();
+    }
+
     private String toSqlEntity(Integer type, Object value) {
         StringBuilder s = new StringBuilder();
         switch (type) {

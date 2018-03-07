@@ -8,16 +8,19 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class Main {
     public static void main(String[] args) {
-        String databaseName = args[1];
-        String userName = args[2];
-        String password = args[3];
-
-        ApiContextInitializer.init();
-        TelegramBotsApi botsApi = new TelegramBotsApi();
-
         try {
+            String databaseName = args[0];
+            String userName = args[1];
+            String password = args[2];
+
+            ApiContextInitializer.init();
+            TelegramBotsApi botsApi = new TelegramBotsApi();
+
             SqlStorage.connect(databaseName, userName, password);
             botsApi.registerBot(new Bot());
+
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("The application requires three command line arguments");
 
         } catch (TelegramApiException|ClassNotFoundException e) {
             e.printStackTrace();

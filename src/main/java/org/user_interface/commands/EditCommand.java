@@ -94,52 +94,30 @@ public class EditCommand extends Command {
                 String temp;
                 for(String i: items) {
                     if(i.startsWith("name")) {
-                        temp = i.substring(i.lastIndexOf("title"), i.length());
-                        User user = new User(userCursor.getCardNumber(), temp,
-                                userCursor.getType(), userCursor.getSubtype());
-                        user.setAddress(userCursor.getAddress());
-                        user.setPasswordHash(userCursor.getPasswordHash());
-                        user.setLogin(userCursor.getLogin());
-                        user.setPhoneNumber(userCursor.getPhoneNumber());
-                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), user);
-
+                        temp = i.substring(i.lastIndexOf("name"), i.length());
+                        QueryParameters params = new QueryParameters().add("name", temp);
+                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), params);
 
                     } else if(i.startsWith("address")) {
                         temp = i.substring(i.lastIndexOf("address"), i.length());
-                        User user = new User(userCursor.getCardNumber(), userCursor.getName(),
-                                userCursor.getType(), userCursor.getSubtype());
-                        user.setAddress(temp);
-                        user.setPasswordHash(userCursor.getPasswordHash());
-                        user.setLogin(userCursor.getLogin());
-                        user.setPhoneNumber(userCursor.getPhoneNumber());
-                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), user);
+                        QueryParameters params = new QueryParameters().add("address", temp);
+                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), params);
 
 
                     } else if(i.startsWith("type")) {
                         temp = i.substring(i.lastIndexOf("type"), i.length());
-                        User user = null;
+                        QueryParameters params = new QueryParameters();
                         if(temp.equals("Student") || temp.equals("Faculty")) {
-                            user = new User(userCursor.getCardNumber(), userCursor.getName(), "Patron", temp);
+                            params.add("type", "Patron").add("subtype", temp);
                         } else if(temp.equals("Librarian")) {
-                            user = new User(userCursor.getCardNumber(), userCursor.getName(), temp, temp);
+                            params.add("type", temp);
                         }
-
-                        user.setAddress(temp);
-                        user.setPasswordHash(userCursor.getPasswordHash());
-                        user.setLogin(userCursor.getLogin());
-                        user.setPhoneNumber(userCursor.getPhoneNumber());
-                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), user);
+                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), params);
                     }
                 }
 
                 keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
                         "Edit done successfully");
-
-
-
-
-
-
         }
         return null;
     }

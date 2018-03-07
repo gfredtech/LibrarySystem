@@ -43,7 +43,6 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
             ResultSet rs = select("user_card", searchParameters);
 
             while(rs.next()) {
-
                 int id = rs.getInt("user_id");
                 String name = rs.getString("name");
                 String type = rs.getString("type");
@@ -228,12 +227,8 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
             p.add("phone_number", user.getPhoneNumber());
             p.add("type", user.getType());
             p.add("subtype", user.getSubtype());
+            p.add("user_id", user.getCardNumber());
             insert("user_card", p);
-            ResultSet rs = select("user_card",
-                    new QueryParameters().add("login",
-                            user.getLogin()));
-            rs.next();
-            user.setCardNumber(rs.getInt("user_id"));
             return user;
 
         } catch (SQLException e) {
@@ -339,13 +334,20 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
     @Override
     public void removeUser(int user_id) {
+        QueryParameters parameters = new QueryParameters()
+                .add("user_id", user_id);
+        try {
+            deleteAll("user_card", parameters);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void removeBook(int book_id) {
         QueryParameters parameters = new QueryParameters().add("book_id", book_id);
         try{
-            deleteOne("checkout", parameters);
+            deleteAll("book", parameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -353,9 +355,9 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
     @Override
     public void removeJournalArticle(int article_id) {
-        QueryParameters parameters = new QueryParameters().add("journal_article_id", article_id);
+        QueryParameters parameters = new QueryParameters().add("article_id", article_id);
         try{
-            deleteOne("checkout", parameters);
+            deleteAll("article", parameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -365,7 +367,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
     public void removeJournal(int journal_id) {
         QueryParameters parameters = new QueryParameters().add("journal_issue_id", journal_id);
         try{
-            deleteOne("checkout", parameters);
+            deleteAll("journal_issue", parameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -375,7 +377,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
     public void removeAvMaterial(int material_id) {
         QueryParameters parameters = new QueryParameters().add("av_material_id", material_id);
         try{
-            deleteOne("checkout", parameters);
+            deleteAll("av_material", parameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -390,7 +392,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
         .add("item_type", c.item.getType())
         .add("due_date", c.dueDate);
         try{
-            deleteOne("checkout", parameters);
+            deleteAll("checkout", parameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -399,17 +401,9 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
 
     @Override
-    public void updateUser(int user_id, User data) {
-        QueryParameters p = new QueryParameters();
-        p.add("name", data.getName());
-        p.add("phone_number", data.getPhoneNumber());
-        p.add("address", data.getAddress());
-        p.add("login", data.getLogin());
-        p.add("type", data.getType());
-        p.add("subtype", data.getSubtype());
-        p.add("password_hash", data.getPasswordHash());
+    public void updateUser(int user_id, QueryParameters params) {
         try {
-            update("user_card", p);
+            update("user_card", params);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -417,11 +411,9 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
 
     @Override
-    public void updateBook(int book_id, Book book) {
-        QueryParameters p = new BookSerializer().toQueryParameters(book);
-        p.remove("book_id");
+    public void updateBook(int book_id, QueryParameters params) {
         try {
-            update("book", p);
+            update("book", params);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -429,33 +421,27 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
 
     @Override
-    public void updateJournalArticle(int article_id, JournalArticle article) {
-        QueryParameters p = new JournalArticleSerializer().toQueryParameters(article);
-        p.remove("article_id");
+    public void updateJournalArticle(int article_id, QueryParameters params) {
         try {
-            update("article", p);
+            update("article", params);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void updateJournal(int journal_id, JournalIssue journal) {
-        QueryParameters p = new JournalIssueSerializer().toQueryParameters(journal);
-        p.remove("journal_issue_id");
+    public void updateJournal(int journal_id, QueryParameters params) {
         try {
-            update("journal_issue", p);
+            update("journal_issue", params);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void updateAvMaterial(int material_id, AvMaterial material) {
-        QueryParameters p = new AvMaterialSerializer().toQueryParameters(material);
-        p.remove("av_material_id");
+    public void updateAvMaterial(int material_id, QueryParameters params) {
         try {
-            update("av_material", p);
+            update("av_material", params);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -21,6 +21,16 @@ public class StorageTest {
     }
 
     @Test
+    public void addUser() {
+        User libra = new User(-1, "Librarian", "Librarian", null);
+        libra.setLogin("libra");
+        libra.setPassword("arbil");
+        libra.setPhoneNumber("+42");
+        libra.setAddress("...");
+        storage.addUser(libra);
+    }
+
+    @Test
     public void findUsers() {
         System.out.println(storage.findUsers(new QueryParameters().add("type", "Faculty")));
     }
@@ -73,7 +83,7 @@ public class StorageTest {
     public void updateArticle() {
         JournalArticle a = storage.findArticles(
                 new QueryParameters().add("title", "Some bright article about gamedev")).get(0);
-        storage.updateJournalArticle(a.getId(), a);
+        storage.updateJournalArticle(a.getId(), new QueryParameters().add("price", 100));
     }
 
     @After

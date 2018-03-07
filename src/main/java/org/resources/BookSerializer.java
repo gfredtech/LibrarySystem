@@ -15,7 +15,6 @@ public class BookSerializer extends ItemSerializer<Book> {
     @Override
     public QueryParameters toQueryParameters(Book book) {
         return super.toQueryParameters(book)
-                .add("book_id")
                 .add("authors", book.getAuthors())
                 .add("publication_date", book.getPublicationDate())
                 .add("publisher", book.getPublisher())
