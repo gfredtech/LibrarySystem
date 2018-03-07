@@ -9,7 +9,9 @@ import org.storage.Storage;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
-
+/**
+ * @author Developed by Vladimir Scherba
+ */
 
 public class BookingController {
 
@@ -18,8 +20,12 @@ public class BookingController {
     }
 
     public void checkOut(int user_id, String item_type, int item_id) {
-
-        User u = storage.getUser(user_id).get();
+        User u;
+        try {
+            u = storage.getUser(user_id).get();
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("User with given id does not exist");
+        }
 
         Item item;
         try{

@@ -41,9 +41,11 @@ CREATE TABLE IF NOT EXISTS article (
 
 
 CREATE TABLE IF NOT EXISTS av_material (
-  material_id INT4 DEFAULT nextval('item_id_seq') NOT NULL,
+  av_material_id INT4 DEFAULT nextval('item_id_seq') NOT NULL,
+  is_reference BOOLEAN DEFAULT FALSE,
   authors TEXT[] CHECK (array_length(authors, 1) >= 1)
 ) INHERITS (item);
+
 
 
 

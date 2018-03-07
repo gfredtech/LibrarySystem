@@ -4,9 +4,19 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
-
+/**
+ * @author Developed by Vladimir Scherba
+ */
 class SqlQueryExecutor {
 
+    /**
+     * Establishes connection to database
+     * @param databaseName Name of database
+     * @param userName username of database
+     * @param userPassword password of database system
+     * @throws SQLException Connection/Authentication error
+     * @throws ClassNotFoundException Dependencies not added
+     */
     SqlQueryExecutor(String databaseName, String userName, String userPassword)
             throws SQLException, ClassNotFoundException {
         Class.forName("org.postgresql.Driver");
@@ -40,11 +50,17 @@ class SqlQueryExecutor {
         }
         query.append(";");
 
+        System.out.println(query.toString());
         return statement.executeQuery(query.toString());
     }
 
 
-
+    /**
+     * Updates an entry based on the query parameter
+     * @param tableName name of table to be updated
+     * @param parameters parameters to be updated
+     * @throws SQLException
+     */
     void update(String tableName, QueryParameters parameters) throws SQLException {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE ");
@@ -52,11 +68,17 @@ class SqlQueryExecutor {
         query.append(" SET ");
         query.append(parameters.toInsertParameters());
         query.append(";");
+        System.out.println(query.toString());
         statement.executeUpdate(query.toString());
     }
 
 
-
+    /**
+     * inserts an a value into database based on parameters
+     * @param tableName name of database
+     * @param parameters parameters to insert data
+     * @throws SQLException
+     */
     void insert(String tableName, QueryParameters parameters) throws SQLException {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO ");
@@ -65,24 +87,29 @@ class SqlQueryExecutor {
         query.append(" VALUES ");
         query.append(parameters.toInsertParameters());
         query.append(";");
-        statement.executeUpdate(query.toString());
-    }
-
-    void deleteOne(String tableName, QueryParameters parameters) throws SQLException {
-        StringBuilder query = new StringBuilder();
-        query.append("DELETE FROM ");
-        query.append(tableName);
-        query.append(" WHERE ctid IN (SELECT ctid\n" +
-                     "                FROM checkout\n" +
-                     "                WHERE ");
-        query.append(parameters.toWhereCondition());
-        query.append(" LIMIT 1)");
-        query.append(";");
+        System.out.println(query.toString());
         statement.executeUpdate(query.toString());
     }
 
     /**
-     * @TODO: Explore what happens if to neglect calling this
+     * Deletes an entry in table based on query parameters
+     * @param tableName name of table to deleted item from
+     * @param parameters QueryParameters to delete item
+     * @throws SQLException
+     */
+    void deleteAll(String tableName, QueryParameters parameters) throws SQLException {
+        StringBuilder query = new StringBuilder();
+        query.append("DELETE FROM ");
+        query.append(tableName);
+        query.append(" WHERE ");
+        query.append(parameters.toWhereCondition());
+        query.append(";");
+        System.out.println(query.toString());
+        statement.executeUpdate(query.toString());
+    }
+
+    /**
+     * Closes connection to database
      */
     void closeConnection() throws SQLException {
         statement.close();

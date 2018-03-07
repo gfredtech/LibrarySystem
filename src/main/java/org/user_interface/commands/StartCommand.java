@@ -1,27 +1,26 @@
 package org.user_interface.commands;
 
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Chat;
+import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
+import org.telegram.telegrambots.bots.AbsSender;
 
-public class StartCommand implements Command {
+public class StartCommand extends Command {
 
-    private final User user;
-    private final Chat chat;
 
-    public StartCommand(User user, Chat chat) {
-        this.user = user;
-        this.chat = chat;
-    }
+
+
+
 
     @Override
-    public SendMessage run() {
+    public String run(AbsSender sender, Update update, String info) {
+        User user = update.getMessage().getFrom();
+        String welcome = "Welcome " + user.getFirstName()
+                + ". This is the Inno Library Bot. Click /login if you already have an account" +
+                "or use /signup if you're a new user.";
+        sendMessage(sender, update, welcome);
 
-        SendMessage welcome = new SendMessage();
-        welcome.setChatId(chat.getId());
-        welcome.setText("Hello " + user.getFirstName() + ". Welcome to Inno Library. Please type /login to login to the system." +
-                "If you don't have an account yet, use /signup");
-        return welcome;
-
+        return null;
     }
+
+
 }

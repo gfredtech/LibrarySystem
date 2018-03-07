@@ -1,12 +1,12 @@
 import org.controller.BookingController;
 import org.junit.Test;
-import org.resources.Book;
-import org.resources.JournalArticle;
-import org.resources.User;
+import org.resources.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BookingSystemTest {

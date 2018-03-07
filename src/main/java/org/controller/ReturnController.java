@@ -7,7 +7,9 @@ import org.resources.User;
 import org.storage.QueryParameters;
 import org.storage.Storage;
 
-
+/**
+ * @author Developed by Vladimir Scherba
+ */
 
 public class ReturnController {
 
