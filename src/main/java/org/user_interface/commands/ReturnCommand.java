@@ -7,7 +7,6 @@ import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-import org.user_interface.ui.KeyboardUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
