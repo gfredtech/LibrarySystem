@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class CheckoutCommand extends Command {
     HashMap<Long, User> currentUser = new HashMap<>();
     HashMap<Long, Item> documentCursor = new HashMap<>();
-    KeyboardUtils keyboardUtils = new KeyboardUtils();
+
 
     @Override
     public String run(AbsSender sender, Update update, String info) {

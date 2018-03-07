@@ -100,19 +100,19 @@ public class KeyboardUtils {
 
     }
 
-    void showCRUDkeyboard(AbsSender sender, Update update) {
+  public   void showCRUDkeyboard(AbsSender sender, Update update) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
         row.add("Add Document");
-        row.add("Modify Document");
+        row.add("Edit Document");
         keyboard.add(row);
 
         row = new KeyboardRow();
         row.add("Add User");
-        row.add("Modify User");
+        row.add("Edit User");
         keyboard.add(row);
 
         keyboardMarkup.setKeyboard(keyboard);

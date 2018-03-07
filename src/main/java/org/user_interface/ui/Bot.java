@@ -1,17 +1,14 @@
 package org.user_interface.ui;
 
 
-import javafx.util.Pair;
-import org.resources.*;
-import org.user_interface.commands.*;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.resources.User;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.user_interface.commands.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -20,8 +17,8 @@ public class Bot extends TelegramLongPollingBot {
     SignUpCommand signUpCommand = new SignUpCommand();
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     ReturnCommand returnCommand = new ReturnCommand();
-
-
+    EditCommand editCommand = new EditCommand();
+    AddCommand addCommand = new AddCommand();
 
     // entry point of bot
     @Override
@@ -71,9 +68,25 @@ public class Bot extends TelegramLongPollingBot {
                     currentState = returnCommand.run(this, update, "return_start");
                     previous.put(chatId, currentState);
 
+                case "Edit":
+                    // first, pass currently logged in user to EditCommand module
+                    currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
+                    editCommand.getCurrentUser(update, currentUser.get(chatId));
+                    System.out.println("yoyo");
+                    currentState = editCommand.run(this, update, "edit_start");
+                    previous.put(chatId, currentState);
+
+                case "Add Document":
+                    currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
+                    addCommand.getCurrentUser(update, currentUser.get(chatId));
+                    currentState = addCommand.run(this, update, x);
+                    previous.put(chatId, currentState);
+
+
+
                     break;
 
-                    
+
                 default:
                     String input = previous.get(chatId);
 
@@ -95,12 +108,22 @@ public class Bot extends TelegramLongPollingBot {
 
                             case "checkout":
                                 currentState = checkoutCommand.run(this, update, previous.get(chatId));
-                                System.out.println("checkout is at" + currentState);
                                 previous.put(chatId, currentState);
                                 break;
 
                             case "return":
                                 currentState = returnCommand.run(this, update, previous.get(chatId));
+                                previous.put(chatId, currentState);
+                                break;
+
+                            case "edit":
+                                currentState = editCommand.run(this, update, previous.get(chatId));
+                                previous.put(chatId, currentState);
+                                break;
+
+                            case "add":
+
+                                currentState = addCommand.run(this, update, previous.get(chatId));
                                 previous.put(chatId, currentState);
                                 break;
                         }
@@ -127,6 +150,16 @@ public class Bot extends TelegramLongPollingBot {
 
                 case "return":
                     currentState = returnCommand.run(this, update, call_data);
+                    previous.put(chatId, currentState);
+                    break;
+
+                case "edit":
+                    currentState = editCommand.run(this, update, call_data);
+                    previous.put(chatId, currentState);
+                    break;
+
+                case "add":
+                    currentState = addCommand.run(this, update, call_data);
                     previous.put(chatId, currentState);
                     break;
 

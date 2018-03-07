@@ -5,15 +5,11 @@ import org.resources.User;
 import org.storage.SqlStorage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-import org.user_interface.ui.KeyboardUtils;
-
 import java.util.ArrayList;
 
 
 public class SignUpCommand extends Command{
     private String fullName, address, phoneNumber, username, password, signupSubType;
-
-    KeyboardUtils keyboardUtils = new KeyboardUtils();
 
     @Override
     public String run(AbsSender sender, Update update, String info) {

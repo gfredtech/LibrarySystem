@@ -8,14 +8,12 @@ import org.storage.SqlStorage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.user_interface.ui.KeyboardUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class ReturnCommand extends Command {
     HashMap<Long, User> currentUser = new HashMap<>();
-    KeyboardUtils keyboardUtils = new KeyboardUtils();
     HashMap<Long, Item> documentCursor = new HashMap<>();
 
     @Override

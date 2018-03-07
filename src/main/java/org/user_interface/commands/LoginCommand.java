@@ -2,24 +2,19 @@ package org.user_interface.commands;
 
 
 
-import javafx.util.Pair;
 import org.resources.User;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-
 import org.user_interface.ui.KeyboardUtils;
 
 import java.util.HashMap;
-
 import java.util.NoSuchElementException;
 
 
 public class LoginCommand extends Command {
     HashMap<Long, User> currentUser = new HashMap<>();
-    KeyboardUtils keyboardUtils = new KeyboardUtils();
-
 
     @Override
     public String run(AbsSender sender, Update update, String currentState) {
