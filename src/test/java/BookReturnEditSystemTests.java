@@ -115,8 +115,8 @@ public class BookReturnEditSystemTests {
 
     @Test
     public void test3() {
-        storage.findUsers(new QueryParameters().add("user_id", 1010)).get(0);
-        storage.findUsers(new QueryParameters().add("user_id", 1100)).get(0);
+        System.out.println(storage.findUsers(new QueryParameters().add("user_id", 1010)).get(0));
+        System.out.println(storage.findUsers(new QueryParameters().add("user_id", 1100)).get(0));
     }
 
     @Test
@@ -127,7 +127,7 @@ public class BookReturnEditSystemTests {
         } catch (IndexOutOfBoundsException e) {
             // correct
         }
-        storage.findUsers(new QueryParameters().add("user_id", 1100)).get(0);
+        System.out.println(storage.findUsers(new QueryParameters().add("user_id", 1100)).get(0));
     }
 
     @Test
@@ -217,9 +217,9 @@ public class BookReturnEditSystemTests {
 
     @Test
     public void test8() {
-        storage.getCheckoutRecordsFor(1010);
-        storage.getCheckoutRecordsFor(1011);
-        storage.getCheckoutRecordsFor(1100);
+        System.out.println(storage.getCheckoutRecordsFor(1010));
+        System.out.println(storage.getCheckoutRecordsFor(1011));
+        System.out.println(storage.getCheckoutRecordsFor(1100));
     }
 
     @Test
