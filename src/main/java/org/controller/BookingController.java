@@ -9,7 +9,9 @@ import org.storage.Storage;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
-
+/**
+ * @author Developed by Vladimir Scherba
+ */
 
 public class BookingController {
 
