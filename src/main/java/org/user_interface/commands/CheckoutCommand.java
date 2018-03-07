@@ -107,7 +107,7 @@ public class CheckoutCommand extends Command {
                                     "book", documentCursor.get(chatId).getId());
                     keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
                             documentCursor.get(chatId).getTitle() + " Checked out successfully.");
-                    return "menu";
+                    return "menu_";
                 } catch (BookingController.CheckoutException e) {
                     keyboardUtils.showMainMenuKeyboard(sender, update,
                             currentUser.get(chatId),
@@ -123,7 +123,6 @@ public class CheckoutCommand extends Command {
     public void getCurrentUser(Update update, User user) {
         Long chatId = update.getMessage().getChatId();
         this.currentUser.put(chatId, user);
-        System.out.println(currentUser.get(chatId).getName() + "moola");
     }
 
 

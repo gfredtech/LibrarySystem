@@ -26,9 +26,6 @@ public class Bot extends TelegramLongPollingBot {
 
         Message message = update.getMessage();
         String currentState;
-
-
-
         if (update.hasMessage() && message.hasText()) {
 
             Long chatId = message.getChatId();
@@ -67,25 +64,28 @@ public class Bot extends TelegramLongPollingBot {
                     returnCommand.getCurrentUser(update, currentUser.get(chatId));
                     currentState = returnCommand.run(this, update, "return_start");
                     previous.put(chatId, currentState);
+                    break;
 
                 case "Edit":
                     // first, pass currently logged in user to EditCommand module
                     currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
                     editCommand.getCurrentUser(update, currentUser.get(chatId));
-                    System.out.println("yoyo");
                     currentState = editCommand.run(this, update, "edit_start");
                     previous.put(chatId, currentState);
+                    break;
 
                 case "Add Document":
                     currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
                     addCommand.getCurrentUser(update, currentUser.get(chatId));
                     currentState = addCommand.run(this, update, x);
                     previous.put(chatId, currentState);
-
-
-
                     break;
 
+                case "Edit Document":
+                    System.out.println("edit document");
+                    currentState = editCommand.run(this, update, x);
+                    previous.put(chatId, currentState);
+                    break;
 
                 default:
                     String input = previous.get(chatId);
@@ -97,7 +97,6 @@ public class Bot extends TelegramLongPollingBot {
                                 currentState = loginCommand.run(this, update, previous.get(chatId));
                                 previous.put(chatId, currentState);
                                 break;
-
 
                             case "signup":
 
@@ -118,6 +117,7 @@ public class Bot extends TelegramLongPollingBot {
 
                             case "edit":
                                 currentState = editCommand.run(this, update, previous.get(chatId));
+                                System.out.println("current" + currentState);
                                 previous.put(chatId, currentState);
                                 break;
 
@@ -137,7 +137,7 @@ public class Bot extends TelegramLongPollingBot {
             String previousData = previous.get(chatId);
             previousData = previousData.substring(0, previousData.indexOf("_"));
 
-            switch (previousData) {
+            switch (previousData.toLowerCase()) {
                 case "signup":
                     signUpCommand.run(this, update, call_data);
                     previous.put(chatId, "signup_confirm");
@@ -164,8 +164,6 @@ public class Bot extends TelegramLongPollingBot {
                     break;
 
             }
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
         }
     }
 
