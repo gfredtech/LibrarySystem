@@ -79,15 +79,12 @@ public class Bot extends TelegramLongPollingBot {
                     previous.put(chatId, currentState);
                     break;
 
-<<<<<<< HEAD
-=======
                 case "Edit Document":
                     System.out.println("edit document");
                     currentState = editCommand.run(this, update, x);
                     previous.put(chatId, currentState);
                     break;
 
->>>>>>> 78158d4b5245afd3840ea661a35fa0b4deb520c9
                 default:
                     String input = previous.get(chatId);
 
