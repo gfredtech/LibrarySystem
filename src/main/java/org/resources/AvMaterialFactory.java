@@ -31,11 +31,10 @@ public class AvMaterialFactory extends ItemFactory<AvMaterial> {
     }
 
     /**
-     * Method to write the authors of the item AvMaterial
+     * Method to set the list of authors of the item
      * @param authors
      */
-
-    void setAuthors(List<String> authors) {
+    public void setAuthors(List<String> authors) {
         item.authors = authors;
     }
 }

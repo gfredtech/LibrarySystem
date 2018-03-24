@@ -50,6 +50,7 @@ class SqlQueryExecutor {
         }
         query.append(";");
 
+        System.out.println(query.toString());
         return statement.executeQuery(query.toString());
     }
 
@@ -67,6 +68,7 @@ class SqlQueryExecutor {
         query.append(" SET ");
         query.append(parameters.toInsertParameters());
         query.append(";");
+        System.out.println(query.toString());
         statement.executeUpdate(query.toString());
     }
 
@@ -85,6 +87,7 @@ class SqlQueryExecutor {
         query.append(" VALUES ");
         query.append(parameters.toInsertParameters());
         query.append(";");
+        System.out.println(query.toString());
         statement.executeUpdate(query.toString());
     }
 
@@ -94,16 +97,14 @@ class SqlQueryExecutor {
      * @param parameters QueryParameters to delete item
      * @throws SQLException
      */
-    void deleteOne(String tableName, QueryParameters parameters) throws SQLException {
+    void deleteAll(String tableName, QueryParameters parameters) throws SQLException {
         StringBuilder query = new StringBuilder();
         query.append("DELETE FROM ");
         query.append(tableName);
-        query.append(" WHERE ctid IN (SELECT ctid\n" +
-                "                FROM checkout\n" +
-                "                WHERE ");
+        query.append(" WHERE ");
         query.append(parameters.toWhereCondition());
-        query.append(" LIMIT 1)");
         query.append(";");
+        System.out.println(query.toString());
         statement.executeUpdate(query.toString());
     }
 

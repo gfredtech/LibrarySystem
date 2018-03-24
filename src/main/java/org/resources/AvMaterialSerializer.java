@@ -28,7 +28,6 @@ public class AvMaterialSerializer extends ItemSerializer<AvMaterial>  {
                 .add("title", material.getTitle())
                 .add("keywords", material.getKeywords())
                 .add("copy_num", material.getCopiesNum())
-                .add("DEFAULT")
                 .add("authors", material.getAuthors())
                 .add("is_reference", material.isReference());
 

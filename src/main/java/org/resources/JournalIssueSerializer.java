@@ -18,7 +18,6 @@ public class JournalIssueSerializer extends ItemSerializer<JournalIssue>  {
                 .add("title", journal.getTitle())
                 .add("keywords", journal.getKeywords())
                 .add("copy_num", journal.getCopiesNum())
-                .add("journal_issue_id")
                 .add("editors", journal.getEditors())
                 .add("publisher", journal.getPublisher())
                 .add("publication_date", journal.getPublicationDate())
