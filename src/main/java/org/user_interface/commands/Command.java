@@ -1,8 +1,6 @@
 package org.user_interface.commands;
 
-import org.resources.AvMaterial;
-import org.resources.Book;
-import org.resources.Item;
+import org.resources.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -12,13 +10,17 @@ import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.user_interface.ui.KeyboardUtils;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public abstract class Command {
 
-    KeyboardUtils keyboardUtils = new KeyboardUtils();
+   public KeyboardUtils keyboardUtils = new KeyboardUtils();
+
+    static HashMap<Long, User> currentUser = new HashMap<>();
+
+    static HashMap<Long, Item> documentCursor = new HashMap<>();
 
     //executes an action, then returns an object that contains some
     //information back to the Bot class
@@ -53,10 +55,7 @@ public abstract class Command {
             System.out.println(name);
             builder.append((i + 1) + ". " + name + "\n\n");
         }
-
         sendMessage(sender, update, builder.toString());
-
-
     }
 
     void listAvMaterials(AbsSender sender, Update update) {
@@ -64,16 +63,30 @@ public abstract class Command {
         List<AvMaterial> avMaterials = SqlStorage.getInstance().findAvMaterials(new QueryParameters());
         for (int i = 0; i < avMaterials.size(); i++) {
             String name = avMaterials.get(i).getTitle();
-            builder.append((i + 1) + ". " + name + "\n\n");
+            builder.append((i + 1) + ". " + name + "\n");
         }
-
         sendMessage(sender, update, builder.toString());
-
     }
 
+    void listJournalIssues(AbsSender sender, Update update) {
+        StringBuilder builder = new StringBuilder();
+        List<JournalIssue> journalIssues = SqlStorage.getInstance().findJournals(new QueryParameters());
+        for(int i = 0; i < journalIssues.size(); i++) {
+            String name = journalIssues.get(i).getTitle();
+            builder.append((i+1) + ". " + name + "\n");
+        }
+        sendMessage(sender, update, builder.toString());
+    }
 
-
-
+    void listJournalArticles(AbsSender sender, Update update) {
+        StringBuilder builder = new StringBuilder();
+        List<JournalArticle> articles = SqlStorage.getInstance().findArticles(new QueryParameters());
+        for(int i = 0; i < articles.size(); i++) {
+            String name = articles.get(i).getTitle();
+            builder.append((i+1) + ". " + name + "\n");
+        }
+        sendMessage(sender, update, builder.toString());
+    }
 
     void showDocumentDetails(AbsSender sender, Update update, Item item, String type) {
         String bookDetails = item.toString() +
@@ -85,7 +98,4 @@ public abstract class Command {
         }});
 
     }
-
-
-
 }

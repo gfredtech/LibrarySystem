@@ -152,5 +152,4 @@ public class AddCommand extends Command{
     List<String> newDocumentKeywords;
     LocalDate newDocumentPublicationDate;
 
-    HashMap<Long, User> currentUser = new HashMap<>();
 }

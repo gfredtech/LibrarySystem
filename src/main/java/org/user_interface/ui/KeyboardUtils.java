@@ -22,39 +22,28 @@ public class KeyboardUtils {
             chatId = update.getCallbackQuery().getMessage().getChatId();
         }
 
-
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Checkout Document");
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-        row.add("Return Document");
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-        row.add("Search");
+        row.add("Checkout");
+        row.add("Return");
         keyboard.add(row);
 
         if(user.getType().equals("Librarian")) {
             row = new KeyboardRow();
             row.add("Edit");
+            row.add("Add");
             keyboard.add(row);
         }
 
-
         row = new KeyboardRow();
+        row.add("Search");
         row.add("️Settings");
-        keyboard.add(row);
-
-        row = new KeyboardRow();
         row.add("Logout");
         keyboard.add(row);
 
-
+        keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(keyboard);
 
         SendMessage message = new SendMessage().setChatId(chatId).setText(msg);
@@ -96,8 +85,6 @@ public class KeyboardUtils {
         }catch (TelegramApiException e) {
             e.printStackTrace();
         }
-
-
     }
 
   public   void showCRUDkeyboard(AbsSender sender, Update update) {
@@ -106,15 +93,11 @@ public class KeyboardUtils {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Add Document");
         row.add("Edit Document");
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-        row.add("Add User");
         row.add("Edit User");
         keyboard.add(row);
 
+        keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(keyboard);
 
         SendMessage message = new SendMessage().setChatId(update.getMessage().getChatId()).setText("Choose an option");
@@ -125,5 +108,33 @@ public class KeyboardUtils {
             e.printStackTrace();
         }
 
+    }
+
+   public void showEditDocumentKeyboard(AbsSender sender, Update update) {
+
+        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
+
+        List<KeyboardRow> keyb = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add("Book");
+        row.add("AV Material");
+        keyb.add(row);
+
+        row = new KeyboardRow();
+        row.add("Journal Article");
+        row.add("Journal Issue");
+        keyb.add(row);
+
+        markup.setResizeKeyboard(true);
+        markup.setKeyboard(keyb);
+
+        SendMessage message = new SendMessage().setChatId(update.getMessage().getChatId()).setText("Choose an option");
+        message.setReplyMarkup(markup);
+        try {
+            sender.execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 }
