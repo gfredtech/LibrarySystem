@@ -101,9 +101,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
 
     @Override
-    public void remove(Resource type, int id) {
-        QueryParameters parameters = new QueryParameters()
-                .add(type.getTableKey(), id);
+    public void removeAll(Resource type, QueryParameters parameters ) {
         try {
             deleteAll(type.getTableName(), parameters);
         } catch (SQLException e) {
@@ -115,11 +113,11 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
 
     @Override
-    public void update(Resource type, int id, QueryParameters params) {
+    public void updateAll(Resource type, QueryParameters searchParams, QueryParameters params) {
         try {
             update(type.getTableName(),
                     params,
-                    new QueryParameters().add(type.getTableKey(), id));
+                    searchParams);
         } catch (SQLException e) {
             final String errorMessage = "Error during update in the table '"+type.getTableName()
                     + "' with parameters: " + params;

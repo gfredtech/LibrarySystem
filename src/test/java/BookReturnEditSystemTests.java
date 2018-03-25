@@ -1,5 +1,5 @@
 import org.controller.CheckOutCommand;
-import org.controller.ReturnController;
+import org.controller.ReturnCommand;
 import org.items.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class BookReturnEditSystemTests {
     public void init() throws ClassNotFoundException {
         SqlStorage.connect("library", "librarian", "tabula_rasa");
         storage = SqlStorage.getInstance();
-        returner = new ReturnController(storage);
+        returner = new ReturnCommand(storage);
         booker = new CheckOutCommand(storage);
         initItemData();
         cleanUp();
@@ -268,6 +268,6 @@ public class BookReturnEditSystemTests {
     HashMap<String, QueryParameters> itemData = new HashMap<>();
 
     CheckOutCommand booker;
-    ReturnController returner;
+    ReturnCommand returner;
     Storage storage;
 }

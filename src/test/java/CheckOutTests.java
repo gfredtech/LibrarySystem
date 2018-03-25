@@ -52,10 +52,8 @@ public class CheckOutTests {
 
     @AfterEach
     public void cleanUp() {
-        BookEntry book = storage.find(Resource.Book,
-                new QueryParameters().add("title", "Cormen")).get(0);
-        storage.remove(Resource.Book, book.getId());
-        storage.remove(Resource.User, 1001);
+        storage.removeAll(Resource.Book, new QueryParameters().add("title", "Cormen"));
+        storage.removeAll(Resource.User, new QueryParameters().add("user_id", 1001));
     }
 
     LibraryManager manager;

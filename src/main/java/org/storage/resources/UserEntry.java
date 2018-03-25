@@ -18,7 +18,7 @@ public class UserEntry extends DatabaseEntry {
         String phoneNumber = rs.getString("phone_number");
         String address = rs.getString("address");
         int passwordHash = rs.getInt("password_hash");
-        User u = new User(getId(), name, type, subType);
+        User u = new User(rs.getInt("user_id"), name, type, subType);
         u.setLogin(login);
         u.setAddress(address);
         u.setPhoneNumber(phoneNumber);
@@ -33,6 +33,10 @@ public class UserEntry extends DatabaseEntry {
     @Override
     public QueryParameters toQueryParameters() {
         return EntrySerializer.serialize(user);
+    }
+
+    public int getId() {
+        return user.getCardNumber();
     }
 
     public User getUser() {

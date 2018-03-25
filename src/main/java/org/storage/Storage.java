@@ -18,13 +18,13 @@ public interface Storage {
     <T extends DatabaseEntry>
     Optional<T> get(Resource<T> type, int id);
 
-    int getNumOfEntries(Resource resource, QueryParameters params);
+    int getNumOfEntries(Resource resource, QueryParameters searchParameters);
 
     void add(Resource type, QueryParameters data);
 
-    void remove(Resource type, int id);
+    void removeAll(Resource type, QueryParameters searchParameters);
 
-    void update(Resource type, int id, QueryParameters params);
+    void updateAll(Resource type, QueryParameters searchParameters, QueryParameters params);
 
     class QueryExecutionError extends RuntimeException {
         QueryExecutionError(String message, Throwable cause) {

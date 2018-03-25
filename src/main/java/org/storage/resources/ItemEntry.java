@@ -28,6 +28,7 @@ public abstract class ItemEntry<T extends Item> extends DatabaseEntry {
         factory.price(rs.getInt("price"));
 
         item = factory.build();
+        id = rs.getInt(getResourceType().getTableKey());
     }
 
     @Override
@@ -39,7 +40,12 @@ public abstract class ItemEntry<T extends Item> extends DatabaseEntry {
         return item;
     }
 
+    public int getId() {
+        return id;
+    }
+
     abstract protected ItemFactory<T> initFactory(ResultSet rs) throws SQLException;
 
     protected T item;
+    private int id;
 }
