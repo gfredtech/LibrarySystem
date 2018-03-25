@@ -1,9 +1,7 @@
 package org.user_interface.commands;
 
-import org.items.User;
-import org.storage.QueryParameters;
+import org.resources.*;
 import org.storage.SqlStorage;
-import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
@@ -11,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class AddCommand extends Command{
     @Override
@@ -30,39 +29,39 @@ public class AddCommand extends Command{
                 return "add_documentname";
 
             case "add_documentname":
-                newDocumentParams.add("title", update.getMessage().getText());
+                newDocumentName = update.getMessage().getText();
                 message = "Enter the name of the authors " +
                         "separated by commas(,):";
                 sendMessage(sender, update, message);
                 return "add_documentauthors";
 
             case "add_documentauthors":
-                newDocumentParams.add("authors", Arrays.asList(input.split("\\s*,\\s*")));
+                newDocumentAuthors = Arrays.asList(input.split("\\s*,\\s*"));
                 message = "Enter the name of the publisher";
                 sendMessage(sender, update, message);
                 return "add_documentpublisher";
 
             case "add_documentpublisher":
-                newDocumentParams.add("publisher", input);
+                newDocumentPublisher = input;
                 message = "Enter the number of copies of the " +
                     "Document you want to add to the library";
                 sendMessage(sender, update, message);
                 return "add_copiesnum";
 
             case "add_copiesnum":
-                newDocumentParams.add("copy_num", Integer.parseInt(input));
+                newDocumentCopies = Integer.parseInt(input);
                 sendMessage(sender, update, "What is the price of the document in Rubles?");
                 return "add_price";
 
             case "add_price":
-                newDocumentParams.add("price", Integer.parseInt(input));
+                newDocumentPrice = Integer.parseInt(input);
                 sendMessage(sender, update, "Is it a bestSeller? (Y/N)");
                 return "add_bestseller";
 
 
             case "add_bestseller":
                 if(input.equalsIgnoreCase("Y")) {
-                    newDocumentParams.add("is_bestseller", true);
+                    newDocumentBestseller = true;
                     sendMessage(sender, update,"Enter the list of keywords for the book, separated by commas(,).");
                     return "add_keywords";
                 } else if(input.equalsIgnoreCase("N")) {
@@ -72,13 +71,13 @@ public class AddCommand extends Command{
 
             case "add_reference":
                 if (input.equalsIgnoreCase("Y")) {
-                    newDocumentParams.add("is_reference", true);
+                    newDocumentReference = true;
                 }
                 sendMessage(sender, update,"Enter the list of keywords for the book, separated by commas(,).");
                 return "add_keywords";
 
             case "add_keywords":
-                newDocumentParams.add("keywords", Arrays.asList(input.split("\\s*,\\s*")));
+                newDocumentKeywords = Arrays.asList(input.split("\\s*,\\s*"));
                 sendMessage(sender, update, "Enter the date of publication, like so: dd mm yyyy");
                 return "add_publicationdate";
 
@@ -88,7 +87,7 @@ public class AddCommand extends Command{
                 int day = Integer.parseInt(date[0]);
                 int month = Integer.parseInt(date[1]);
                 int year = Integer.parseInt(date[2]);
-                newDocumentParams.add("publication_date", LocalDate.of(year, month, day));
+                newDocumentPublicationDate = LocalDate.of(year, month, day);
                 keyboardUtils.setInlineKeyBoard(sender, update, "What type of document is it?",
                         new ArrayList<String>() {{
                             add("Add Book");
@@ -99,24 +98,59 @@ public class AddCommand extends Command{
                 return "add_documenttype";
 
             case "Add Book":
-                SqlStorage.getInstance().add(Resource.Book, newDocumentParams);
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId), "Added successfully!");
+                BookFactory bookFactory = new BookFactory();
+                System.out.println("Authors: " + newDocumentAuthors.toString());
+                System.out.println("Title:" + newDocumentName);
+                System.out.println(newDocumentCopies);
+                System.out.println(newDocumentPublisher);
+
+                bookFactory.setAuthors(newDocumentAuthors);
+                bookFactory.setTitle(newDocumentName);
+                bookFactory.setCopiesNum(newDocumentCopies);
+                bookFactory.setPublisher(newDocumentPublisher);
+                bookFactory.setPrice(newDocumentPrice);
+                if(newDocumentReference) {
+                    bookFactory.setAsReference();
+                }
+                if(newDocumentBestseller) {
+                    bookFactory.setAsBestseller();
+                }
+                bookFactory.setKeywords(newDocumentKeywords);
+                bookFactory.setPublicationDate(newDocumentPublicationDate);
+                //TODO: null pointer exception
+                SqlStorage.getInstance().addBook(bookFactory);
+                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
+                        newDocumentName + " added successfully!");
                 return "menu";
 
             case "Add Av Material":
-                SqlStorage.getInstance().add(Resource.AvMaterial, newDocumentParams);
+                AvMaterialFactory avMaterialFactory = new AvMaterialFactory();
+                avMaterialFactory.setAsNonReference();
+                avMaterialFactory.setTitle(newDocumentName);
+                avMaterialFactory.setCopiesNum(newDocumentCopies);
+                if(newDocumentReference) avMaterialFactory.setAsReference();
+                avMaterialFactory.setKeywords(newDocumentKeywords);
+                avMaterialFactory.setPrice(newDocumentPrice);
+                SqlStorage.getInstance().addAvMaterial(avMaterialFactory);
                 keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                        "Added succesffully.");
+                        newDocumentName + " added succesffully.");
                 return "menu";
                 }
         return null;
     }
 
-    public void setCurrentUser(Long chatId, User user) {
+    public void getCurrentUser(Update update, User user) {
+        Long chatId = update.getMessage().getChatId();
         currentUser.put(chatId, user);
     }
 
-    QueryParameters newDocumentParams = new QueryParameters();
+    List<String> newDocumentAuthors;
+    int newDocumentCopies, newDocumentPrice;
+    String newDocumentName, newDocumentPublisher;
+    Boolean newDocumentReference = false;
+    Boolean newDocumentBestseller = false;
+    List<String> newDocumentKeywords;
+    LocalDate newDocumentPublicationDate;
 
     HashMap<Long, User> currentUser = new HashMap<>();
 }
