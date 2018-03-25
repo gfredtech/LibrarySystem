@@ -1,4 +1,4 @@
-package org.resources;
+package org.items;
 
 import java.util.List;
 
@@ -21,8 +21,8 @@ public class JournalArticleFactory extends ItemFactory<JournalArticle> {
      */
     @Override
     @Deprecated
-    public void setCopiesNum(int copiesNum) {
-        ;
+    public JournalArticleFactory copiesNum(int copiesNum) {
+        return this;
     }
 
     /**
@@ -30,8 +30,8 @@ public class JournalArticleFactory extends ItemFactory<JournalArticle> {
      */
     @Override
     @Deprecated
-    public void setAsReference() {
-        ;
+    public JournalArticleFactory isReference() {
+        return this;
     }
 
     /**
@@ -39,7 +39,7 @@ public class JournalArticleFactory extends ItemFactory<JournalArticle> {
      */
     @Override
     @Deprecated
-    public void setPrice(int price) {
-        ;
+    public JournalArticleFactory price(int price) {
+        return this;
     }
 }

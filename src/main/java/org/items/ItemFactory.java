@@ -1,6 +1,5 @@
-package org.resources;
+package org.items;
 
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -11,40 +10,40 @@ public abstract class ItemFactory<T extends Item> {
         item = i;
     }
 
-    public T build(int id) {
+    public T build() {
         assert item.keywords != null;
         assert item.title != null;
-        item.id = id;
         return item;
     }
 
-    @Deprecated
-    public T getCarcass() {
-        return item;
-    }
-
-    public void setTitle(String title) {
+    public ItemFactory<T> title(String title) {
         item.title = title;
+        return this;
     }
 
-    public void setCopiesNum(int copiesNum) {
+    public ItemFactory<T> copiesNum(int copiesNum) {
         item.copiesNum = copiesNum;
+        return this;
     }
 
-    public void setPrice(int price) {
+    public ItemFactory<T> price(int price) {
         item.price = price;
+        return this;
     }
 
-    public void setKeywords(List<String> keywords) {
+    public ItemFactory<T> keywords(List<String> keywords) {
         item.keywords = keywords;
+        return this;
     }
 
-    public void setAsReference() {
+    public ItemFactory<T> isReference() {
         item.reference = true;
+        return this;
     }
 
-    public void setAsNonReference() {
+    public ItemFactory<T> isNotReference() {
         item.reference = false;
+        return this;
     }
 
     protected T item;

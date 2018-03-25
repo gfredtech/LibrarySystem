@@ -1,12 +1,9 @@
-package org.resources;
+package org.items;
 
 import java.util.List;
 
 public abstract class Item {
 
-    public int getId() {
-        return id;
-    }
     public String getTitle() {
         return title;
     }
@@ -22,7 +19,6 @@ public abstract class Item {
     public int getPrice() {
         return price;
     }
-    public abstract String getType();
 
     @Override
     public String toString() {
@@ -34,5 +30,4 @@ public abstract class Item {
     boolean reference;
     int price;
     List<String> keywords;
-    int id;
 }

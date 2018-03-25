@@ -1,4 +1,4 @@
-package org.resources;
+package org.items;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,11 +13,6 @@ public class JournalIssue extends Item {
         return publicationDate;
     }
 
-    @Override
-    public String getType() {
-        return type;
-    }
-
     public List<String> getEditors() {
         return editors;
     }
@@ -25,5 +20,4 @@ public class JournalIssue extends Item {
     List<String> editors;
     String publisher;
     LocalDate publicationDate;
-    static final String type = "journal_issue";
 }

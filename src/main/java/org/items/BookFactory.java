@@ -1,7 +1,6 @@
-package org.resources;
+package org.items;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -24,37 +23,42 @@ public class BookFactory extends ItemFactory<Book> {
      * Setting method to set the authors of book item
      * @param authors
      */
-    public void setAuthors(List<String> authors) {
+    public BookFactory authors(List<String> authors) {
         item.authors = authors;
+        return this;
     }
 
     /**
      * Setting method to set the publication date of book item
      * @param publicationDate
      */
-    public void setPublicationDate(LocalDate publicationDate) {
+    public BookFactory publicationDate(LocalDate publicationDate) {
         item.publicationDate = publicationDate;
+        return this;
     }
 
     /**
      * Setting method to set the publisher of book item
      * @param publisher
      */
-    public void setPublisher(String publisher) {
+    public BookFactory publisher(String publisher) {
         item.publisher = publisher;
+        return this;
     }
 
     /**
      * Setting method to establish whether a book item is a best seller
      */
-    public void setAsBestseller() {
+    public BookFactory isBestseller() {
         item.bestseller = true;
+        return this;
     }
 
     /**
      * Setting method to establish whether a book item is not a best seller
      */
-    public void setAsNonBestseller() {
+    public BookFactory isNotBestseller() {
         item.bestseller = false;
+        return this;
     }
 }

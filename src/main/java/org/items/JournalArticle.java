@@ -1,4 +1,4 @@
-package org.resources;
+package org.items;
 
 import java.util.List;
 
@@ -27,11 +27,6 @@ public class JournalArticle extends Item {
     @Override
     public int getPrice() {
         return journal.getPrice();
-    }
-
-    @Override
-    public String getType() {
-        return "article";
     }
 
     public void initializeJournal(JournalIssue issue) {

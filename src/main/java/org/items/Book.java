@@ -1,4 +1,4 @@
-package org.resources;
+package org.items;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,15 +25,6 @@ public class Book extends Item {
     @Override
     public String toString() {
         return String.format("Book{title: %s, authors: %s, publisher: %s}", title, authors, publisher);
-    }
-
-    /**
-     * This function returns the type of item of Book
-     * @return type of item
-     */
-    @Override
-    public String getType() {
-        return type;
     }
 
     /**
@@ -85,5 +76,4 @@ public class Book extends Item {
     String publisher;
     LocalDate publicationDate;
     boolean bestseller;
-    static final String type = "book";
 }

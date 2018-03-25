@@ -1,7 +1,6 @@
-package org.resources;
+package org.items;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -13,16 +12,19 @@ public class JournalIssueFactory extends ItemFactory<JournalIssue> {
         super(new JournalIssue());
     }
 
-    public void setEditors(List<String> editors) {
+    public JournalIssueFactory editors(List<String> editors) {
         item.editors = editors;
+        return this;
     }
 
-    public void setPublicationDate(LocalDate publicationDate) {
+    public JournalIssueFactory publicationDate(LocalDate publicationDate) {
         item.publicationDate = publicationDate;
+        return this;
     }
 
-    public void setPublisher(String publisher) {
+    public JournalIssueFactory publisher(String publisher) {
         item.publisher = publisher;
+        return this;
     }
 }
 

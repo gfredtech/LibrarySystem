@@ -1,8 +1,9 @@
 package org.storage;
 
-import org.resources.*;
+import org.items.*;
+import org.storage.resources.Resource;
+import org.storage.resources.DatabaseEntry;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,43 +12,23 @@ import java.util.Optional;
  * Represents an abstract storage of library materials and records (both user and checkout)
  */
 public interface Storage {
+    <T extends DatabaseEntry>
+    List<T> find(Resource<T> type, QueryParameters searchParameters);
 
-    List<User> findUsers(QueryParameters searchParameters);
-    Optional<User> getUser(int id);
+    <T extends DatabaseEntry>
+    Optional<T> get(Resource<T> type, int id);
 
-    List<Book> findBooks(QueryParameters searchParameters);
-    Optional<Book> getBook(int id);
+    int getNumOfEntries(Resource resource, QueryParameters params);
 
-    List<JournalArticle> findArticles(QueryParameters searchParameters);
-    Optional<JournalArticle> getArticle(int id);
+    void add(Resource type, QueryParameters data);
 
-    List<AvMaterial> findAvMaterials(QueryParameters searchParameters);
-    Optional<AvMaterial> getAvMaterial(int id);
+    void remove(Resource type, int id);
 
-    List<JournalIssue> findJournals(QueryParameters searchParameters);
-    Optional<JournalIssue> getJournal(int id);
+    void update(Resource type, int id, QueryParameters params);
 
-    int getNumOfCheckouts(int item_id);
-    List<CheckoutRecord> getCheckoutRecordsFor(int user_id);
-
-    User addUser(User user);
-    Book addBook(BookFactory book);
-    JournalArticle addJournalArticle(JournalArticleFactory article);
-    JournalIssue addJournal(JournalIssueFactory journal);
-    AvMaterial addAvMaterial(AvMaterialFactory material);
-    void addCheckoutRecord(CheckoutRecord record);
-
-    void removeUser(int user_id);
-    void removeBook(int book_id);
-    void removeJournalArticle(int article_id);
-    void removeJournal(int journal_id);
-    void removeAvMaterial(int material_id);
-    void removeCheckoutRecord(CheckoutRecord record);
-
-    void updateUser(int user_id, QueryParameters params);
-    void updateBook(int book_id, QueryParameters params);
-    void updateJournalArticle(int article_id, QueryParameters params);
-    void updateJournal(int journal_id, QueryParameters params);
-    void updateAvMaterial(int material_id, QueryParameters params);
-
+    class QueryExecutionError extends RuntimeException {
+        QueryExecutionError(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 }

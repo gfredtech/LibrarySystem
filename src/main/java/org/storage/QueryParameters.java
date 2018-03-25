@@ -4,12 +4,13 @@ import javafx.util.Pair;
 
 import java.sql.Types;
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author Developed by Vladimir Scherba
+ * @author Vladimir Shcherba
  */
 
 public class QueryParameters {
@@ -24,9 +25,7 @@ public class QueryParameters {
 
     /**
      * adds a String parameter to hashmap of query parameters
-     * @param key
-     * @param value
-     * @return the current QueryParameters object
+     * @return this object
      */
     public QueryParameters add(String key, String value) {
         params.put(key, new Pair<>(Types.VARCHAR, value));
@@ -34,32 +33,26 @@ public class QueryParameters {
     }
 
     /**
-     * adds an Integer parameter to Hashmap of QueryParameters
-     * @param key
-     * @param value
-     * @return
+     * adds an Integer parameter
+     * @return this object
      */
-    public QueryParameters add(String key, int value) {
+    public QueryParameters add(String key, Integer value) {
         params.put(key, new Pair<>(Types.INTEGER, value));
         return this;
     }
 
     /**
-     * adds a boolean parameter to Hashmap of QueryParameters
-     * @param key
-     * @param value
-     * @return
+     * adds a boolean parameter
+     * @return this object
      */
-    public QueryParameters add(String key, boolean value) {
+    public QueryParameters add(String key, Boolean value) {
         params.put(key, new Pair<>(Types.BOOLEAN, value));
         return this;
     }
 
     /**
-     * adds a list of objects of an arbitrary type to QueryParameters
-     * @param key
-     * @param value
-     * @return QueryParameter object
+     * adds a list parameter
+     * @return this object
      */
     public QueryParameters add(String key, List<?> value) {
         params.put(key, new Pair<>(Types.ARRAY, value));
@@ -67,10 +60,10 @@ public class QueryParameters {
     }
 
     /**
-     * adds a Date parameter to Query Parameters
+     * adds a Date parameter
      * @param key
      * @param value
-     * @return Query Parameters
+     * @return this object
      */
     public QueryParameters add(String key, LocalDate value) {
         params.put(key, new Pair<>(Types.DATE, value));
@@ -78,9 +71,9 @@ public class QueryParameters {
     }
 
     /**
-     * adds a default string key to query parameters
+     * adds a parameter with default value
      * @param key
-     * @return
+     * @return this object
      */
     public QueryParameters add(String key) {
         params.put(key, new Pair<>(Types.OTHER, "DEFAULT"));
@@ -96,13 +89,15 @@ public class QueryParameters {
     }
 
     /**
-     * check if query parameters is empty
-     * @return
+     * @return if the list of query parameters is empty
      */
     public boolean isEmpty() {
         return params.isEmpty();
     }
 
+    /**
+     * @return a string representing the list of keys, surrounded by brackets and separated by commas
+     */
     public String getKeys() {
         StringBuilder sqlRow = new StringBuilder();
 
@@ -117,10 +112,7 @@ public class QueryParameters {
     }
 
     /**
-     * adds the SQL where condition to all
-     * query parameters
-     * @return string of SQL statement produced
-     * from Query Parameters
+     * @return parameters in the format required by WHERE SQL clause
      */
     public String toWhereCondition() {
         StringBuilder condition = new StringBuilder();
@@ -139,9 +131,7 @@ public class QueryParameters {
     }
 
     /**
-     * converts query parameter to string to be
-     * executed as an SQL statement
-     * @return
+     * @return parameters in the format required for INSERT parameters
      */
     public String toInsertParameters() {
         StringBuilder params = new StringBuilder();
@@ -157,6 +147,34 @@ public class QueryParameters {
         return params.toString();
     }
 
+    /**
+     * @return parameters in the format required for INSERT parameters
+     */
+    public String toUpdateParameters() {
+        StringBuilder params = new StringBuilder();
+        for(Map.Entry<String, Pair<Integer, ?>>
+                p: this.params.entrySet()) {
+            params.append("\"");
+            params.append(p.getKey());
+            params.append("\"");
+            params.append(" = ");
+            Pair<Integer, ?> value = p.getValue();
+            params.append(toSqlEntity(value.getKey(), value.getValue()));
+            params.append(",");
+        }
+        params.deleteCharAt(params.length()-1);
+        return params.toString();
+    }
+
+    @Override
+    public String toString() {
+        // lists all keys and values
+        return toUpdateParameters();
+    }
+
+    /**
+     * @return converts an object to a string, which is a valid SQL entity
+     */
     private String toSqlEntity(Integer type, Object value) {
         StringBuilder s = new StringBuilder();
         switch (type) {
