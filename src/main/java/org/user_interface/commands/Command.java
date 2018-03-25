@@ -1,10 +1,11 @@
 package org.user_interface.commands;
 
-import org.resources.AvMaterial;
-import org.resources.Book;
-import org.resources.Item;
+import org.items.Item;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.AvMaterialEntry;
+import org.storage.resources.BookEntry;
+import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.Update;
@@ -47,9 +48,9 @@ public abstract class Command {
 
     void listBooks(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<Book> books = SqlStorage.getInstance().findBooks(new QueryParameters());
+        List<BookEntry> books = SqlStorage.getInstance().find(Resource.Book, new QueryParameters());
         for (int i = 0; i < books.size(); i++) {
-            String name = books.get(i).getTitle();
+            String name = books.get(i).getItem().getTitle();
             System.out.println(name);
             builder.append((i + 1) + ". " + name + "\n\n");
         }
@@ -61,9 +62,9 @@ public abstract class Command {
 
     void listAvMaterials(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<AvMaterial> avMaterials = SqlStorage.getInstance().findAvMaterials(new QueryParameters());
+        List<AvMaterialEntry> avMaterials = SqlStorage.getInstance().find(Resource.AvMaterial, new QueryParameters());
         for (int i = 0; i < avMaterials.size(); i++) {
-            String name = avMaterials.get(i).getTitle();
+            String name = avMaterials.get(i).getItem().getTitle();
             builder.append((i + 1) + ". " + name + "\n\n");
         }
 

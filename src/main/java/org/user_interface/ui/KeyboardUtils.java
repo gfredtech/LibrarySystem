@@ -1,6 +1,6 @@
 package org.user_interface.ui;
 
-import org.resources.User;
+import org.items.User;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;

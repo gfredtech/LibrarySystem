@@ -1,8 +1,7 @@
-import org.junit.After;
 import org.junit.Test;
-import org.resources.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -22,71 +21,75 @@ public class StorageTest {
 
     @Test
     public void addUser() {
-        User libra = new User(-1, "Librarian", "Librarian", null);
-        libra.setLogin("libra");
-        libra.setPassword("arbil");
-        libra.setPhoneNumber("+42");
-        libra.setAddress("...");
-        storage.addUser(libra);
+        QueryParameters params = new QueryParameters()
+                .add("user_id")
+                .add("name", "Librarian")
+                .add("type", "Librarian")
+                .add("login", "libra")
+                .add("password", "arbil")
+                .add("phone_number", "+42")
+                .add("address", "...");
+        storage.add(Resource.User, params);
     }
 
     @Test
     public void findUsers() {
-        System.out.println(storage.findUsers(new QueryParameters().add("type", "Faculty")));
+        System.out.println(storage.find(Resource.User, new QueryParameters().add("type", "Faculty")));
     }
 
     @Test
     public void findBooks() {
-        System.out.println(storage.findBooks(new QueryParameters().add("title", "The Lord of The Rings")));
+        System.out.println(storage.find(Resource.User, new QueryParameters().add("title", "The Lord of The Rings")));
     }
 
     @Test
     public void addBook() {
-        BookFactory f = new BookFactory();
-        f.setTitle("The Lord of The Rings");
-        f.setCopiesNum(3);
-        f.setPublicationDate(LocalDate.of(1955, 10, 20));
-        f.setPublisher("George Allen & Unwin");
-        f.setAsBestseller();
-        f.setKeywords(Collections.emptyList());
-        f.setAuthors(Arrays.asList("J. R. R. Tolkien"));
-        f.setPrice(9);
-        storage.addBook(f);
+        QueryParameters params = new QueryParameters()
+                .add("title", "The Lord of The Rings")
+                .add("copy_num", 3)
+                .add("publication_date", LocalDate.of(1955, 10, 20))
+                .add("publisher", "George Allen & Unwin")
+                .add("is_bestseller", true)
+                .add("keywords", Collections.emptyList())
+                .add("authors", Arrays.asList("J. R. R. Tolkien"))
+                .add("price", 9);
+        storage.add(Resource.Book, params);
     }
 
     @Test
     public void addJournal() {
-        JournalIssueFactory j = new JournalIssueFactory();
-        j.setEditors(Arrays.asList("Someone"));
-        j.setPublicationDate(LocalDate.of(2000, 12, 20));
-        j.setPublisher("Some");
-        j.setCopiesNum(5);
-        j.setPrice(100);
-        j.setTitle("Gamedev Prime");
-        j.setKeywords(Arrays.asList("GameDev"));
+        QueryParameters params = new QueryParameters()
+                .add("authors", Arrays.asList("Someone"))
+                .add("publication_date", LocalDate.of(2000, 12, 20))
+                .add("publisher", "Some")
+                .add("copy_num", 5)
+                .add("price", 100)
+                .add("title", "Gamedev Prime")
+                .add("keywords", Arrays.asList("GameDev"));
 
-        storage.addJournal(j);
+        storage.add(Resource.JournalIssue, params);
     }
 
     @Test
-    public void addJournalArticle() {
+    public void addJournalArticle() {/*
         JournalArticleFactory j = new JournalArticleFactory();
-        j.setAuthors(Arrays.asList("J. A. Brown"));
-        j.setJournalIssue(storage.findJournals(
-                new QueryParameters().add("title", "Gamedev Prime")).get(0));
-        j.setKeywords(Collections.emptyList());
-        j.setTitle("Some bright article about gamedev");
-        storage.addJournalArticle(j);
+        j.authors(Arrays.asList("J. A. Brown"));
+        j.setJournalIssue(storage.find(Resource.JournalIssue,
+                new QueryParameters().add("title", "Gamedev Prime")).get(0).getItem());
+        j.keywords(Collections.emptyList());
+        j.title("Some bright article about gamedev");
+        storage.add(Resource.JournalArticle, new );*/
     }
 
     @Test
     public void updateArticle() {
-        JournalArticle a = storage.findArticles(
+        JournalArticleEntry a = storage.find(
+                Resource.JournalArticle,
                 new QueryParameters().add("title", "Some bright article about gamedev")).get(0);
-        storage.updateJournalArticle(a.getId(), new QueryParameters().add("price", 100));
+        storage.update(Resource.JournalArticle, a.getId(), new QueryParameters().add("price", 100));
     }
 
-    @After
+
     public void finalize() {
         try {
             storage.closeConnection();

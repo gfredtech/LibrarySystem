@@ -1,11 +1,12 @@
 package org.user_interface.commands;
 
-
-import org.resources.User;
+import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 import java.util.ArrayList;
+
 
 
 public class SignUpCommand extends Command{
@@ -89,14 +90,15 @@ public class SignUpCommand extends Command{
     }
 
     void createAccount() {
-
-        User user = new User(1001, fullName, "Patron", signupSubType);
-        user.setLogin(username);
-        user.setPassword(password);
-        user.setPhoneNumber(phoneNumber);
-        user.setAddress(address);
-        System.out.println(user.toString());
-
-        SqlStorage.getInstance().addUser(user);
+        QueryParameters params = new QueryParameters()
+                .add("user_id")
+                .add("login", username)
+                .add("type", "Patron")
+                .add("subtype", signupSubType)
+                .add("password_hash", password.hashCode())
+                .add("phone_number", phoneNumber)
+                .add("address", address)
+                .add("name", fullName);
+        SqlStorage.getInstance().add(Resource.User, params);
     }
 }

@@ -1,10 +1,11 @@
 package org.user_interface.commands;
 
-import org.controller.BookingController;
+import org.controller.CheckOutCommand;
 import org.controller.ReturnController;
-import org.resources.*;
+import org.items.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.*;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 import java.util.ArrayList;
@@ -12,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ReturnCommand extends Command {
-    HashMap<Long, User> currentUser = new HashMap<>();
-    HashMap<Long, Item> documentCursor = new HashMap<>();
+    HashMap<Long, UserEntry> currentUser = new HashMap<>();
+    HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
 
     @Override
     public String run(AbsSender sender, Update update, String info) {
@@ -38,7 +39,7 @@ public class ReturnCommand extends Command {
             return  "return_document";
 
             case "Return Book":
-                listOfItems = listCheckedOutBooks(sender, update, currentUser.get(chatId));
+                listOfItems = listCheckedOutBooks(sender, update, currentUser.get(chatId).getUser());
                 if(listOfItems.length() > 0) {
                     sendMessage(sender, update,
                             "This is the list of current books checked out by you:\n"+ listOfItems);
@@ -50,7 +51,7 @@ public class ReturnCommand extends Command {
 
             case "return_bookindexnumber":
                 System.out.println("reacged");
-                Book book;
+                BookEntry book;
                 String number = update.getMessage().getText();
                 int index;
                 try {
@@ -61,7 +62,7 @@ public class ReturnCommand extends Command {
                     break;
                 }
 
-                book = SqlStorage.getInstance().findBooks(new QueryParameters()).get(index - 1);
+                book = SqlStorage.getInstance().find(Resource.Book, new QueryParameters()).get(index - 1);
 
                 if (book != null) {
                     documentCursor.put(chatId, book);
@@ -69,18 +70,17 @@ public class ReturnCommand extends Command {
 
                 try {
                     new ReturnController(SqlStorage.getInstance())
-                            .returnItem(currentUser.get(chatId).getCardNumber(),
-                                    "book", documentCursor.get(chatId).getId());
-                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                            documentCursor.get(chatId).getTitle() + " returned successfully.");
-                } catch (BookingController.CheckoutException e) {
-                   keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
+                            .returnItem(currentUser.get(chatId), documentCursor.get(chatId));
+                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                            documentCursor.get(chatId).getItem().getTitle() + " returned successfully.");
+                } catch (CheckOutCommand.CheckoutException e) {
+                   keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                             "Sorry, there was an error returning this item");
                 }
                 return "menu";
 
             case "return_avmaterialindexnumber":
-                AvMaterial avMaterial = null;
+                AvMaterialEntry avMaterial;
                 String avMaterialIndex = update.getMessage().getText();
                 int indexNumber;
                 try {
@@ -91,7 +91,7 @@ public class ReturnCommand extends Command {
                     break;
                 }
 
-                avMaterial = SqlStorage.getInstance().findAvMaterials(new QueryParameters()).get(indexNumber - 1);
+                avMaterial = SqlStorage.getInstance().find(Resource.AvMaterial, new QueryParameters()).get(indexNumber - 1);
 
                 if (avMaterial != null) {
                     documentCursor.put(chatId, avMaterial);
@@ -99,10 +99,9 @@ public class ReturnCommand extends Command {
 
 
                 new ReturnController(SqlStorage.getInstance())
-                        .returnItem(currentUser.get(chatId)
-                                .getCardNumber(), "av_material", documentCursor.get(chatId).getId());
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                        documentCursor.get(chatId).getTitle() + " returned successfully.");
+                        .returnItem(currentUser.get(chatId), documentCursor.get(chatId));
+                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                        documentCursor.get(chatId).getItem().getTitle() + " returned successfully.");
 
                 return "menu";
         }
@@ -110,20 +109,21 @@ public class ReturnCommand extends Command {
         return null;
     }
 
-    public void getCurrentUser(Update update, User user) {
-        Long chatId = update.getMessage().getChatId();
+    public void setCurrentUser(Long chatId, UserEntry user) {
         currentUser.put(chatId, user);
     }
 
     String listCheckedOutBooks(AbsSender sender, Update update, User user) {
-        List<CheckoutRecord> checkedOut =
-                SqlStorage.getInstance().getCheckoutRecordsFor(user.getCardNumber());
+        List<CheckoutEntry> checkedOut =
+                SqlStorage.getInstance().find(Resource.Checkout,
+                        new QueryParameters().add("user_id", user.getCardNumber()));
         System.out.println(user.getCardNumber());
         StringBuilder books = new StringBuilder();
         int i = 1;
-        for (CheckoutRecord c : checkedOut) {
-            if (c.item.getType().equals("book")) {
-                Book b = SqlStorage.getInstance().getBook(c.item.getId()).get();
+        for (CheckoutEntry c : checkedOut) {
+            if (c.getItem().getResourceType() == Resource.Book) {
+                Book b = SqlStorage.getInstance().get(
+                        Resource.Book, c.getItem().getId()).get().getItem();
                 books.append(i);
                 books.append(". ");
                 books.append(b.getTitle());

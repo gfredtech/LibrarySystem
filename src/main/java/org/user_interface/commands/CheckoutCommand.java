@@ -1,22 +1,19 @@
 package org.user_interface.commands;
 
-import org.controller.BookingController;
-import org.resources.AvMaterial;
-import org.resources.Book;
-import org.resources.Item;
+import org.controller.CheckOutCommand;
 
-import org.resources.User;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.*;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-import org.user_interface.ui.KeyboardUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CheckoutCommand extends Command {
-    HashMap<Long, User> currentUser = new HashMap<>();
-    HashMap<Long, Item> documentCursor = new HashMap<>();
+    HashMap<Long, UserEntry> currentUser = new HashMap<>();
+    HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
 
 
     @Override
@@ -60,7 +57,7 @@ public class CheckoutCommand extends Command {
                 return "checkout_selectavmaterial";
 
             case "checkout_selectbook":
-                Book bookSelected = null;
+                BookEntry bookSelected;
                 String msg = update.getMessage().getText();
                 System.out.println("Code reached: " + msg);
                 int position;
@@ -72,15 +69,15 @@ public class CheckoutCommand extends Command {
                     break;
                 }
 
-                bookSelected = SqlStorage.getInstance().findBooks(new QueryParameters()).get(position - 1);
+                bookSelected = SqlStorage.getInstance().find(Resource.Book, new QueryParameters()).get(position - 1);
 
                 if (bookSelected != null) {
-                    showDocumentDetails(sender, update, bookSelected, "Book");
+                    showDocumentDetails(sender, update, bookSelected.getItem(), "Book");
                     documentCursor.put(chatId, bookSelected);
                 }
                 return "checkout_book";
             case "checkout_selectavmaterial":
-                AvMaterial selected = null;
+                AvMaterialEntry selected;
                 String msg1 = update.getMessage().getText();
                 int position1;
                 try {
@@ -90,27 +87,26 @@ public class CheckoutCommand extends Command {
                     sendMessage(sender, update, "Input is not a number.");
                     break;
                 }
-                selected = SqlStorage.getInstance().findAvMaterials(new QueryParameters()).get(position1-1);
+                selected = SqlStorage.getInstance().find(Resource.AvMaterial, new QueryParameters()).get(position1-1);
 
                 if(selected != null) {
-                    showDocumentDetails(sender, update, selected, "AV Material");
+                    showDocumentDetails(sender, update, selected.getItem(), "AV Material");
                     documentCursor.put(chatId, selected);
                     return "checkout_avmaterial";
                 }
 
             case "Checkout Book":
                 try {
-                    System.out.println(currentUser.get(chatId).getName());
+                    System.out.println(currentUser.get(chatId).getUser().getName());
 
-                    new BookingController(SqlStorage.getInstance())
-                            .checkOut(currentUser.get(chatId).getCardNumber(),
-                                    "book", documentCursor.get(chatId).getId());
-                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                            documentCursor.get(chatId).getTitle() + " Checked out successfully.");
+                    new CheckOutCommand(SqlStorage.getInstance())
+                            .checkOut();
+                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                            documentCursor.get(chatId).getItem().getTitle() + " Checked out successfully.");
                     return "menu_";
-                } catch (BookingController.CheckoutException e) {
+                } catch (CheckOutCommand.CheckoutException e) {
                     keyboardUtils.showMainMenuKeyboard(sender, update,
-                            currentUser.get(chatId),
+                            currentUser.get(chatId).getUser(),
                             "Sorry, but you cannot check out the item now.");
                 }
                 return "logged_in";
@@ -120,21 +116,7 @@ public class CheckoutCommand extends Command {
     }
 
 
-    public void getCurrentUser(Update update, User user) {
-        Long chatId = update.getMessage().getChatId();
+    public void setCurrentUser(Long chatId, UserEntry user) {
         this.currentUser.put(chatId, user);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

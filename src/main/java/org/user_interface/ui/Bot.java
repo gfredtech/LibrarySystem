@@ -1,6 +1,6 @@
 package org.user_interface.ui;
 
-import org.resources.User;
+import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -49,7 +49,7 @@ public class Bot extends TelegramLongPollingBot {
                     // first,  pass currently logged in user to CheckoutCommand module
                     currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
                     System.out.println("ayo");
-                    checkoutCommand.getCurrentUser(update, currentUser.get(chatId));
+                    checkoutCommand.setCurrentUser(chatId, currentUser.get(chatId));
                     currentState = checkoutCommand.run(this, update, "checkout_start");
                     previous.put(chatId, currentState);
 
@@ -58,8 +58,8 @@ public class Bot extends TelegramLongPollingBot {
                 case "Return Document":
                     // first, pass currently logged in user to CheckoutCommand module
                     currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
-                    System.out.println(currentUser.get(chatId).getName());
-                    returnCommand.getCurrentUser(update, currentUser.get(chatId));
+                    System.out.println(currentUser.get(chatId).getUser().getName());
+                    returnCommand.setCurrentUser(chatId, currentUser.get(chatId));
                     currentState = returnCommand.run(this, update, "return_start");
                     previous.put(chatId, currentState);
                     break;
@@ -67,14 +67,14 @@ public class Bot extends TelegramLongPollingBot {
                 case "Edit":
                     // first, pass currently logged in user to EditCommand module
                     currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
-                    editCommand.getCurrentUser(update, currentUser.get(chatId));
+                    editCommand.setCurrentUser(chatId, currentUser.get(chatId));
                     currentState = editCommand.run(this, update, "edit_start");
                     previous.put(chatId, currentState);
                     break;
 
                 case "Add Document":
                     currentUser.put(chatId, loginCommand.returnNewlyLoggedInUser(update));
-                    addCommand.getCurrentUser(update, currentUser.get(chatId));
+                    addCommand.setCurrentUser(chatId, currentUser.get(chatId).getUser());
                     currentState = addCommand.run(this, update, x);
                     previous.put(chatId, currentState);
                     break;
@@ -178,6 +178,6 @@ public class Bot extends TelegramLongPollingBot {
 
     HashMap<Long, String> previous = new HashMap<>();
 
-    Map<Long, User> currentUser = new HashMap<>();
+    Map<Long, UserEntry> currentUser = new HashMap<>();
 }
 

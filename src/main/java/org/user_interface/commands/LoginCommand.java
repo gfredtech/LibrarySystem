@@ -1,8 +1,9 @@
 package org.user_interface.commands;
 
-import org.resources.User;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
@@ -11,7 +12,7 @@ import java.util.NoSuchElementException;
 
 
 public class LoginCommand extends Command {
-    HashMap<Long, User> currentUser = new HashMap<>();
+    HashMap<Long, UserEntry> currentUser = new HashMap<>();
 
     @Override
     public String run(AbsSender sender, Update update, String currentState) {
@@ -30,7 +31,7 @@ public class LoginCommand extends Command {
 
 
                    currentUser.put(chatId,
-                            SqlStorage.getInstance().findUsers(new QueryParameters().add("login", username)).get(0));
+                            SqlStorage.getInstance().find(Resource.User, new QueryParameters().add("login", username)).get(0));
                     sendMessage(sender, update, "Enter your password");
                     return "login_validator";
                 } catch (NoSuchElementException e) {
@@ -42,24 +43,22 @@ public class LoginCommand extends Command {
                 String password = update.getMessage().getText();
 
                 System.out.println(password.hashCode());
-                System.out.println(currentUser.get(chatId).getPasswordHash());
-                if (password.hashCode() == currentUser.get(chatId).getPasswordHash()) {
-                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId), "Success!");
+                System.out.println(currentUser.get(chatId).getUser().getPasswordHash());
+                if (password.hashCode() == currentUser.get(chatId).getUser().getPasswordHash()) {
+                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), "Success!");
                     return "logged_in";
 
                 } else {
                     sendMessage(sender, update, "Password is incorrect. Please try again.");
                     return "login_validator";
                 }
-
-
         }
 
         return null;
     }
 
-   public User returnNewlyLoggedInUser(Update update) {
+    public UserEntry returnNewlyLoggedInUser(Update update) {
         Long chatId = update.getMessage().getChatId();
-      return currentUser.getOrDefault(chatId, null);
+        return currentUser.get(chatId);
     }
 }

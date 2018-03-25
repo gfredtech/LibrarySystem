@@ -1,11 +1,12 @@
 package org.user_interface.commands;
 
-import org.resources.Book;
-import org.resources.BookFactory;
-import org.resources.Item;
-import org.resources.User;
+import org.items.Book;
+import org.items.User;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.BookEntry;
+import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
@@ -18,7 +19,6 @@ import java.util.List;
 public class EditCommand extends Command {
     @Override
     public String run(AbsSender sender, Update update, String info) {
-        BookFactory bookFactory = new BookFactory();
         Long chatId;
         if (update.hasMessage()) chatId = update.getMessage().getChatId();
         else chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -30,7 +30,7 @@ public class EditCommand extends Command {
 
             case "Edit Document":
                 System.out.println("next code after keyboard shown");
-                String input = null;
+                String input;
                 input = update.getMessage().getText();
 
                 if(input != null && input.equals("Edit Document")) {
@@ -52,16 +52,17 @@ public class EditCommand extends Command {
 
             case "edit_booklist":
                 System.out.println("kwasiabeema");
-                Book book = null;
+                BookEntry book = null;
                 input = update.getMessage().getText();
                 int index = Integer.parseInt(input);
-                book = SqlStorage.getInstance().findBooks(new QueryParameters()).get(index - 1);
+                book = SqlStorage.getInstance().find(Resource.Book, new QueryParameters()).get(index - 1);
 
                 if (book != null) {
                     bookCursor.put(chatId, book);
-                    String accountDetails = "Name: " + book.getTitle() +
-                            "\nNo. of copies: " + book.getCopiesNum() + "\nAuthors:" + book.getAuthors() +
-                            "\nPublicationDate: " + book.getPublicationDate();
+                    Book item = book.getItem();
+                    String accountDetails = "Name: " + item.getTitle() +
+                            "\nNo. of copies: " + item.getCopiesNum() + "\nAuthors:" + item.getAuthors() +
+                            "\nPublicationDate: " + item.getPublicationDate();
 
                     sendMessage(sender, update, accountDetails);
                     String parameterlist = "title `Name` \ncopies `new number of copies` \n" +
@@ -74,16 +75,17 @@ public class EditCommand extends Command {
                 break;
 
             case "edit_bookparams":
-                Book currentBook = bookCursor.get(chatId);
-                editNumberOfCopies = currentBook.getCopiesNum();
-                editTitle = currentBook.getTitle();
-                System.out.println("*** " + currentBook.getTitle());
+                BookEntry currentBook = bookCursor.get(chatId);
+                Book item = currentBook.getItem();
+                editNumberOfCopies = item.getCopiesNum();
+                editTitle = item.getTitle();
+                System.out.println("*** " + item.getTitle());
 
                 input = update.getMessage().getText();
                 if (input.equals("delete")) {
-                    SqlStorage.getInstance().removeBook(currentBook.getId());
-                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                            currentBook.getTitle() + " removed successfully");
+                    SqlStorage.getInstance().remove(Resource.Book, currentBook.getId());
+                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                            item.getTitle() + " removed successfully");
                     return "menu";
                 }
 
@@ -92,18 +94,20 @@ public class EditCommand extends Command {
                 for(String i: items) {
                     if(i.startsWith("title")) {
                         temp = i.replace("title ", "");
-                        SqlStorage.getInstance().updateBook(
+                        SqlStorage.getInstance().update(
+                                Resource.Book,
                                 currentBook.getId(),
                                 new QueryParameters().add("title", temp));
 
                     } else if(i.startsWith("copies")) {
                         temp = i.replace("copies ", "");
-                        SqlStorage.getInstance().updateBook(
+                        SqlStorage.getInstance().update(
+                                Resource.Book,
                                 currentBook.getId(),
                                 new QueryParameters().add("copy_num", Integer.parseInt(temp)));
                     }
                 }
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
+                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                         "Edit done successfully");
 
                 break;
@@ -121,12 +125,12 @@ public class EditCommand extends Command {
                     break;
                 }
 
-                userCursor = SqlStorage.getInstance().findUsers(new QueryParameters()).get(position - 1);
-
+                UserEntry userCursor = currentUser.get(chatId);
+                User user = userCursor.getUser();
                 if (userCursor != null) {
-                    String accountDetails = "Name: " + userCursor.getName() +
-                            "\nAddress: " + userCursor.getAddress() + "\nPhone Number: " + userCursor.getPhoneNumber()
-                            + "\nType:" + userCursor.getSubtype() + "\nCard number: " + userCursor.getCardNumber();
+                    String accountDetails = "Name: " + user.getName() +
+                            "\nAddress: " + user.getAddress() + "\nPhone Number: " + user.getPhoneNumber()
+                            + "\nType:" + user.getSubtype() + "\nCard number: " + user.getCardNumber();
                     sendMessage(sender, update, accountDetails);
                     String parameterlist = "name `Name`\n address `Address`\n phone `Phone Number`\n type `Type`\n\n" +
                             "*If you want to delete a user, type `delete` followed by user's card number";
@@ -139,13 +143,14 @@ public class EditCommand extends Command {
                 break;
 
             case "edit_userparams":
-                editNumberOfCopies = bookCursor.get(chatId).getCopiesNum();
+                userCursor = currentUser.get(chatId);
+                editNumberOfCopies = bookCursor.get(chatId).getItem().getCopiesNum();
                 input = update.getMessage().getText();
                 if (input.startsWith("delete")) {
                     input.replace("delete", "");
-                    SqlStorage.getInstance().removeUser(userCursor.getCardNumber());
-                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                            userCursor.getName() + " removed successfully");
+                    SqlStorage.getInstance().remove(Resource.User, userCursor.getId());
+                    keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                            userCursor.getUser().getName() + " removed successfully");
                     return "menu";
                 }
                 items = Arrays.asList(input.split("\\s*,\\s*"));
@@ -153,12 +158,12 @@ public class EditCommand extends Command {
                     if(i.startsWith("name")) {
                         temp = i.substring(i.lastIndexOf("name"), i.length());
                         QueryParameters params = new QueryParameters().add("name", temp);
-                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), params);
+                        SqlStorage.getInstance().update(Resource.User, userCursor.getId(), params);
 
                     } else if(i.startsWith("address")) {
                         temp = i.substring(i.lastIndexOf("address"), i.length());
                         QueryParameters params = new QueryParameters().add("address", temp);
-                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), params);
+                        SqlStorage.getInstance().update(Resource.User, userCursor.getId(), params);
 
 
                     } else if(i.startsWith("type")) {
@@ -169,28 +174,25 @@ public class EditCommand extends Command {
                         } else if(temp.equals("Librarian")) {
                             params.add("type", temp);
                         }
-                        SqlStorage.getInstance().updateUser(userCursor.getCardNumber(), params);
+                        SqlStorage.getInstance().update(Resource.User, userCursor.getId(), params);
                     }
                 }
 
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
+                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                         "Edit done successfully");
         }
         return null;
     }
 
-    public void getCurrentUser(Update update, User user) {
-        Long chatId = update.getMessage().getChatId();
+    public void setCurrentUser(Long chatId, UserEntry user) {
         currentUser.put(chatId, user);
     }
 
-    HashMap<Long, User> currentUser = new HashMap<>();
-    User userCursor;
+    HashMap<Long, UserEntry> currentUser = new HashMap<>();
 
-    HashMap<Long, Book> bookCursor = new HashMap<>();
+    HashMap<Long, BookEntry> bookCursor = new HashMap<>();
 
     String editTitle;
     int editNumberOfCopies;
     LocalDate publicationDate;
-
 }
