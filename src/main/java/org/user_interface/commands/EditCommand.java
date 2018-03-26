@@ -17,7 +17,7 @@ public class EditCommand extends Command {
 
         switch (info) {
             case "startnext":
-                keyboardUtils.showCRUDkeyboard(sender, update);
+                keyboardUtils.showCRUDkeyboard(sender, update, "Edit");
                 return "edit_main";
 
             case "main":

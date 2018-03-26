@@ -17,6 +17,7 @@ public class Interface {
         commandHashMap.put("checkout", new CheckoutCommand());
         commandHashMap.put("return", new ReturnItemCommand());
         commandHashMap.put("edit", new EditCommand());
+        commandHashMap.put("add", new AddCommand());
         return commandHashMap;
 
     }

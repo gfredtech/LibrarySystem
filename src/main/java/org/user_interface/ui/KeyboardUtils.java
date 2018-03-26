@@ -87,14 +87,14 @@ public class KeyboardUtils {
         }
     }
 
-    public   void showCRUDkeyboard(AbsSender sender, Update update) {
+    public   void showCRUDkeyboard(AbsSender sender, Update update, String type) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Edit Document");
-        row.add("Edit User");
+        row.add(type + " Document");
+        row.add(type + " User");
         keyboard.add(row);
 
         keyboardMarkup.setResizeKeyboard(true);
@@ -109,6 +109,7 @@ public class KeyboardUtils {
         }
 
     }
+
 
     public void showEditDocumentKeyboard(AbsSender sender, Update update) {
 

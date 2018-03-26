@@ -1,9 +1,5 @@
 package org.user_interface.commands;
 
-import org.items.AvMaterial;
-import org.items.Book;
-import org.items.JournalIssue;
-
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.resources.AvMaterialEntry;
@@ -59,7 +55,7 @@ public class CheckoutCommand extends Command {
         return null;
     }
 
-    void showCheckoutType(AbsSender sender, Update update) {
+    private void showCheckoutType(AbsSender sender, Update update) {
         keyboardUtils.setInlineKeyBoard(sender, update, "Select the kind of document you want to checkout:", new
                 ArrayList<String>() {{
                     add("Book");
@@ -126,7 +122,7 @@ public class CheckoutCommand extends Command {
         }
     }
 
-    String displayItemsForCheckout(AbsSender sender, Update update) {
+    private String displayItemsForCheckout(AbsSender sender, Update update) {
         String type = update.getCallbackQuery().getData();
         sendMessage(sender, update, "Here's a " +
                 "list of all the specified documents in the library. Enter the number of the book you want:");

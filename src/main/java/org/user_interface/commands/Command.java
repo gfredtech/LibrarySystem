@@ -39,6 +39,7 @@ public abstract class Command {
         SendMessage message = new SendMessage();
         message.setText(text);
         message.setChatId(chat.getId());
+        message.enableMarkdown(true);
         message.setReplyMarkup(new ReplyKeyboardRemove()); // hides keyboard in case it's showing already
 
         try {

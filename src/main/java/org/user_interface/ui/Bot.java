@@ -6,7 +6,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import java.util.HashMap;
 
 public class Bot extends TelegramLongPollingBot {
-    Interface handler = new Interface();
+    private Interface handler = new Interface();
 
     // entry point of bot
     @Override
@@ -34,6 +34,6 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() { return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";  }
 
-    static HashMap<Long, String> currentState = new HashMap<>();
+    private static HashMap<Long, String> currentState = new HashMap<>();
 }
 

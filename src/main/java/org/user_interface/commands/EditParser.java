@@ -89,8 +89,8 @@ public class EditParser extends Command {
         String tokens[] = input.split("[,]+");
         for (int i = 0; i < tokens.length; i++) tokens[i] = tokens[i].trim();
 
-        editParser.findGroup(tokens, "authors");
-        editParser.findGroup(tokens, "keywords");
+        findGroup(tokens, "authors");
+        findGroup(tokens, "keywords");
 
         for(String i: tokens) {
             if(!i.equals(" ")) editParser.addEditParameters(i.trim());
