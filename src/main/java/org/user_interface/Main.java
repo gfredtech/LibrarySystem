@@ -8,9 +8,9 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class Main {
     public static void main(String[] args) {
-        String databaseName = args[1];
-        String userName = args[2];
-        String password = args[3];
+        String databaseName = args[0];
+        String userName = args[1];
+        String password = args[2];
 
         ApiContextInitializer.init();
         TelegramBotsApi botsApi = new TelegramBotsApi();
