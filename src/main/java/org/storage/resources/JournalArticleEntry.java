@@ -37,7 +37,7 @@ public class JournalArticleEntry extends ItemEntry<JournalArticle> {
         String[] authorsArray =
                 (String[])rs.getArray("authors").getArray();
         List<String> authors = Arrays.asList(authorsArray);
-        j.setAuthors(authors);
+        j.authors(authors);
 
         String[] keywordsArray =
                 (String[])rs.getArray("keywords").getArray();
@@ -46,7 +46,7 @@ public class JournalArticleEntry extends ItemEntry<JournalArticle> {
 
         journal = SqlStorage.getInstance().get(
                 Resource.JournalIssue,  rs.getInt("journal_id")).get();
-        j.setJournalIssue(journal.item);
+        j.journal(journal.item);
 
         return j;
     }

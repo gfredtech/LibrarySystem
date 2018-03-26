@@ -19,6 +19,14 @@ public class BookFactory extends ItemFactory<Book> {
         super(new Book());
     }
 
+    @Override
+    public Book build() {
+        assert item.authors != null;
+        assert item.publisher != null;
+        assert item.publicationDate != null;
+        return item;
+    }
+
     /**
      * Setting method to set the authors of book item
      * @param authors

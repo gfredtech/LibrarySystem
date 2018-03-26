@@ -2,10 +2,7 @@ import org.controller.*;
 import org.items.Book;
 import org.items.BookFactory;
 import org.items.User;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.Storage;
@@ -13,9 +10,14 @@ import org.storage.resources.BookEntry;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
+
+import java.time.LocalDate;
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CheckOutTests {
 
     @BeforeAll
@@ -28,8 +30,12 @@ public class CheckOutTests {
     @BeforeEach
     public void initStorage() {
         Book b = new BookFactory()
+                .authors(Collections.emptyList())
+                .publisher("MIT Press")
+                .publicationDate(LocalDate.of(1990, 01, 01))
                 .title("Cormen")
                 .copiesNum(1)
+                .keywords(Collections.emptyList())
                 .build();
         manager.execute(new AddItemCommand(b));
         User u = new User(1001, "u1",
@@ -52,6 +58,7 @@ public class CheckOutTests {
 
     @AfterEach
     public void cleanUp() {
+        storage.removeAll(Resource.Checkout, new QueryParameters().add("user_id", 1001));
         storage.removeAll(Resource.Book, new QueryParameters().add("title", "Cormen"));
         storage.removeAll(Resource.User, new QueryParameters().add("user_id", 1001));
     }

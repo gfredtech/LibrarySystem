@@ -8,11 +8,18 @@ public class JournalArticleFactory extends ItemFactory<JournalArticle> {
         super(new JournalArticle());
     }
 
-    public void setAuthors(List<String> authors) {
+    @Override
+    public JournalArticle build() {
+        assert item.authors != null;
+        assert item.journal != null;
+        return item;
+    }
+
+    public void authors(List<String> authors) {
         item.authors = authors;
     }
 
-    public void setJournalIssue(JournalIssue journal) {
+    public void journal(JournalIssue journal) {
         item.journal = journal;
     }
 

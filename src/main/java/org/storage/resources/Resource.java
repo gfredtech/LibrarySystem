@@ -48,9 +48,9 @@ public class Resource<T extends DatabaseEntry> {
                 return JournalIssue;
             case "av_material":
                 return AvMaterial;
-            case "journal_article":
+            case "article":
                 return JournalArticle;
-            case "user":
+            case "user_card":
                 return User;
             case "checkout":
                 return Checkout;

@@ -1,29 +1,28 @@
 import org.controller.CheckOutCommand;
-import org.controller.ReturnCommand;
+import org.controller.Command;
+import org.controller.LibraryManager;
 import org.items.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.storage.EntrySerializer;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.Storage;
-import org.storage.resources.AvMaterialEntry;
-import org.storage.resources.BookEntry;
-import org.storage.resources.Resource;
-import org.storage.resources.UserEntry;
+import org.storage.resources.*;
 
 import java.time.LocalDate;
 import java.util.*;
 
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BookReturnEditSystemTests {
 
-    @Before
+    @BeforeAll
     public void init() throws ClassNotFoundException {
         SqlStorage.connect("library", "librarian", "tabula_rasa");
         storage = SqlStorage.getInstance();
-        returner = new ReturnCommand(storage);
-        booker = new CheckOutCommand(storage);
+        manager = new LibraryManager(storage);
         initItemData();
         cleanUp();
     }
@@ -97,25 +96,30 @@ public class BookReturnEditSystemTests {
     }
 
     void initStorage() {
+        initItemData();
         storage.add(Resource.Book, itemData.get("cormen"));
         storage.add(Resource.Book, itemData.get("patterns"));
         storage.add(Resource.Book, itemData.get("brooks"));
         storage.add(Resource.AvMaterial, itemData.get("null"));
         storage.add(Resource.AvMaterial, itemData.get("entropy"));
+        itemData.get("cormen").remove("copy_num");
+        itemData.get("patterns").remove("copy_num");
+        itemData.get("brooks").remove("copy_num");
+        itemData.get("null").remove("copy_num");
+        itemData.get("entropy").remove("copy_num");
         storage.add(Resource.User, itemData.get("sergey"));
         storage.add(Resource.User, itemData.get("elvira"));
         storage.add(Resource.User, itemData.get("nadia"));
     }
 
     void modifyStorage() {
-        storage.remove(Resource.User, 1011);
+        storage.removeAll(Resource.User, new QueryParameters().add("user_id", 1011));
 
-        BookEntry b = storage.find(Resource.Book, itemData.get("cormen")).get(0);
-        storage.update(Resource.Book, b.getId(), new QueryParameters().add("copy_num", 1));
+        storage.updateAll(Resource.Book, itemData.get("cormen"),
+                new QueryParameters().add("copy_num", 1));
 
-        b = storage.find(Resource.Book, itemData.get("brooks")).get(0);
-        storage.remove(Resource.Book, b.getId());
-        storage.remove(Resource.User, 1011);
+        storage.removeAll(Resource.Book, itemData.get("brooks"));
+        storage.removeAll(Resource.User, new QueryParameters().add("user_id", 1011));
     }
 
     @Test
@@ -162,7 +166,7 @@ public class BookReturnEditSystemTests {
         try {
             BookEntry b = storage.find(Resource.Book, itemData.get("cormen")).get(0);
             UserEntry u = storage.get(Resource.User, 1011).get();
-            booker.checkOut(u, b);
+            manager.execute(new CheckOutCommand(u, b));
             assert false;
         } catch (NoSuchElementException e) {
             // correct
@@ -174,17 +178,20 @@ public class BookReturnEditSystemTests {
     @Test
     public void test6() {
         initStorage();
-        booker.checkOut(storage.get(Resource.User,1010).get(),
+        modifyStorage();
+        Command checkout = new CheckOutCommand(
+                storage.get(Resource.User,1010).get(),
                 storage.find(Resource.Book, itemData.get("cormen")).get(0));
-        try {
-            booker.checkOut(storage.get(Resource.User, 1100).get(),
-                    storage.find(Resource.Book, itemData.get("cormen")).get(0));
-            assert false;
-        } catch (CheckOutCommand.CheckoutException e) {
-            // correct
-        }
-        booker.checkOut(storage.get(Resource.User, 1010).get(),
+        manager.execute(checkout);
+        Command failingCheckout = new CheckOutCommand(
+                storage.get(Resource.User, 1100).get(),
+                storage.find(Resource.Book, itemData.get("cormen")).get(0));
+
+        assert manager.execute(failingCheckout) == Command.Result.Failure;
+        checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1010).get(),
                 storage.find(Resource.Book, itemData.get("patterns")).get(0));
+        manager.execute(checkout);
         cleanUp();
     }
 
@@ -192,41 +199,34 @@ public class BookReturnEditSystemTests {
     @Test
     public void test7() {
         initStorage();
-        try {
-            booker.checkOut(storage.get(Resource.User, 1010).get(),
-                    storage.find(Resource.Book, itemData.get("cormen")).get(0));
-        } catch (CheckOutCommand.CheckoutException e) {
-        }
-        try {
-            booker.checkOut(storage.get(Resource.User, 1010).get(),
-                    storage.find(Resource.Book, itemData.get("patterns")).get(0));
-            } catch (CheckOutCommand.CheckoutException e) {
-        }
-        try {
-            booker.checkOut(storage.get(Resource.User, 1010).get(),
-                    storage.find(Resource.Book, itemData.get("brooks")).get(0));
-        } catch (CheckOutCommand.CheckoutException e) {
-        }
-        try {
-            booker.checkOut(storage.get(Resource.User, 1010).get(),
-                    storage.find(Resource.AvMaterial, itemData.get("null")).get(0));
-        } catch (CheckOutCommand.CheckoutException e) {
-        }
-        try {
-            booker.checkOut(storage.get(Resource.User, 1011).get(),
-                    storage.find(Resource.Book, itemData.get("cormen")).get(0));
-        } catch (CheckOutCommand.CheckoutException e) {
-        }
-        try {
-            booker.checkOut(storage.get(Resource.User, 1011).get(),
-                    storage.find(Resource.Book, itemData.get("patterns")).get(0));
-        } catch (CheckOutCommand.CheckoutException e) {
-        }
-        try {
-            booker.checkOut(storage.get(Resource.User, 1011).get(),
-                    storage.find(Resource.AvMaterial, itemData.get("entropy")).get(0));
-        } catch (CheckOutCommand.CheckoutException e) {
-        }
+        Command checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1010).get(),
+                storage.find(Resource.Book, itemData.get("cormen")).get(0));
+        manager.execute(checkout);
+        checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1010).get(),
+                storage.find(Resource.Book, itemData.get("patterns")).get(0));
+        manager.execute(checkout);
+        checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1010).get(),
+                storage.find(Resource.Book, itemData.get("brooks")).get(0));
+        manager.execute(checkout);
+        checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1010).get(),
+                storage.find(Resource.AvMaterial, itemData.get("null")).get(0));
+        manager.execute(checkout);
+        checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1011).get(),
+                storage.find(Resource.Book, itemData.get("cormen")).get(0));
+        manager.execute(checkout);
+        checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1011).get(),
+                storage.find(Resource.Book, itemData.get("patterns")).get(0));
+        manager.execute(checkout);
+        checkout = new CheckOutCommand(
+                storage.get(Resource.User, 1011).get(),
+                storage.find(Resource.AvMaterial, itemData.get("entropy")).get(0));
+        manager.execute(checkout);
         cleanUp();
     }
 
@@ -235,39 +235,32 @@ public class BookReturnEditSystemTests {
         initStorage();
         for(String u: Arrays.asList("elvira", "nadia", "sergey")) {
             UserEntry entry = storage.find(Resource.User, itemData.get(u)).get(0);
-            storage.getCheckoutRecordsFor(entry.getId());
+            storage.find(Resource.Checkout, new QueryParameters().add("user_id", entry.getId()));
         }
         cleanUp();
     }
 
-    @Test
     public void cleanUp() {
         for(String u: Arrays.asList("elvira", "nadia", "sergey")) {
             List<UserEntry> found = storage.find(Resource.User, itemData.get(u));
             if(!found.isEmpty()) {
-                for (CheckoutRecord c : storage.getCheckoutRecordsFor(found.get(0).getId())) {
-                    storage.removeCheckoutRecord(c);
-                }
-                storage.remove(Resource.User, found.get(0).getId());
+                int id = found.get(0).getId();
+                storage.removeAll(Resource.Checkout,
+                        new QueryParameters().add("user_id", id));
+                storage.removeAll(Resource.User,
+                        new QueryParameters().add("user_id", id));
             }
         }
         for(String b: Arrays.asList("cormen", "patterns", "brooks")) {
-            List<BookEntry> found = storage.find(Resource.Book, itemData.get(b));
-            if(!found.isEmpty()) {
-                storage.remove(Resource.Book, found.get(0).getId());
-            }
+            storage.removeAll(Resource.Book, itemData.get(b));
         }
         for(String a: Arrays.asList("null", "entropy")) {
-            List<AvMaterialEntry> found = storage.find(Resource.AvMaterial, itemData.get(a));
-            if(!found.isEmpty()) {
-                storage.remove(Resource.AvMaterial, found.get(0).getId());
-            }
+            storage.removeAll(Resource.AvMaterial, itemData.get(a));
         }
     }
 
     HashMap<String, QueryParameters> itemData = new HashMap<>();
 
-    CheckOutCommand booker;
-    ReturnCommand returner;
+    LibraryManager manager;
     Storage storage;
 }

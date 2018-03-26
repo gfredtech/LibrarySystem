@@ -83,10 +83,9 @@ public class StorageTest {
 
     @Test
     public void updateArticle() {
-        JournalArticleEntry a = storage.find(
-                Resource.JournalArticle,
-                new QueryParameters().add("title", "Some bright article about gamedev")).get(0);
-        storage.update(Resource.JournalArticle, a.getId(), new QueryParameters().add("price", 100));
+        storage.updateAll(Resource.JournalArticle,
+                new QueryParameters().add("title", "Some bright article about gamedev"),
+                new QueryParameters().add("price", 100));
     }
 
 

@@ -17,6 +17,12 @@ public class AvMaterialFactory extends ItemFactory<AvMaterial> {
         super(new AvMaterial());
     }
 
+    @Override
+    public AvMaterial build() {
+        assert item.authors != null;
+        return item;
+    }
+
     /**
      * Method to set the list of authors of the item
      * @param authors

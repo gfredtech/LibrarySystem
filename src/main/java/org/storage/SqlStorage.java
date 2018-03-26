@@ -132,7 +132,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
             return type.getConstructor(ResultSet.class).newInstance(rs);
         } catch (NoSuchMethodException|IllegalAccessException
                 |InvocationTargetException|InstantiationException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 

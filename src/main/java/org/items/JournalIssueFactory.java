@@ -12,6 +12,14 @@ public class JournalIssueFactory extends ItemFactory<JournalIssue> {
         super(new JournalIssue());
     }
 
+    @Override
+    public JournalIssue build() {
+        assert item.editors != null;
+        assert item.publisher != null;
+        assert item.publicationDate != null;
+        return item;
+    }
+
     public JournalIssueFactory editors(List<String> editors) {
         item.editors = editors;
         return this;

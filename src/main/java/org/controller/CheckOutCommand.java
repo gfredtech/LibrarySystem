@@ -29,7 +29,8 @@ public class CheckOutCommand implements Command {
         Item item = itemEntry.getItem();
 
         if(checkoutNum >= item.getCopiesNum()) {
-            throw new CheckoutException("There are no copies available of "+ item.getTitle());
+            return Result.failure(
+                    "There are no copies available of "+ item.getTitle());
         }
         if(item.isReference()) {
             return  Result.failure(
@@ -53,14 +54,6 @@ public class CheckOutCommand implements Command {
                 .add("due_date", calculateOverdueDate());
         storage.add(Resource.Checkout, params);
         return Result.Success;
-    }
-
-
-
-    public class CheckoutException extends RuntimeException {
-        public CheckoutException(String cause) {
-            super(cause);
-        }
     }
 
 

@@ -23,6 +23,7 @@ public class CheckoutEntry extends DatabaseEntry {
         patron = storage.get(User, userId).get();
         Resource<ItemEntry> resourceType =
                 Resource.<ItemEntry>fromString(itemType);
+        System.out.println(itemType + " " + itemId);
         item = storage.get(resourceType, itemId).get();
     }
 
