@@ -17,7 +17,6 @@ public abstract class ItemEntry<T extends Item> extends DatabaseEntry {
         ItemFactory<T> factory = initFactory(rs);
         factory.title(rs.getString("title"));
         factory.copiesNum(rs.getInt("copy_num"));
-
         String[] keywordsArray =
                 (String[])rs.getArray("keywords").getArray();
         List<String> keywords = Arrays.asList(keywordsArray);

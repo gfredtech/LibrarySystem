@@ -1,14 +1,11 @@
 package org.user_interface.commands;
 
-import org.resources.*;
-import org.storage.SqlStorage;
+import org.items.User;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class AddCommand extends Command{
@@ -44,7 +41,7 @@ public class AddCommand extends Command{
             case "add_documentpublisher":
                 newDocumentPublisher = input;
                 message = "Enter the number of copies of the " +
-                    "Document you want to add to the library";
+                        "Document you want to add to the library";
                 sendMessage(sender, update, message);
                 return "add_copiesnum";
 
@@ -98,51 +95,16 @@ public class AddCommand extends Command{
                 return "add_documenttype";
 
             case "Add Book":
-                BookFactory bookFactory = new BookFactory();
-                System.out.println("Authors: " + newDocumentAuthors.toString());
-                System.out.println("Title:" + newDocumentName);
-                System.out.println(newDocumentCopies);
-                System.out.println(newDocumentPublisher);
-
-                bookFactory.setAuthors(newDocumentAuthors);
-                bookFactory.setTitle(newDocumentName);
-                bookFactory.setCopiesNum(newDocumentCopies);
-                bookFactory.setPublisher(newDocumentPublisher);
-                bookFactory.setPrice(newDocumentPrice);
-                if(newDocumentReference) {
-                    bookFactory.setAsReference();
-                }
-                if(newDocumentBestseller) {
-                    bookFactory.setAsBestseller();
-                }
-                bookFactory.setKeywords(newDocumentKeywords);
-                bookFactory.setPublicationDate(newDocumentPublicationDate);
-                //TODO: null pointer exception
-                SqlStorage.getInstance().addBook(bookFactory);
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                        newDocumentName + " added successfully!");
+                //TODO:
                 return "menu";
 
             case "Add Av Material":
-                AvMaterialFactory avMaterialFactory = new AvMaterialFactory();
-                avMaterialFactory.setAsNonReference();
-                avMaterialFactory.setTitle(newDocumentName);
-                avMaterialFactory.setCopiesNum(newDocumentCopies);
-                if(newDocumentReference) avMaterialFactory.setAsReference();
-                avMaterialFactory.setKeywords(newDocumentKeywords);
-                avMaterialFactory.setPrice(newDocumentPrice);
-                SqlStorage.getInstance().addAvMaterial(avMaterialFactory);
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId),
-                        newDocumentName + " added succesffully.");
+                //TODO:
                 return "menu";
-                }
+        }
         return null;
     }
 
-    public void getCurrentUser(Update update, User user) {
-        Long chatId = update.getMessage().getChatId();
-        currentUser.put(chatId, user);
-    }
 
     List<String> newDocumentAuthors;
     int newDocumentCopies, newDocumentPrice;
@@ -152,5 +114,4 @@ public class AddCommand extends Command{
     List<String> newDocumentKeywords;
     LocalDate newDocumentPublicationDate;
 
-    HashMap<Long, User> currentUser = new HashMap<>();
 }

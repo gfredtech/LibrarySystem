@@ -1,10 +1,9 @@
 package org.user_interface.commands;
 
-import org.resources.AvMaterial;
-import org.resources.Book;
-import org.resources.Item;
+import org.items.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.resources.*;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.Update;
@@ -12,13 +11,17 @@ import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.user_interface.ui.KeyboardUtils;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public abstract class Command {
 
-    KeyboardUtils keyboardUtils = new KeyboardUtils();
+    public KeyboardUtils keyboardUtils = new KeyboardUtils();
+
+    static HashMap<Long, UserEntry> currentUser = new HashMap<>();
+
+    static HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
 
     //executes an action, then returns an object that contains some
     //information back to the Bot class
@@ -43,41 +46,52 @@ public abstract class Command {
         }catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        }
+    }
 
     void listBooks(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<Book> books = SqlStorage.getInstance().findBooks(new QueryParameters());
+        List<BookEntry> books = SqlStorage.getInstance().find(Resource.Book, new QueryParameters());
         for (int i = 0; i < books.size(); i++) {
-            String name = books.get(i).getTitle();
+            String name = books.get(i).getItem().getTitle();
             System.out.println(name);
             builder.append((i + 1) + ". " + name + "\n\n");
         }
-
         sendMessage(sender, update, builder.toString());
-
-
     }
 
     void listAvMaterials(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<AvMaterial> avMaterials = SqlStorage.getInstance().findAvMaterials(new QueryParameters());
+        List<AvMaterialEntry> avMaterials = SqlStorage.getInstance().find(Resource.AvMaterial, new QueryParameters());
         for (int i = 0; i < avMaterials.size(); i++) {
-            String name = avMaterials.get(i).getTitle();
-            builder.append((i + 1) + ". " + name + "\n\n");
+            String name = avMaterials.get(i).getItem().getTitle();
+            builder.append((i + 1) + ". " + name + "\n");
         }
-
         sendMessage(sender, update, builder.toString());
-
     }
 
+    void listJournalIssues(AbsSender sender, Update update) {
+        StringBuilder builder = new StringBuilder();
+        List<JournalIssueEntry> journalIssues = SqlStorage.getInstance().find(Resource.JournalIssue, new QueryParameters());
+        for(int i = 0; i < journalIssues.size(); i++) {
+            String name = journalIssues.get(i).getItem().getTitle();
+            builder.append((i+1) + ". " + name + "\n");
+        }
+        sendMessage(sender, update, builder.toString());
+    }
 
+    void listJournalArticles(AbsSender sender, Update update) {
+        StringBuilder builder = new StringBuilder();
+        List<JournalArticleEntry> articles = SqlStorage.getInstance().find(Resource.JournalArticle, new QueryParameters());
+        for(int i = 0; i < articles.size(); i++) {
+            String name = articles.get(i).getItem().getTitle();
+            builder.append((i+1) + ". " + name + "\n");
+        }
+        sendMessage(sender, update, builder.toString());
+    }
 
-
-
-    void showDocumentDetails(AbsSender sender, Update update, Item item, String type) {
-        String bookDetails = item.toString() +
-                "\nCopies: " + item.getCopiesNum();
+    void showDocumentDetails(AbsSender sender, Update update, ItemEntry item, String type) {
+        String bookDetails = item.getItem().toString() +
+                "\nCopies: " + item.getItem().getCopiesNum();
 
         keyboardUtils.setInlineKeyBoard(sender, update, bookDetails, new ArrayList<String>(){{
             add("Checkout " + type);
@@ -85,7 +99,4 @@ public abstract class Command {
         }});
 
     }
-
-
-
 }

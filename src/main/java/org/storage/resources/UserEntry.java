@@ -3,7 +3,6 @@ package org.storage.resources;
 import org.items.User;
 import org.storage.QueryParameters;
 import org.storage.EntrySerializer;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -18,11 +17,11 @@ public class UserEntry extends DatabaseEntry {
         String phoneNumber = rs.getString("phone_number");
         String address = rs.getString("address");
         int passwordHash = rs.getInt("password_hash");
-        User u = new User(rs.getInt("user_id"), name, type, subType);
-        u.setLogin(login);
-        u.setAddress(address);
-        u.setPhoneNumber(phoneNumber);
-        u.setPasswordHash(passwordHash);
+        user = new User(rs.getInt("user_id"), name, type, subType);
+        user.setLogin(login);
+        user.setAddress(address);
+        user.setPhoneNumber(phoneNumber);
+        user.setPasswordHash(passwordHash);
     }
 
     @Override

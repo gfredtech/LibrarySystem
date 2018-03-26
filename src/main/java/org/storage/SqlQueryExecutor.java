@@ -71,7 +71,7 @@ class SqlQueryExecutor {
      * @param whatToUpdate distinctive features of items to be updated
      * @throws SQLException
      */
-    void update(String tableName, QueryParameters updateParameters, QueryParameters whatToUpdate) throws SQLException {
+    void update(String tableName, QueryParameters updateParameters, QueryParameters whatToUpdate) throws SQLException{
         StringBuilder query = new StringBuilder();
         query.append("UPDATE ");
         query.append(tableName);

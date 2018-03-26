@@ -12,7 +12,7 @@ import static org.storage.resources.Resource.User;
 
 public class CheckoutEntry extends DatabaseEntry {
 
-    CheckoutEntry(ResultSet rs) throws SQLException {
+    public CheckoutEntry(ResultSet rs) throws SQLException {
         super(rs);
         Storage storage = SqlStorage.getInstance();
         int userId = rs.getInt("user_id");

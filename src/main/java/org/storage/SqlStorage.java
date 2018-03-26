@@ -59,7 +59,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
     public <T extends DatabaseEntry>
     Optional<T> get(Resource<T> type, int id) {
         QueryParameters params = new QueryParameters()
-            .add(type.getTableKey(), id);
+                .add(type.getTableKey(), id);
         List<T> users = find(type, params);
         if(!users.isEmpty()) {
             return Optional.of(users.get(0));
@@ -106,7 +106,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
             deleteAll(type.getTableName(), parameters);
         } catch (SQLException e) {
             final String errorMessage = "Error during removal from the table '"+type.getTableName()
-                + "' with parameters: " + parameters;
+                    + "' with parameters: " + parameters;
             throw new QueryExecutionError(errorMessage, e);
         }
     }

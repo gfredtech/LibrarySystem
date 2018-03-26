@@ -27,4 +27,3 @@ public class JournalIssueFactory extends ItemFactory<JournalIssue> {
         return this;
     }
 }
-
