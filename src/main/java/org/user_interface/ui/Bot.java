@@ -16,7 +16,7 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && message.hasText()) {
             Long chatId = update.getMessage().getChatId();
             String userState = currentState.getOrDefault(chatId, "start_start");
-            System.out.println("debug" + userState);
+
             currentState.put(chatId, handler.handleMessageUpdate(this, update, userState));
 
         }else if(update.hasCallbackQuery()) {

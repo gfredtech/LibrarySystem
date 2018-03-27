@@ -3,6 +3,8 @@ package org.user_interface.commands;
 import org.items.Item;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
+import org.user_interface.ui.Interface;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,8 +27,8 @@ public class AddCommand extends Command{
                     keyboardUtils.showEditDocumentKeyboard(sender, update);
                     return "add_documenttype";
                 } else if (message != null && message.equals("Add User")) {
-                    //TODO: EDIT users
-                    return "signup_startnext";
+                    System.out.println("user add executed");
+                    return new Interface().handleMessageUpdate(sender, update, "signup_startnext");
                 }
 
             case "documenttype":
@@ -62,10 +64,10 @@ public class AddCommand extends Command{
                item =  addParser.parseBookParameters(update);
                 break;
             case "AV Material":
-               item =  addParser.parseAvMaterialParameters(sender, update, chatId);
+               item =  addParser.parseAvMaterialParameters(update);
                 break;
             case "Journal Issue":
-               item = addParser.parseJournalIssueParameters(sender, update, chatId);
+               item = addParser.parseJournalIssueParameters(update);
                 break;
         }
 

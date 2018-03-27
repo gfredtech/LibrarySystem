@@ -25,11 +25,10 @@ public class Interface {
         String message = update.getMessage().getText();
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
-        System.out.println(userState + ", " + userCommand);
 
        if(message.equals("/login") || message.equals("/start")) {
            message = message.substring(message.lastIndexOf("/") + 1);
-           System.out.println("mess " + message);
+
            return initialize().get(message).run(sender, update, userCommand);
        } else {
            System.out.println(userCommand + " from " + userState);

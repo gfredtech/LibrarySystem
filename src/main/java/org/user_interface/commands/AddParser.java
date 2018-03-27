@@ -1,12 +1,8 @@
 package org.user_interface.commands;
 
-
-import org.items.Book;
-import org.items.BookFactory;
-import org.items.Item;
+import org.items.*;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,14 +35,42 @@ public class AddParser extends Command{
         return bookFactory.build();
     }
 
-    Item parseAvMaterialParameters(AbsSender sender, Update update, Long chatId) {
+    Item parseAvMaterialParameters(Update update) {
+        String message = update.getMessage().getText();
+        String[] params = message.split("[;]+");
 
-        return null;
+        for(int i = 0; i < params.length; i++) params[i] = params[i].trim();
+        if (params.length != 6) return null;
+
+        AvMaterialFactory factory = new AvMaterialFactory();
+        factory.title(params[0]);
+        factory.copiesNum(Integer.valueOf(params[1]));
+        if(params[2].equals("true")) factory.isReference(); else factory.isNotReference();
+        factory.keywords(parseGroups(params[3]));
+        factory.price(Integer.valueOf(params[4]));
+        factory.authors(parseGroups(params[5]));
+
+        return factory.build();
     }
 
-    Item parseJournalIssueParameters(AbsSender sender, Update update, Long chatId) {
+    Item parseJournalIssueParameters(Update update) {
+        String message = update.getMessage().getText();
+        String[] params = message.split("[;]+");
 
-        return null;
+        for(int i = 0; i < params.length; i++) params[i] = params[i].trim();
+        if (params.length != 8) return null;
+
+        JournalIssueFactory factory = new JournalIssueFactory();
+        factory.title(params[0]);
+        factory.copiesNum(Integer.valueOf(params[1]));
+        if(params[2].equals("true")) factory.isReference(); else factory.isNotReference();
+        factory.keywords(parseGroups(params[3]));
+        factory.price(Integer.valueOf(params[4]));
+        factory.editors(parseGroups(params[5]));
+        factory.publicationDate(parseDate(params[6]));
+        factory.publisher(params[7]);
+
+        return factory.build();
     }
 
     List<String> parseGroups(String a) {
