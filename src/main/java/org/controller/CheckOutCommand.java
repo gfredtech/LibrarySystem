@@ -60,11 +60,15 @@ public class CheckOutCommand implements Command {
 
     private LocalDate calculateOverdueDate() {
         LocalDate overdue;
-        if(itemEntry.getResourceType() == Resource.Book) {
+        String userType = user.getUser().getType();
+        if(userType.equals("Visiting")) {
+            overdue = LocalDate.now().plusWeeks(1);
+
+        } else if(itemEntry.getResourceType() == Resource.Book) {
             Book b = (Book)itemEntry.getItem();
             if(b.isBestseller()) {
                 overdue = LocalDate.now().plusWeeks(2);
-            } else if (user.getUser().getSubtype().equals("Faculty")) {
+            } else if (user.getUser().getType().equals("Faculty")) {
                 overdue = LocalDate.now().plusWeeks(4);
             } else {
                 overdue = LocalDate.now().plusWeeks(3);

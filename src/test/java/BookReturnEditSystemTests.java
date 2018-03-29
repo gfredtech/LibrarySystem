@@ -16,10 +16,10 @@ import java.util.*;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class BookReturnEditSystemTests {
+class BookReturnEditSystemTests {
 
     @BeforeAll
-    public void init() throws ClassNotFoundException {
+    void init() throws ClassNotFoundException {
         SqlStorage.connect("library", "librarian", "tabula_rasa");
         storage = SqlStorage.getInstance();
         manager = new LibraryManager(storage);
@@ -27,7 +27,7 @@ public class BookReturnEditSystemTests {
         cleanUp();
     }
 
-    void initItemData() {
+    private void initItemData() {
         QueryParameters b1 = new QueryParameters()
                 .add("title", "Introduction to Algorithms, Third edition")
                 .add("authors", Arrays.asList("Thomas H. Cormen", "Charles E. Leiserson",
@@ -63,7 +63,7 @@ public class BookReturnEditSystemTests {
         itemData.put("brooks", b3);
         QueryParameters av1 = new QueryParameters()
                 .add("title", "Null References: The Billion Dollar Mistake")
-                .add("authors", Arrays.asList("Tony Hoare"))
+                .add("authors", Collections.singletonList("Tony Hoare"))
                 .add("price", 0)
                 .add("copy_num", 1)
                 .add("keywords", Collections.emptyList());
@@ -76,26 +76,29 @@ public class BookReturnEditSystemTests {
                 .add("keywords", Collections.emptyList());
         itemData.put("entropy", av2);
 
-        User p1 = new User(1010, "Sergey Afonso", "Patron", "Faculty");
+        User p1 = new User(
+                1010, "Sergey Afonso", "Faculty", "Professor");
         p1.setPhoneNumber("30001");
         p1.setAddress("Via Margutta, 3");
         p1.setLogin("s.afonso");
         itemData.put("sergey", EntrySerializer.serialize(p1));
 
-        User p2 = new User(1011, "Nadia Teixeira", "Patron", "Student");
+        User p2 = new User(
+                1011, "Nadia Teixeira", "Student", null);
         p2.setPhoneNumber("30002");
         p2.setAddress("Via Sacra, 13");
         p2.setLogin("n.teixeira");
         itemData.put("nadia", EntrySerializer.serialize(p2));
 
-        User p3 = new User(1100, "Elvira Espindola", "Patron", "Student");
+        User p3 = new User(
+                1100, "Elvira Espindola", "Student", null);
         p3.setPhoneNumber("30003");
         p3.setAddress("Via del Corso, 22");
         p3.setLogin("e.espindola");
         itemData.put("elvira", EntrySerializer.serialize(p3));
     }
 
-    void initStorage() {
+    private void initStorage() {
         initItemData();
         storage.add(Resource.Book, itemData.get("cormen"));
         storage.add(Resource.Book, itemData.get("patterns"));
@@ -112,7 +115,7 @@ public class BookReturnEditSystemTests {
         storage.add(Resource.User, itemData.get("nadia"));
     }
 
-    void modifyStorage() {
+    private void modifyStorage() {
         storage.removeAll(Resource.User, new QueryParameters().add("user_id", 1011));
 
         storage.updateAll(Resource.Book, itemData.get("cormen"),
@@ -123,20 +126,20 @@ public class BookReturnEditSystemTests {
     }
 
     @Test
-    public void test1() {
+    void test1() {
         initStorage();
         cleanUp();
     }
 
     @Test
-    public void test2() {
+    void test2() {
         initStorage();
         modifyStorage();
         cleanUp();
     }
 
     @Test
-    public void test3() {
+    void test3() {
         initStorage();
         modifyStorage();
         storage.get(Resource.User, 1010).get();
@@ -145,7 +148,7 @@ public class BookReturnEditSystemTests {
     }
 
     @Test
-    public void test4() {
+    void test4() {
         initStorage();
         modifyStorage();
         try {
@@ -159,7 +162,7 @@ public class BookReturnEditSystemTests {
     }
 
     @Test
-    public void test5() {
+    void test5() {
         initStorage();
         modifyStorage();
 
@@ -176,7 +179,7 @@ public class BookReturnEditSystemTests {
     }
 
     @Test
-    public void test6() {
+    void test6() {
         initStorage();
         modifyStorage();
         Command checkout = new CheckOutCommand(
@@ -197,7 +200,7 @@ public class BookReturnEditSystemTests {
 
 
     @Test
-    public void test7() {
+    void test7() {
         initStorage();
         Command checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1010).get(),
@@ -231,7 +234,7 @@ public class BookReturnEditSystemTests {
     }
 
     @Test
-    public void test8() {
+    void test8() {
         initStorage();
         for(String u: Arrays.asList("elvira", "nadia", "sergey")) {
             UserEntry entry = storage.find(Resource.User, itemData.get(u)).get(0);
@@ -240,7 +243,7 @@ public class BookReturnEditSystemTests {
         cleanUp();
     }
 
-    public void cleanUp() {
+    void cleanUp() {
         for(String u: Arrays.asList("elvira", "nadia", "sergey")) {
             List<UserEntry> found = storage.find(Resource.User, itemData.get(u));
             if(!found.isEmpty()) {
@@ -259,8 +262,7 @@ public class BookReturnEditSystemTests {
         }
     }
 
-    HashMap<String, QueryParameters> itemData = new HashMap<>();
-
-    LibraryManager manager;
-    Storage storage;
+    private HashMap<String, QueryParameters> itemData = new HashMap<>();
+    private LibraryManager manager;
+    private Storage storage;
 }

@@ -28,7 +28,10 @@ public class QueryParameters {
      * @return this object
      */
     public QueryParameters add(String key, String value) {
-        params.put(key, new Pair<>(Types.VARCHAR, value));
+        if(value == null)
+            params.put(key, new Pair<>(Types.NULL, null));
+        else
+            params.put(key, new Pair<>(Types.VARCHAR, value));
         return this;
     }
 
@@ -37,7 +40,10 @@ public class QueryParameters {
      * @return this object
      */
     public QueryParameters add(String key, Integer value) {
-        params.put(key, new Pair<>(Types.INTEGER, value));
+        if(value == null)
+            params.put(key, new Pair<>(Types.NULL, null));
+        else
+            params.put(key, new Pair<>(Types.INTEGER, value));
         return this;
     }
 
@@ -46,7 +52,10 @@ public class QueryParameters {
      * @return this object
      */
     public QueryParameters add(String key, Boolean value) {
-        params.put(key, new Pair<>(Types.BOOLEAN, value));
+        if(value == null)
+            params.put(key, new Pair<>(Types.NULL, null));
+        else
+            params.put(key, new Pair<>(Types.BOOLEAN, value));
         return this;
     }
 
@@ -55,7 +64,10 @@ public class QueryParameters {
      * @return this object
      */
     public QueryParameters add(String key, List<?> value) {
-        params.put(key, new Pair<>(Types.ARRAY, value));
+        if(value == null)
+            params.put(key, new Pair<>(Types.NULL, null));
+        else
+            params.put(key, new Pair<>(Types.ARRAY, value));
         return this;
     }
 
@@ -66,7 +78,10 @@ public class QueryParameters {
      * @return this object
      */
     public QueryParameters add(String key, LocalDate value) {
-        params.put(key, new Pair<>(Types.DATE, value));
+        if(value == null)
+            params.put(key, new Pair<>(Types.NULL, null));
+        else
+            params.put(key, new Pair<>(Types.DATE, value));
         return this;
     }
 
@@ -121,9 +136,14 @@ public class QueryParameters {
             condition.append("\"");
             condition.append(p.getKey());
             condition.append("\"");
-            condition.append(" = ");
             Pair<Integer, ?> value = p.getValue();
-            condition.append(toSqlEntity(value.getKey(), value.getValue()));
+            int type = value.getKey();
+            if(type == Types.NULL) {
+                condition.append(" IS ");
+            } else {
+                condition.append(" = ");
+            }
+            condition.append(toSqlEntity(type, value.getValue()));
             condition.append(" AND ");
         }
         condition.append("TRUE");
@@ -202,6 +222,10 @@ public class QueryParameters {
                     s.append("FALSE");
                 }
                 break;
+            case Types.NULL:
+                s.append("NULL");
+                break;
+
             default:
                 s.append(value);
         }

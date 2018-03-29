@@ -1,6 +1,11 @@
 package org.items;
 
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
+
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Data structure representing a user record in the system
  */
@@ -13,8 +18,8 @@ public class User {
 
     public User(int cardNumber, String name, String type, String subtype) {
         this.cardNumber = cardNumber;
-        this.type = type;
-        this.subtype = subtype;
+        setType(type);
+        setSubtype(subtype);
         this.name = name;
     }
 
@@ -27,11 +32,24 @@ public class User {
     }
 
     public void setType(String type) {
-        this.type = type;
+        final List<String> types =
+                Arrays.asList("Librarian", "Student", "Faculty", "Visiting");
+        if (types.contains(type)) {
+            this.type = type;
+        } else {
+            throw new IllegalArgumentException("Invalid type: "+type+"; Should be one of "+types);
+        }
     }
 
     public void setSubtype(String subtype) {
-        this.subtype = subtype;
+        final List<String> subtypes =
+                Arrays.asList("Instructor", "TA", "Professor");
+        if (subtype == null || subtypes.contains(subtype)) {
+            this.subtype = subtype;
+        } else {
+            throw new IllegalArgumentException(
+                    "Invalid subtype: "+subtype+"; Should be one of "+subtypes);
+        }
     }
 
     @Override
