@@ -19,6 +19,8 @@ public class MenuCommand extends Command {
                 return new Interface().handleMessageUpdate(sender, update, "edit_startnext");
             } else if (message.equals("add")) {
                 return new Interface().handleMessageUpdate(sender, update, "add_startnext");
+            } else if(message.equals("renew")) {
+                return new Interface().handleMessageUpdate(sender, update, "renew_startnext");
             }
         }
         return null;

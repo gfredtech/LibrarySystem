@@ -18,6 +18,7 @@ public class Interface {
         commandHashMap.put("return", new ReturnItemCommand());
         commandHashMap.put("edit", new EditCommand());
         commandHashMap.put("add", new AddCommand());
+        commandHashMap.put("renew", new RenewCommand());
         return commandHashMap;
 
     }
@@ -29,7 +30,7 @@ public class Interface {
        if(message.equals("/login") || message.equals("/start")) {
            message = message.substring(message.lastIndexOf("/") + 1);
 
-           return initialize().get(message).run(sender, update, userCommand);
+           return initialize().get(message).run(sender, update, "start");
        } else {
            System.out.println(userCommand + " from " + userState);
            return initialize().get(userState).run(sender, update, userCommand);

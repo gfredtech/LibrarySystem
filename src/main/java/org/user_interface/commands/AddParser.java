@@ -85,18 +85,6 @@ public class AddParser extends Command{
         return result;
     }
 
-    LocalDate parseDate(String a) {
-        DateFormat df = new SimpleDateFormat("MMddyyyy", Locale.ENGLISH);
-        Date result = null;
-        try {
-            result = df.parse(a);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
-
     @Override
     public String run(AbsSender sender, Update update, String info) {
         return null;

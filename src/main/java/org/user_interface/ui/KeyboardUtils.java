@@ -28,12 +28,14 @@ public class KeyboardUtils {
         KeyboardRow row = new KeyboardRow();
         row.add("Checkout");
         row.add("Return");
+        row.add("RenewCommand");
         keyboard.add(row);
 
         if(user.getType().equals("Librarian")) {
             row = new KeyboardRow();
             row.add("Edit");
             row.add("Add");
+            row.add("Fine");
             keyboard.add(row);
         }
 

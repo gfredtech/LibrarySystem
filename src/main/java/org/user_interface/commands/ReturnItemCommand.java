@@ -31,7 +31,9 @@ public class ReturnItemCommand extends Command {
             return  "return_document";
 
             case "document":
-                return showCheckedOutDocuments(sender, update, chatId);
+                String s = showCheckedOutDocuments(sender, update, chatId);
+                System.out.println("stuff " + s);
+                return s;
 
             case "indexnumber":
                 returnDocument(sender, update, chatId);
@@ -55,6 +57,7 @@ public class ReturnItemCommand extends Command {
         entry = checkoutEntryMap.get(chatId).get(index - 1);
         if (entry != null) documentCursor.put(chatId, entry.getItem());
 
+        assert entry != null;
         System.out.println(entry.getItem().getItem().getTitle());
 
         //TODO: return item
