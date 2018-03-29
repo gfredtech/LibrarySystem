@@ -28,7 +28,7 @@ public class KeyboardUtils {
         KeyboardRow row = new KeyboardRow();
         row.add("Checkout");
         row.add("Return");
-        row.add("RenewCommand");
+        row.add("Renew");
         keyboard.add(row);
 
         if(user.getType().equals("Librarian")) {
