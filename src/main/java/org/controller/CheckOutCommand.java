@@ -28,14 +28,11 @@ public class CheckOutCommand implements Command {
         int checkoutNum = storage.getNumOfEntries(Resource.Checkout, p);
         Item item = itemEntry.getItem();
 
-        if(checkoutNum >= item.getCopiesNum()) {
-            return Result.failure(
-                    "There are no copies available of "+ item.getTitle());
-        }
         if(item.isReference()) {
             return  Result.failure(
                     "A reference item cannot be checked out: "+item.getTitle());
         }
+
         p = new QueryParameters()
                 .add("user_id", user.getId());
         boolean itemIsAlreadyCheckedOutByTheUser =
@@ -50,8 +47,18 @@ public class CheckOutCommand implements Command {
         QueryParameters params = new QueryParameters()
                 .add("item_id", itemEntry.getId())
                 .add("item_type", itemEntry.getResourceType().getTableName())
-                .add("user_id", user.getId())
-                .add("due_date", calculateOverdueDate());
+                .add("user_id", user.getId());
+
+        if(checkoutNum >= item.getCopiesNum()) {
+            params.add("request_date", LocalDate.now());
+            storage.add(Resource.PendingRequest, params);
+
+            return Result.warning(
+                    "There are no copies available of "+ item.getTitle()+
+                    "; A request is placed in the queue.");
+        }
+
+        params.add("due_date", calculateOverdueDate());
         storage.add(Resource.Checkout, params);
         return Result.Success;
     }

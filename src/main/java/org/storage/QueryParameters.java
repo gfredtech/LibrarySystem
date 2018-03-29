@@ -8,6 +8,7 @@ import java.time.chrono.ChronoLocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * @author Vladimir Shcherba
@@ -126,11 +127,23 @@ public class QueryParameters {
         return sqlRow.toString();
     }
 
+    public QueryParameters subset(String... keys) {
+        QueryParameters result = new QueryParameters();
+        for(String key: keys) {
+            if(params.containsKey(key))
+                result.params.put(key, params.get(key));
+            else
+                throw new NoSuchElementException(key+" is not a parameter");
+        }
+        return result;
+    }
+
     /**
      * @return parameters in the format required by WHERE SQL clause
      */
     public String toWhereCondition() {
         StringBuilder condition = new StringBuilder();
+
         for(Map.Entry<String, Pair<Integer, ?>>
                 p: params.entrySet()) {
             condition.append("\"");

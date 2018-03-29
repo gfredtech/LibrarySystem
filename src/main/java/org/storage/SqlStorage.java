@@ -14,6 +14,8 @@ import java.util.*;
 public class SqlStorage extends SqlQueryExecutor implements Storage {
 
     public static SqlStorage getInstance() {
+        if(instance == null)
+            throw new RuntimeException("SQL Storage has not been initialized");
         return instance;
     }
 
@@ -132,7 +134,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
             return type.getConstructor(ResultSet.class).newInstance(rs);
         } catch (NoSuchMethodException|IllegalAccessException
                 |InvocationTargetException|InstantiationException e) {
-            throw new RuntimeException(e.getCause());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
