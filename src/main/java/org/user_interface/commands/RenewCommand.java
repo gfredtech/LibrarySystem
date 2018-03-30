@@ -39,7 +39,7 @@ public class RenewCommand extends Command {
         CheckoutEntry entry = null;
         int index = Integer.valueOf(update.getMessage().getText());
 
-        entry = checkoutEntryMap.get(chatId).get(index - 1);
+        entry = checkoutEntries.get(index - 1);
         if (entry != null) documentCursor.put(chatId, entry.getItem());
 
         assert entry != null;

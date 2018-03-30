@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS book (
 
 
 CREATE TABLE IF NOT EXISTS journal_issue (
-  issue_id INT4 DEFAULT nextval('item_id_seq') PRIMARY KEY,
+  journal_issue_id INT4 DEFAULT nextval('item_id_seq') PRIMARY KEY,
   editors TEXT[] CHECK (array_length(editors, 1) >= 1),
   publisher TEXT NOT NULL,
   publication_date DATE NOT NULL,

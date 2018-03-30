@@ -64,7 +64,7 @@ public class ReturnItemCommand extends Command {
         new org.controller.ReturnCommand(currentUser.get(chatId), entry.getItem()).execute(
                 SqlStorage.getInstance());
         keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), 
-                "Book returned successfully!!");
+                entry.getItem().getItem().toString() + " returned successfully!!");
 
         }
 
@@ -82,8 +82,7 @@ public class ReturnItemCommand extends Command {
         return "return_indexnumber";
     }
     private void showReturnType(AbsSender sender, Update update) {
-        sendMessage(sender, update, "Select the type of document you want to return");
-        keyboardUtils.setInlineKeyBoard(sender, update, "Types:",
+        keyboardUtils.setInlineKeyBoard(sender, update, "Select the type of document you want to return",
                 new ArrayList<String>() {{
                     add("Return Book");
                     add("Return Av Material");
@@ -113,10 +112,10 @@ public class ReturnItemCommand extends Command {
         Book book; AvMaterial avMaterial; JournalArticle article;
         if (entries != null && entries.size() > 0) {
             sendMessage(sender, update,
-                    "This is the list of current " + type + "s checked out by you:\n" );
+                    "This is the list of current items checked out by you:\n" );
 
         } else {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), "You have no " + type + " checked out");
+            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), "You have no items  checked out");
             return null;
         }
 

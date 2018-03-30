@@ -1,6 +1,5 @@
 package org.user_interface.commands;
 
-import org.items.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.resources.*;
@@ -11,7 +10,6 @@ import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.user_interface.ui.KeyboardUtils;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -95,12 +93,12 @@ public abstract class Command {
         sendMessage(sender, update, builder.toString());
     }
 
-    void showDocumentDetails(AbsSender sender, Update update, ItemEntry item, String type) {
+    void showDocumentDetails(AbsSender sender, Update update, ItemEntry item) {
         String bookDetails = item.getItem().toString() +
                 "\nCopies: " + item.getItem().getCopiesNum();
 
         keyboardUtils.setInlineKeyBoard(sender, update, bookDetails, new ArrayList<String>(){{
-            add("Checkout " + type);
+            add("Checkout");
             add("Cancel Checkout");
         }});
 

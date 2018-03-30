@@ -15,7 +15,7 @@ public class LoginCommand extends Command {
         String data;
         switch (currentState) {
             case "start":
-                String message = "Enter your username and password separated by a space";
+                String message = "Enter your username and password, separated by a space:";
                 sendMessage(sender, update, message);
                 data = "login_password";
                 return data;

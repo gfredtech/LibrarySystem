@@ -1,7 +1,9 @@
 package org.user_interface.commands;
 
+import org.controller.CheckOutCommand;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
+import org.storage.Storage;
 import org.storage.resources.AvMaterialEntry;
 import org.storage.resources.BookEntry;
 import org.storage.resources.JournalIssueEntry;
@@ -9,9 +11,10 @@ import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CheckoutCommand extends Command {
+public class CheckoutItemCommand extends Command {
 
     @Override
     public String run(AbsSender sender, Update update, String info) {
@@ -30,26 +33,18 @@ public class CheckoutCommand extends Command {
 
             case "selectbook":
                 selectBookForCheckout(sender, update, chatId);
-                return "checkout_book";
+                return "checkout_final";
 
             case "selectavmaterial":
                 selectAvMaterialForCheckout(sender, update, chatId);
-                return "checkout_avmaterial";
+                return "checkout_final";
 
             case "selectjournalissue":
                 selectJournalIssueForCheckout(sender, update, chatId);
-                return "checkout_journalissue";
+                return "checkout_final";
 
-            case "book":
-                checkOutBook(sender, update, chatId);
-                return "menu_main";
-
-            case "avmaterial":
-                checkOutAvMaterial(sender, update, chatId);
-                return "menu_main";
-
-            case "journalissue":
-                checkOutJournalIssue(sender, update, chatId);
+            case "final":
+                checkOutItem(sender, update, chatId);
                 return "menu_main";
         }
         return null;
@@ -77,7 +72,7 @@ public class CheckoutCommand extends Command {
         bookSelected = SqlStorage.getInstance().find(Resource.Book, new QueryParameters()).get(position - 1);
 
         if (bookSelected != null) {
-            showDocumentDetails(sender, update, bookSelected, "Book");
+            showDocumentDetails(sender, update, bookSelected);
             documentCursor.put(chatId, bookSelected);
         }
     }
@@ -97,7 +92,7 @@ public class CheckoutCommand extends Command {
         selected = SqlStorage.getInstance().find(Resource.AvMaterial, new QueryParameters()).get(position1 - 1);
 
         if (selected != null) {
-            showDocumentDetails(sender, update, selected, "AV Material");
+            showDocumentDetails(sender, update, selected);
             documentCursor.put(chatId, selected);
         }
     }
@@ -117,7 +112,7 @@ public class CheckoutCommand extends Command {
         selectedJournal = SqlStorage.getInstance().find(Resource.JournalIssue, new QueryParameters()).get(position-1);
 
         if(selectedJournal != null) {
-            showDocumentDetails(sender, update, selectedJournal, "Journal Issue");
+            showDocumentDetails(sender, update, selectedJournal);
             documentCursor.put(chatId, selectedJournal);
         }
     }
@@ -138,39 +133,20 @@ public class CheckoutCommand extends Command {
         }
     }
 
-    void checkOutBook(AbsSender sender, Update update, Long chatId) {
-        //TODO: check out Book
-        if(update.getCallbackQuery().getData().equals("Checkout Book")) {
+    void checkOutItem(AbsSender sender, Update update, Long chatId){
+        //TODO: check out items
+        if(update.getCallbackQuery().getData().equals("Checkout")) {
+            CheckOutCommand command = new CheckOutCommand(currentUser.get(chatId),
+                    documentCursor.get(chatId));
+
+            command.execute(SqlStorage.getInstance());
+
             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                     documentCursor.get(chatId).getItem().getTitle() + " Checked out successfully.");
 
         } else {
             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                     "Checkout cancelled");
-        }
-    }
-
-    void checkOutAvMaterial(AbsSender sender, Update update, Long chatId) {
-        //TODO: check out AV material
-        if(update.getCallbackQuery().getData().equals("Checkout AV Material")) {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    documentCursor.get(chatId).getItem().getTitle() + " Checked out successfully.");
-
-        } else {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    "Checkout cancelled");
-        }
-
-    }
-
-    private void checkOutJournalIssue(AbsSender sender, Update update, Long chatId) {
-        //TODO: check out Journal Issue
-        if(update.getCallbackQuery().getData().equals("Checkout Journal Issue")) {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    documentCursor.get(chatId).getItem().getTitle() + " checked out successfully");
-        } else {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    "Checkout Cancelled");
         }
     }
 }

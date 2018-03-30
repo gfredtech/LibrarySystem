@@ -10,20 +10,26 @@ public class Interface {
 
     public static HashMap<String, Command> initialize() {
         HashMap<String, Command> commandHashMap = new HashMap<>();
-        commandHashMap.put("login", new LoginCommand());
-        commandHashMap.put("start", new StartCommand());
         commandHashMap.put("menu", new MenuCommand());
+        commandHashMap.put("start", new StartCommand());
+        commandHashMap.put("login", new LoginCommand());
         commandHashMap.put("signup", new SignUpCommand());
-        commandHashMap.put("checkout", new CheckoutCommand());
+        commandHashMap.put("checkout", new CheckoutItemCommand());
         commandHashMap.put("return", new ReturnItemCommand());
         commandHashMap.put("edit", new EditCommand());
         commandHashMap.put("add", new AddCommand());
+        commandHashMap.put("fine", new FineCommand());
         commandHashMap.put("renew", new RenewCommand());
         return commandHashMap;
 
     }
+
    public String handleMessageUpdate(AbsSender sender, Update update, String currentState) {
-        String message = update.getMessage().getText();
+        String message = update.hasMessage() ? update.getMessage().getText()
+                :update.getCallbackQuery().getData();
+
+        if(currentState == null) return new ErrorCommand().run(sender, update, message);
+
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
 
@@ -33,7 +39,7 @@ public class Interface {
            return initialize().get(message).run(sender, update, "start");
        } else {
            System.out.println(userCommand + " from " + userState);
-           return initialize().get(userState).run(sender, update, userCommand);
+           return initialize().getOrDefault(userState, new ErrorCommand()).run(sender, update, userCommand);
        }
     }
 
@@ -42,6 +48,6 @@ public class Interface {
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
 
-        return initialize().get(userState).run(sender, update, userCommand);
+        return initialize().getOrDefault(userState, new ErrorCommand()).run(sender, update, userCommand);
     }
 }
