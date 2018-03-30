@@ -4,6 +4,7 @@ import org.controller.LibraryManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.Storage;
@@ -16,8 +17,8 @@ class BookReturnEditSystemTests {
 
     @BeforeAll
     void init() throws ClassNotFoundException {
-        SqlStorage.connect("library", "librarian", "tabula_rasa");
-        storage = SqlStorage.getInstance();
+        LibraryStorage.connect("library", "librarian", "tabula_rasa");
+        storage = LibraryStorage.getInstance();
         manager = new LibraryManager(storage);
         cleanUp();
     }
@@ -181,5 +182,5 @@ class BookReturnEditSystemTests {
 
     private TestItems data = new TestItems();
     private LibraryManager manager;
-    private Storage storage;
+    private LibraryStorage storage;
 }

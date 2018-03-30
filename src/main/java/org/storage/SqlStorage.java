@@ -19,7 +19,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
         return instance;
     }
 
-    public static void connect(String databaseName, String userName, String userPassword) throws ClassNotFoundException {
+    public static void connect(String databaseName, String userName, String userPassword) {
         try {
             instance = new SqlStorage(databaseName, userName, userPassword);
         } catch (SQLException e) {

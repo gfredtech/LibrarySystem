@@ -3,6 +3,7 @@ package org.controller;
 import org.items.Book;
 import org.items.Item;
 import org.items.User;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.Storage;
 import org.storage.resources.*;
@@ -18,6 +19,13 @@ public class CheckOutCommand implements Command {
     public CheckOutCommand(UserEntry user, ItemEntry itemEntry) {
         this.user = user;
         this.itemEntry = itemEntry;
+        this.dateOfCheckout = LocalDate.now();
+    }
+
+    public CheckOutCommand(UserEntry user, ItemEntry itemEntry, LocalDate dateOfCheckout) {
+        this.user = user;
+        this.itemEntry = itemEntry;
+        this.dateOfCheckout = dateOfCheckout;
     }
 
 
@@ -40,7 +48,7 @@ public class CheckOutCommand implements Command {
                 ! storage.find(Resource.Checkout, p).isEmpty();
         if(itemIsAlreadyCheckedOutByTheUser) {
             final String result = String.format(
-                    "A copy of the item %s is alredy checked out by the user %s",
+                    "A copy of the item %s is already checked out by the user %s",
                             item.getTitle(), user.getUser().getCardNumber());
             return Result.failure(result);
         }
@@ -51,7 +59,7 @@ public class CheckOutCommand implements Command {
                 .add("user_id", user.getId());
 
         if(checkoutNum >= item.getCopiesNum()) {
-            params.add("request_date", LocalDate.now());
+            params.add("request_date", dateOfCheckout);
             storage.add(Resource.PendingRequest, params);
 
             return Result.warning(
@@ -59,34 +67,36 @@ public class CheckOutCommand implements Command {
                     "; A request is placed in the queue.");
         }
 
-        params.add("due_date", calculateOverdueDate(user, itemEntry));
+        params.add("due_date", calculateOverdueDate(user, itemEntry, dateOfCheckout));
         storage.add(Resource.Checkout, params);
         return Result.Success;
     }
 
 
 
-    static LocalDate calculateOverdueDate(UserEntry user, ItemEntry itemEntry) {
+    static LocalDate calculateOverdueDate(UserEntry user, ItemEntry itemEntry,
+                                          LocalDate dateOfCheckout) {
         LocalDate overdue;
         String userType = user.getUser().getType();
         if(userType.equals("Visiting")) {
-            overdue = LocalDate.now().plusWeeks(1);
+            overdue = dateOfCheckout.plusWeeks(1);
 
         } else if(itemEntry.getResourceType() == Resource.Book) {
             Book b = (Book)itemEntry.getItem();
             if(b.isBestseller()) {
-                overdue = LocalDate.now().plusWeeks(2);
+                overdue = dateOfCheckout.plusWeeks(2);
             } else if (user.getUser().getType().equals("Faculty")) {
-                overdue = LocalDate.now().plusWeeks(4);
+                overdue = dateOfCheckout.plusWeeks(4);
             } else {
-                overdue = LocalDate.now().plusWeeks(3);
+                overdue = dateOfCheckout.plusWeeks(3);
             }
         } else {
-            overdue = LocalDate.now().plusWeeks(2);
+            overdue = dateOfCheckout.plusWeeks(2);
         }
         return overdue;
     }
 
     private UserEntry user;
     private ItemEntry itemEntry;
+    private LocalDate dateOfCheckout;
 }

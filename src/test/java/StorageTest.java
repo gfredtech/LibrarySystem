@@ -1,4 +1,5 @@
 import org.junit.Test;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.resources.*;
@@ -10,13 +11,8 @@ import java.util.Collections;
 
 public class StorageTest {
     public StorageTest() {
-        try {
-            SqlStorage.connect("library", "librarian", "tabula_rasa");
-            storage = SqlStorage.getInstance();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        LibraryStorage.connect("library", "librarian", "tabula_rasa");
+        storage = LibraryStorage.getInstance();
     }
 
     @Test
@@ -97,5 +93,5 @@ public class StorageTest {
         }
     }
 
-    private final SqlStorage storage;
+    private final LibraryStorage storage;
 }

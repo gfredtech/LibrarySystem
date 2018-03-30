@@ -1,5 +1,6 @@
 import org.controller.*;
 import org.junit.jupiter.api.*;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.Storage;
@@ -13,8 +14,8 @@ import org.storage.resources.UserEntry;
 public class RequestQueueTests {
     @BeforeAll
     void initStorage() throws ClassNotFoundException {
-        SqlStorage.connect("library", "librarian", "tabula_rasa");
-        storage = SqlStorage.getInstance();
+        LibraryStorage.connect("library", "librarian", "tabula_rasa");
+        storage = LibraryStorage.getInstance();
         manager = new LibraryManager(storage);
     }
 
@@ -53,16 +54,19 @@ public class RequestQueueTests {
                 user,
                 book);
         manager.execute(c).validate();
+
         CheckoutEntry checkout = storage.find(Resource.Checkout,
                 new QueryParameters().add("user_id", user.getId())
                                      .add("item_id", book.getId())).get(0);
         c = new RenewCommand(checkout);
         manager.execute(c).validate();
+
         checkout = storage.find(Resource.Checkout,
                 new QueryParameters().add("user_id", user.getId())
                         .add("item_id", book.getId())).get(0);
         c = new RenewCommand(checkout);
         assert manager.execute(c) == Command.Result.Failure;
+
         c = new ReturnCommand(user, book);
         manager.execute(c).validate();
         assert storage.find(Resource.Checkout,
@@ -72,7 +76,6 @@ public class RequestQueueTests {
 
     @AfterEach
     void cleanUp() {
-        System.out.println("Cleanup");
         UserEntry user1 =
                 storage.find(Resource.User, data.users.get("nadia")).get(0);
         BookEntry book =
@@ -86,7 +89,7 @@ public class RequestQueueTests {
         storage.removeAll(Resource.Book, data.books.get("cormen"));
     }
 
-    private Storage storage;
+    private LibraryStorage storage;
     private LibraryManager manager;
     private TestItems data = new TestItems();
 }

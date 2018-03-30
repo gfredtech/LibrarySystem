@@ -3,6 +3,7 @@ import org.items.Book;
 import org.items.BookFactory;
 import org.items.User;
 import org.junit.jupiter.api.*;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.Storage;
@@ -21,9 +22,9 @@ public class CheckOutTests {
 
     @BeforeAll
     public void connect() throws ClassNotFoundException {
-        SqlStorage.connect("library", "librarian", "tabula_rasa");
+        LibraryStorage.connect("library", "librarian", "tabula_rasa");
         manager = new LibraryManager(SqlStorage.getInstance());
-        storage = SqlStorage.getInstance();
+        storage = LibraryStorage.getInstance();
     }
 
     @BeforeEach
@@ -67,5 +68,5 @@ public class CheckOutTests {
     }
 
     LibraryManager manager;
-    Storage storage;
+    LibraryStorage storage;
 }

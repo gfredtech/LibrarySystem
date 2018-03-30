@@ -21,7 +21,7 @@ public class Application {
             SqlStorage.connect(databaseName, userName, password);
             botsApi.registerBot(new Bot());
 
-        } catch (TelegramApiException |ClassNotFoundException e) {
+        } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }

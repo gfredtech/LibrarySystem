@@ -38,7 +38,7 @@ public class RenewCommand implements Command {
                 }
                 newDue = CheckOutCommand.calculateOverdueDate(
                             checkout.getPatron(),
-                            checkout.getItem());
+                            checkout.getItem(), LocalDate.now());
                 break;
             default:
                 return Result.failure("Invalid user type: " +
