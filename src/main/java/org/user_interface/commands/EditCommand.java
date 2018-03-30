@@ -4,9 +4,11 @@ import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 import java.util.HashMap;
+import java.util.List;
 
 public class EditCommand extends Command {
     @Override
@@ -27,6 +29,7 @@ public class EditCommand extends Command {
                     return "edit_documenttype";
                 } else if (message != null && message.equals("Edit User")) {
                     //TODO: EDIT users
+                    showUsersInDatabase(sender, update, chatId);
                     return "edit_users";
                 }
 
@@ -76,68 +79,118 @@ public class EditCommand extends Command {
                 selectDocToEdit(sender, update, chatId, "journalarticlelist");
                 return "edit_params";
 
+            case "users":
+                selectDocToEdit(sender, update, chatId, "user");
+                return "edit_params";
+
             case "params":
                 parseParameters(sender, update, chatId);
                 return "menu_main";
+
 
         }
         return null;
     }
 
+    private List<UserEntry> showUsersInDatabase(AbsSender sender, Update update, Long chatId) {
+        sendMessage(sender, update, "Here's a list of all users: Select the user you want to edit.");
+        List<UserEntry> userEntryList = SqlStorage.getInstance().find(Resource.User,
+                new QueryParameters());
+        if(userEntryList == null) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder();
+        int i = 1;
+        for(UserEntry e: userEntryList) {
+            builder.append(i).append(". ");
+            builder.append(e.getUser().getName());
+            builder.append("\n");
+            i += 1;
+        }
+
+        sendMessage(sender, update, builder.toString());
+        return userEntryList;
+    }
+
     private void parseParameters(AbsSender sender, Update update, Long chatId) {
         String input = update.getMessage().getText().trim();
+        String type = userCursor.get(chatId) == null
+                ? documentCursor.get(chatId).getResourceType().getTableName()
+                : userCursor.get(chatId).getResourceType().getTableName();
 
-        switch (documentCursor.get(chatId).getResourceType().getTableName()) {
+        if (input.equals("delete")) {
+            switch (type) {
+                case "user_card":
+                    //TODO: remove user in `userCursor`
+                    default:
+                        //TODO: delete document in `documentCursor`
+            }
+//           SqlStorage.getInstance().removeBook(currentBook.getId());
+            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                      "Entity removed successfully");
+            return;
+        }
+
+        switch (type) {
             case "book":
-                editParser.parseBookParameters(sender, update, chatId, input);
+                editParser.coreParser(sender, update, Resource.Book, chatId, input);
                 break;
-            case "avmaterial":
-                editParser.parseAvMaterialParameters(input);
+            case "av_material":
+                editParser.coreParser(sender, update, Resource.AvMaterial, chatId, input);
                 break;
-            case "journalissue":
-                editParser.parseJournalIssueParameters(input);
+            case "journal_issue":
+                editParser.coreParser(sender, update, Resource.JournalIssue, chatId, input);
                 break;
-            case "journalarticle":
-                editParser.parseJournalArticleParameters(input);
+            case "article":
+                editParser.coreParser(sender, update, Resource.JournalArticle, chatId, input);
                 break;
+            case "user_card":
+                editParser.parseUserParameters(sender, update, chatId, input);
+
         }
 
     }
 
     private void selectDocToEdit(AbsSender sender, Update update, Long chatId, String type) {
         ItemEntry item = null;
+        UserEntry user = null;
         String input = update.getMessage().getText();
         int index = Integer.parseInt(input);
-        switch (type) {
-            case "book":
-                item = SqlStorage.getInstance().find(Resource.Book,
-                        new QueryParameters()).get(index - 1);
-                break;
-            case "avmaterial":
-                item = SqlStorage.getInstance().find(Resource.AvMaterial,
-                        new QueryParameters()).get(index - 1);
-                break;
-            case "journalissue":
-                item = SqlStorage.getInstance().find(Resource.JournalIssue,
-                        new QueryParameters()).get(index - 1);
-                break;
-            case "journalarticle":
-                item = SqlStorage.getInstance().find(Resource.JournalArticle,
-                        new QueryParameters()).get(index - 1);
-                break;
-        }
 
-        if (item != null) {
-            documentCursor.put(chatId, item);
-            sendMessage(sender, update, item.getItem().toString());
+            switch (type) {
+                case "book":
+                    item = SqlStorage.getInstance().find(Resource.Book,
+                            new QueryParameters()).get(index - 1);
+                    break;
+                case "avmaterial":
+                    item = SqlStorage.getInstance().find(Resource.AvMaterial,
+                            new QueryParameters()).get(index - 1);
+                    break;
+                case "journalissue":
+                    item = SqlStorage.getInstance().find(Resource.JournalIssue,
+                            new QueryParameters()).get(index - 1);
+                    break;
+                case "journalarticle":
+                    item = SqlStorage.getInstance().find(Resource.JournalArticle,
+                            new QueryParameters()).get(index - 1);
+                    break;
+                case "user":
+                    user = SqlStorage.getInstance().find(Resource.User,
+                            new QueryParameters()).get(index - 1);
+                    break;
+            }
 
-            String parameterlist = "title `Name` \ncopies `new number of copies` \n" +
-                    "*If you want to delete the item, type delete*";
-            sendMessage(sender, update, "This is the parameter list for editing a use book; first type the key of the " +
-                    "parameter you want to edit, followed by its new value, then separate each with a comma(,)");
-            sendMessage(sender, update, parameterlist);
 
-        }
+        if (user != null) { userCursor.put(chatId, user); sendMessage(sender, update, user.getUser().toString());}
+        else if(item != null) { documentCursor.put(chatId, item); sendMessage(sender, update, item.getItem().toString());}
+
+            String details = "This is the parameter list for editing; first type the key of the " +
+                    "parameter you want to edit, followed by its new value, then separate each with a semicolon(;)\n" +
+                    editParser.showEditFormat(type) + "\n*If you want to delete the item, type* `delete`\n" +
+                                        "Example below:\n"
+                    + editParser.showEditExample(type);
+            sendMessage(sender, update, details);
     }
 
     static HashMap<String, String> editParams = new HashMap<>();

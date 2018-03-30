@@ -15,7 +15,7 @@ public class LoginCommand extends Command {
         String data;
         switch (currentState) {
             case "start":
-                String message = "Enter your username and password separated by a space";
+                String message = "Enter your username and password, separated by a space:";
                 sendMessage(sender, update, message);
                 data = "login_password";
                 return data;
@@ -26,9 +26,8 @@ public class LoginCommand extends Command {
                 String password = credentials.split("\\s")[1].trim();
 
 
-                System.out.println(username);
-                    UserEntry user = SqlStorage.getInstance().find(
-                            Resource.User, new QueryParameters().add("login", username)).get(0);
+                UserEntry user = SqlStorage.getInstance().find(Resource.User,
+                        new QueryParameters().add("login", username)).get(0);
 
 
                      if (user == null) {

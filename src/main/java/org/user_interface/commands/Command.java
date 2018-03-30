@@ -1,6 +1,5 @@
 package org.user_interface.commands;
 
-import org.items.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.resources.*;
@@ -11,9 +10,12 @@ import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.user_interface.ui.KeyboardUtils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 public abstract class Command {
 
@@ -22,6 +24,7 @@ public abstract class Command {
     static HashMap<Long, UserEntry> currentUser = new HashMap<>();
 
     static HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
+    static HashMap<Long, UserEntry> userCursor = new HashMap<>();
 
     //executes an action, then returns an object that contains some
     //information back to the Bot class
@@ -90,14 +93,27 @@ public abstract class Command {
         sendMessage(sender, update, builder.toString());
     }
 
-    void showDocumentDetails(AbsSender sender, Update update, ItemEntry item, String type) {
+    void showDocumentDetails(AbsSender sender, Update update, ItemEntry item) {
         String bookDetails = item.getItem().toString() +
                 "\nCopies: " + item.getItem().getCopiesNum();
 
         keyboardUtils.setInlineKeyBoard(sender, update, bookDetails, new ArrayList<String>(){{
-            add("Checkout " + type);
+            add("Checkout");
             add("Cancel Checkout");
         }});
 
+    }
+
+
+    LocalDate parseDate(String a) {
+        DateFormat df = new SimpleDateFormat("MMddyyyy", Locale.ENGLISH);
+        Date result = null;
+        try {
+            result = df.parse(a);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(result != null) return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return null;
     }
 }

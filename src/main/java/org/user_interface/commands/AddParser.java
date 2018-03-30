@@ -3,15 +3,8 @@ package org.user_interface.commands;
 import org.items.*;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class AddParser extends Command{
 
@@ -84,18 +77,6 @@ public class AddParser extends Command{
 
         return result;
     }
-
-    LocalDate parseDate(String a) {
-        DateFormat df = new SimpleDateFormat("MMddyyyy", Locale.ENGLISH);
-        Date result = null;
-        try {
-            result = df.parse(a);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
 
     @Override
     public String run(AbsSender sender, Update update, String info) {
