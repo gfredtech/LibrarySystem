@@ -1,8 +1,15 @@
 package org.storage;
 
-import org.storage.resources.CheckoutEntry;
+import javafx.util.Pair;
+import org.storage.resources.*;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class LibraryStorage extends SqlStorage {
@@ -17,6 +24,16 @@ public class LibraryStorage extends SqlStorage {
             return c.getDueDate().until(LocalDate.now()).getDays()*feePerDay;
         else
             return 0;
+    }
+
+    public List<UserEntry> getQueueFor(ItemEntry item) {
+        List<PendingRequestEntry> requests = find(Resource.PendingRequest,
+                new QueryParameters().add("item_id", item.getId()));
+        List<UserEntry> patrons =
+                requests.stream().map(PendingRequestEntry::getUser)
+                        .collect(Collectors.toCollection(LinkedList::new));
+        sortAwaitingPatronsList(patrons);
+        return patrons;
     }
 
     public static LibraryStorage getInstance() {
@@ -36,6 +53,22 @@ public class LibraryStorage extends SqlStorage {
 
     protected LibraryStorage(String databaseName, String userName, String userPassword) throws  SQLException {
         super(databaseName, userName, userPassword);
+    }
+
+    private void sortAwaitingPatronsList(List<UserEntry> patrons) {
+        HashMap<Pair<String, String>, Integer> priorities = new HashMap<>();
+        priorities.put(new Pair<>("Student", null), 1);
+        priorities.put(new Pair<>("Faculty", "Instructor"), 2);
+        priorities.put(new Pair<>("Faculty", "TA"), 3);
+        priorities.put(new Pair<>("Visiting", null), 4);
+        priorities.put(new Pair<>("Faculty", "Professor"), 5);
+        patrons.sort((o1, o2) -> {
+            Pair<String, String> o1type =
+                    new Pair<>(o1.getUser().getType(), o1.getUser().getSubtype());
+            Pair<String, String> o2type =
+                    new Pair<>(o2.getUser().getType(), o2.getUser().getSubtype());
+            return priorities.get(o1type) - priorities.get(o2type);
+        });
     }
 
     private static LibraryStorage instance;

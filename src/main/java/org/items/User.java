@@ -31,24 +31,28 @@ public class User {
         this.name = name;
     }
 
+    public static List<String> getTypes() {
+        return Arrays.asList("Librarian", "Student", "Faculty", "Visiting");
+    }
+
     public void setType(String type) {
-        final List<String> types =
-                Arrays.asList("Librarian", "Student", "Faculty", "Visiting");
-        if (types.contains(type)) {
+        if (getTypes().contains(type)) {
             this.type = type;
         } else {
-            throw new IllegalArgumentException("Invalid type: "+type+"; Should be one of "+types);
+            throw new IllegalArgumentException("Invalid type: "+type+"; Should be one of "+getTypes());
         }
     }
 
+    public static List<String> getSubypes() {
+        return Arrays.asList("Instructor", "TA", "Professor");
+    }
+
     public void setSubtype(String subtype) {
-        final List<String> subtypes =
-                Arrays.asList("Instructor", "TA", "Professor");
-        if (subtype == null || subtypes.contains(subtype)) {
+        if (subtype == null || getSubypes().contains(subtype)) {
             this.subtype = subtype;
         } else {
             throw new IllegalArgumentException(
-                    "Invalid subtype: "+subtype+"; Should be one of "+subtypes);
+                    "Invalid subtype: "+subtype+"; Should be one of "+getSubypes());
         }
     }
 
