@@ -1,5 +1,5 @@
 import org.items.User;
-import org.storage.EntrySerializer;
+import org.storage.ItemSerializer;
 import org.storage.QueryParameters;
 
 import java.time.LocalDate;
@@ -67,21 +67,21 @@ public class TestItems {
         p1.setPhoneNumber("30001");
         p1.setAddress("Via Margutta, 3");
         p1.setLogin("s.afonso");
-        users.put("sergey", EntrySerializer.serialize(p1));
+        users.put("sergey", ItemSerializer.serialize(p1));
 
         User p2 = new User(
                 1011, "Nadia Teixeira", "Student", null);
         p2.setPhoneNumber("30002");
         p2.setAddress("Via Sacra, 13");
         p2.setLogin("n.teixeira");
-        users.put("nadia", EntrySerializer.serialize(p2));
+        users.put("nadia", ItemSerializer.serialize(p2));
 
         User p3 = new User(
                 1100, "Elvira Espindola", "Student", null);
         p3.setPhoneNumber("30003");
         p3.setAddress("Via del Corso, 22");
         p3.setLogin("e.espindola");
-        users.put("elvira", EntrySerializer.serialize(p3));
+        users.put("elvira", ItemSerializer.serialize(p3));
     }
 
 }

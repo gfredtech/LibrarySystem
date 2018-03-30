@@ -22,15 +22,18 @@ public class CheckoutEntry extends DatabaseEntry {
 
         patron = storage.get(User, userId).get();
         Resource<ItemEntry> resourceType =
-                Resource.<ItemEntry>fromString(itemType);
+                Resource.fromString(itemType);
         item = storage.get(resourceType, itemId).get();
+
+        isRenewed = rs.getBoolean("is_renewed");
     }
 
     public QueryParameters toQueryParameters() {
         return new QueryParameters()
                 .add("item_id", item.getId())
                 .add("user_id", patron.getId())
-                .add("due_date", dueDate);
+                .add("due_date", dueDate)
+                .add("is_renewed", isRenewed);
     }
 
     public Resource getResourceType() {
@@ -49,7 +52,12 @@ public class CheckoutEntry extends DatabaseEntry {
         return dueDate;
     }
 
+    public boolean isRenewed() {
+        return isRenewed;
+    }
+
     UserEntry patron;
     ItemEntry item;
     LocalDate dueDate;
+    boolean isRenewed;
 }

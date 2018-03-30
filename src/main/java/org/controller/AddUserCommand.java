@@ -1,7 +1,7 @@
 package org.controller;
 
 import org.items.User;
-import org.storage.EntrySerializer;
+import org.storage.ItemSerializer;
 import org.storage.Storage;
 import org.storage.resources.Resource;
 
@@ -14,7 +14,7 @@ public class AddUserCommand implements Command {
     @Override
     public Command.Result execute(Storage storage) {
         try {
-            storage.add(Resource.User, EntrySerializer.serialize(user));
+            storage.add(Resource.User, ItemSerializer.serialize(user));
             return Result.Success;
 
         } catch (Storage.QueryExecutionError e) {

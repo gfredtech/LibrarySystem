@@ -2,7 +2,7 @@ package org.storage.resources;
 
 import org.items.User;
 import org.storage.QueryParameters;
-import org.storage.EntrySerializer;
+import org.storage.ItemSerializer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -31,7 +31,7 @@ public class UserEntry extends DatabaseEntry {
 
     @Override
     public QueryParameters toQueryParameters() {
-        return EntrySerializer.serialize(user);
+        return ItemSerializer.serialize(user);
     }
 
     public int getId() {

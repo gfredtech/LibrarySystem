@@ -1,8 +1,7 @@
 package org.controller;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import org.items.Item;
-import org.storage.EntrySerializer;
+import org.storage.ItemSerializer;
 import org.storage.Storage;
 import org.storage.resources.Resource;
 
@@ -17,7 +16,7 @@ public class AddItemCommand implements Command {
     public Result execute(Storage storage) {
         try {
             storage.add(Resource.fromItem(item),
-                    EntrySerializer.serialize(item));
+                    ItemSerializer.serialize(item));
             return Result.Success;
         } catch (Storage.QueryExecutionError e) {
             return Result.failure(e.getMessage());

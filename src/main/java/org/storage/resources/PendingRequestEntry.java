@@ -22,6 +22,7 @@ public class PendingRequestEntry extends DatabaseEntry {
         item = storage.get(itemType, itemId).get();
 
         requestDate = rs.getDate("request_date").toLocalDate();
+        isOutstanding = rs.getBoolean("is_outstanding");
     }
 
     @Override
@@ -34,7 +35,8 @@ public class PendingRequestEntry extends DatabaseEntry {
         return new QueryParameters()
                 .add("user_id", user.getId())
                 .add("item_id", item.getId())
-                .add("request_date", requestDate);
+                .add("request_date", requestDate)
+                .add("is_outstanding", isOutstanding);
     }
 
     public ItemEntry getItem() {
@@ -49,7 +51,12 @@ public class PendingRequestEntry extends DatabaseEntry {
         return requestDate;
     }
 
+    public boolean isOutstanding() {
+        return isOutstanding;
+    }
+
     private UserEntry user;
     private ItemEntry item;
     private LocalDate requestDate;
+    private boolean isOutstanding;
 }

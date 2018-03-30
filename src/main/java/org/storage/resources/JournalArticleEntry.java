@@ -3,7 +3,7 @@ package org.storage.resources;
 import org.items.JournalArticle;
 import org.items.JournalArticleFactory;
 import org.storage.QueryParameters;
-import org.storage.EntrySerializer;
+import org.storage.ItemSerializer;
 import org.storage.SqlStorage;
 
 import java.sql.ResultSet;
@@ -25,7 +25,7 @@ public class JournalArticleEntry extends ItemEntry<JournalArticle> {
 
     @Override
     public QueryParameters toQueryParameters() {
-        return EntrySerializer.serialize(item).add("journal_id", journal.getId());
+        return ItemSerializer.serialize(item).add("journal_id", journal.getId());
     }
 
     @Override

@@ -20,9 +20,7 @@ class SqlQueryExecutor {
      * @throws ClassNotFoundException Dependencies not added
      */
     SqlQueryExecutor(String databaseName, String userName, String userPassword)
-            throws SQLException, ClassNotFoundException {
-        Class.forName("org.postgresql.Driver");
-
+            throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/" + databaseName;
         connection = DriverManager.getConnection(url, userName, userPassword);
     }

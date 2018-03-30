@@ -1,11 +1,10 @@
-import org.controller.CheckOutCommand;
-import org.controller.Command;
-import org.controller.LibraryManager;
+import org.controller.*;
 import org.junit.jupiter.api.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.Storage;
 import org.storage.resources.BookEntry;
+import org.storage.resources.CheckoutEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 
@@ -42,6 +41,33 @@ public class RequestQueueTests {
         QueryParameters p = new QueryParameters()
                 .add("user_id", user2.getId());
         assert !storage.find(Resource.PendingRequest, p).isEmpty();
+    }
+
+    @Test
+    void test2() {
+        BookEntry book =
+                storage.find(Resource.Book, data.books.get("cormen")).get(0);
+        UserEntry user =
+                storage.find(Resource.User, data.users.get("nadia")).get(0);
+        Command c = new CheckOutCommand(
+                user,
+                book);
+        manager.execute(c).validate();
+        CheckoutEntry checkout = storage.find(Resource.Checkout,
+                new QueryParameters().add("user_id", user.getId())
+                                     .add("item_id", book.getId())).get(0);
+        c = new RenewCommand(checkout);
+        manager.execute(c).validate();
+        checkout = storage.find(Resource.Checkout,
+                new QueryParameters().add("user_id", user.getId())
+                        .add("item_id", book.getId())).get(0);
+        c = new RenewCommand(checkout);
+        assert manager.execute(c) == Command.Result.Failure;
+        c = new ReturnCommand(user, book);
+        manager.execute(c).validate();
+        assert storage.find(Resource.Checkout,
+                new QueryParameters().add("user_id", user.getId())
+                        .add("item_id", book.getId())).isEmpty();
     }
 
     @AfterEach

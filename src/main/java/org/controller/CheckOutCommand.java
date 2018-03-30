@@ -34,7 +34,8 @@ public class CheckOutCommand implements Command {
         }
 
         p = new QueryParameters()
-                .add("user_id", user.getId());
+                .add("user_id", user.getId())
+                .add("item_id", itemEntry.getId());
         boolean itemIsAlreadyCheckedOutByTheUser =
                 ! storage.find(Resource.Checkout, p).isEmpty();
         if(itemIsAlreadyCheckedOutByTheUser) {
@@ -58,14 +59,14 @@ public class CheckOutCommand implements Command {
                     "; A request is placed in the queue.");
         }
 
-        params.add("due_date", calculateOverdueDate());
+        params.add("due_date", calculateOverdueDate(user, itemEntry));
         storage.add(Resource.Checkout, params);
         return Result.Success;
     }
 
 
 
-    private LocalDate calculateOverdueDate() {
+    static LocalDate calculateOverdueDate(UserEntry user, ItemEntry itemEntry) {
         LocalDate overdue;
         String userType = user.getUser().getType();
         if(userType.equals("Visiting")) {

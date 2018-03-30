@@ -31,8 +31,8 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
      * Calls the constructor of the superclass
      * @see SqlQueryExecutor#SqlQueryExecutor(String, String, String)
      */
-    private SqlStorage(String databaseName, String userName, String userPassword)
-            throws SQLException, ClassNotFoundException {
+    protected SqlStorage(String databaseName, String userName, String userPassword)
+            throws SQLException {
         super(databaseName, userName, userPassword);
     }
 

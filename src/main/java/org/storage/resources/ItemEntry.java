@@ -3,7 +3,7 @@ package org.storage.resources;
 import org.items.Item;
 import org.items.ItemFactory;
 import org.storage.QueryParameters;
-import org.storage.EntrySerializer;
+import org.storage.ItemSerializer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ public abstract class ItemEntry<T extends Item> extends DatabaseEntry {
 
     @Override
     public QueryParameters toQueryParameters() {
-        return EntrySerializer.serialize(item);
+        return ItemSerializer.serialize(item);
     }
 
     public T getItem() {

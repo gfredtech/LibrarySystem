@@ -83,7 +83,7 @@ class BookReturnEditSystemTests {
             BookEntry b =
                     storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0);
             UserEntry u = storage.get(Resource.User, 1011).get();
-            manager.execute(new CheckOutCommand(u, b));
+            assert manager.execute(new CheckOutCommand(u, b)).successful();
             assert false;
 
         } catch (NoSuchElementException e) {
@@ -100,7 +100,7 @@ class BookReturnEditSystemTests {
         Command checkout = new CheckOutCommand(
                 storage.get(Resource.User,1010).get(),
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         Command failingCheckout = new CheckOutCommand(
                 storage.get(Resource.User, 1100).get(),
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
@@ -109,7 +109,7 @@ class BookReturnEditSystemTests {
         checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1010).get(),
                 storage.find(Resource.Book, data.books.get("patterns").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         cleanUp();
     }
 
@@ -120,31 +120,31 @@ class BookReturnEditSystemTests {
         Command checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1010).get(),
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1010).get(),
                 storage.find(Resource.Book, data.books.get("patterns").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1010).get(),
                 storage.find(Resource.Book, data.books.get("brooks").subset("title")).get(0));
-        manager.execute(checkout);
+        assert manager.execute(checkout) == Command.Result.Failure;
         checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1010).get(),
                 storage.find(Resource.AvMaterial, data.av.get("null").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1011).get(),
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1011).get(),
                 storage.find(Resource.Book, data.books.get("patterns").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
                 storage.get(Resource.User, 1011).get(),
                 storage.find(Resource.AvMaterial, data.av.get("entropy").subset("title")).get(0));
-        manager.execute(checkout);
+        manager.execute(checkout).validate();
         cleanUp();
     }
 
@@ -164,6 +164,8 @@ class BookReturnEditSystemTests {
             if(!found.isEmpty()) {
                 int id = found.get(0).getId();
                 storage.removeAll(Resource.Checkout,
+                        new QueryParameters().add("user_id", id));
+                storage.removeAll(Resource.PendingRequest,
                         new QueryParameters().add("user_id", id));
                 storage.removeAll(Resource.User,
                         new QueryParameters().add("user_id", id));

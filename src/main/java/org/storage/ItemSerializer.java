@@ -2,7 +2,7 @@ package org.storage;
 
 import org.items.*;
 
-public class EntrySerializer {
+public class ItemSerializer {
 
     public static QueryParameters serialize(Item item) {
         if(item instanceof Book) {

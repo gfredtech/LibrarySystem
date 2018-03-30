@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 import org.storage.Storage;
-import org.storage.resources.BookEntry;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
@@ -37,10 +36,14 @@ public class CheckOutTests {
                 .copiesNum(1)
                 .keywords(Collections.emptyList())
                 .build();
-        manager.execute(new AddItemCommand(b));
+        manager.execute(new AddItemCommand(b)).validate();
         User u = new User(1001, "u1",
-                "Faculty", "Student");
-        manager.execute(new AddUserCommand(u));
+                "Student", null);
+        u.setAddress("Somewhere");
+        u.setPhoneNumber("12342");
+        u.setLogin("uone");
+        u.setPasswordHash(32);
+        manager.execute(new AddUserCommand(u)).validate();
     }
 
     @Test

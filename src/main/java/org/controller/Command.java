@@ -23,6 +23,19 @@ public interface Command {
             return r;
         }
 
+        // will throw if failure
+        public void validate() {
+            if (this == Failure)
+                throw new RuntimeException("The command execution resulted in a failure: " + this.info);
+        }
+
+        public boolean successful() {
+            if (this == Success) {
+                return true;
+            }
+            return false;
+        }
+
         String getInfo() {
             return info;
         }
