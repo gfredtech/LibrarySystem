@@ -22,7 +22,7 @@ public class Bot extends TelegramLongPollingBot {
         }else if(update.hasCallbackQuery()) {
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
             currentState.put(chatId, handler.handleCallbackUpdate(
-                    this, update, currentState.getOrDefault(chatId, null)));
+                    this, update, currentState.getOrDefault(chatId, "error")));
         }
     }
 

@@ -20,6 +20,7 @@ public class Interface {
         commandHashMap.put("add", new AddCommand());
         commandHashMap.put("fine", new FineCommand());
         commandHashMap.put("renew", new RenewCommand());
+        commandHashMap.put("error", new ErrorCommand());
         return commandHashMap;
 
     }
@@ -44,7 +45,10 @@ public class Interface {
     }
 
     String handleCallbackUpdate(AbsSender sender, Update update, String currentState) {
-        System.out.println("editrr"  + currentState);
+        System.out.println("editrr "  + currentState);
+        if(currentState.equals("error")) return initialize().getOrDefault(
+                "error", new ErrorCommand()).run(sender, update, "error");
+
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
 

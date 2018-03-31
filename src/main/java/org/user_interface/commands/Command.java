@@ -1,7 +1,7 @@
 package org.user_interface.commands;
 
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
 import org.storage.resources.*;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
@@ -54,18 +54,19 @@ public abstract class Command {
 
     void listBooks(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<BookEntry> books = SqlStorage.getInstance().find(Resource.Book, new QueryParameters());
+        List<BookEntry> books = LibraryStorage.getInstance().find(Resource.Book, new QueryParameters());
         for (int i = 0; i < books.size(); i++) {
             String name = books.get(i).getItem().getTitle();
             System.out.println(name);
             builder.append((i + 1) + ". " + name + "\n\n");
         }
+        if(builder.length() > 0)
         sendMessage(sender, update, builder.toString());
     }
 
     void listAvMaterials(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<AvMaterialEntry> avMaterials = SqlStorage.getInstance().find(Resource.AvMaterial, new QueryParameters());
+        List<AvMaterialEntry> avMaterials = LibraryStorage.getInstance().find(Resource.AvMaterial, new QueryParameters());
         for (int i = 0; i < avMaterials.size(); i++) {
             String name = avMaterials.get(i).getItem().getTitle();
             builder.append((i + 1) + ". " + name + "\n");
@@ -75,7 +76,7 @@ public abstract class Command {
 
     void listJournalIssues(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<JournalIssueEntry> journalIssues = SqlStorage.getInstance().find(Resource.JournalIssue, new QueryParameters());
+        List<JournalIssueEntry> journalIssues = LibraryStorage.getInstance().find(Resource.JournalIssue, new QueryParameters());
         for(int i = 0; i < journalIssues.size(); i++) {
             String name = journalIssues.get(i).getItem().getTitle();
             builder.append((i+1) + ". " + name + "\n");
@@ -85,7 +86,7 @@ public abstract class Command {
 
     void listJournalArticles(AbsSender sender, Update update) {
         StringBuilder builder = new StringBuilder();
-        List<JournalArticleEntry> articles = SqlStorage.getInstance().find(Resource.JournalArticle, new QueryParameters());
+        List<JournalArticleEntry> articles = LibraryStorage.getInstance().find(Resource.JournalArticle, new QueryParameters());
         for(int i = 0; i < articles.size(); i++) {
             String name = articles.get(i).getItem().getTitle();
             builder.append((i+1) + ". " + name + "\n");

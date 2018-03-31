@@ -77,6 +77,6 @@ public class SignUpCommand extends Command {
         //user.setAddress(address);
         //System.out.println(user.toString());
 
-        // SqlStorage.getInstance().addUser(user);
+        // LibraryStorage.getInstance().addUser(user);
     }
 }

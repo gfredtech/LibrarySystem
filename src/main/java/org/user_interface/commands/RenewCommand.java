@@ -1,7 +1,7 @@
 package org.user_interface.commands;
 
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
 import org.storage.resources.CheckoutEntry;
 import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
@@ -26,10 +26,9 @@ public class RenewCommand extends Command {
                 checkoutEntryMap.put(chatId, checkoutEntries);
                 return "renew_indexnumber";
 
-            case "index_number":
+            case "indexnumber":
                 selectItemToRenew(sender, update, chatId, checkoutEntryMap.get(chatId));
                 break;
-
         }
 
         return null;
@@ -52,7 +51,7 @@ public class RenewCommand extends Command {
     }
 
     List<CheckoutEntry> listCheckedOutMaterials(AbsSender sender, Update update, Long chatId) {
-        List<CheckoutEntry> entries = SqlStorage.getInstance().find(
+        List<CheckoutEntry> entries = LibraryStorage.getInstance().find(
                 Resource.Checkout, new QueryParameters());
 
         if(entries == null || entries.isEmpty()) {

@@ -1,17 +1,14 @@
 package org.user_interface.commands;
 
 import org.controller.CheckOutCommand;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
-import org.storage.Storage;
 import org.storage.resources.AvMaterialEntry;
 import org.storage.resources.BookEntry;
 import org.storage.resources.JournalIssueEntry;
 import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CheckoutItemCommand extends Command {
@@ -69,7 +66,7 @@ public class CheckoutItemCommand extends Command {
             sendMessage(sender, update, "Input is not a number.");
             return;
         }
-        bookSelected = SqlStorage.getInstance().find(Resource.Book, new QueryParameters()).get(position - 1);
+        bookSelected = LibraryStorage.getInstance().find(Resource.Book, new QueryParameters()).get(position - 1);
 
         if (bookSelected != null) {
             showDocumentDetails(sender, update, bookSelected);
@@ -89,7 +86,7 @@ public class CheckoutItemCommand extends Command {
             return;
         }
 
-        selected = SqlStorage.getInstance().find(Resource.AvMaterial, new QueryParameters()).get(position1 - 1);
+        selected = LibraryStorage.getInstance().find(Resource.AvMaterial, new QueryParameters()).get(position1 - 1);
 
         if (selected != null) {
             showDocumentDetails(sender, update, selected);
@@ -109,7 +106,7 @@ public class CheckoutItemCommand extends Command {
             return;
 
         }
-        selectedJournal = SqlStorage.getInstance().find(Resource.JournalIssue, new QueryParameters()).get(position-1);
+        selectedJournal = LibraryStorage.getInstance().find(Resource.JournalIssue, new QueryParameters()).get(position-1);
 
         if(selectedJournal != null) {
             showDocumentDetails(sender, update, selectedJournal);
@@ -139,7 +136,7 @@ public class CheckoutItemCommand extends Command {
             CheckOutCommand command = new CheckOutCommand(currentUser.get(chatId),
                     documentCursor.get(chatId));
 
-            command.execute(SqlStorage.getInstance());
+            command.execute(LibraryStorage.getInstance());
 
             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                     documentCursor.get(chatId).getItem().getTitle() + " Checked out successfully.");

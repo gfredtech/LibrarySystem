@@ -1,8 +1,8 @@
 package org.user_interface.commands;
 
 
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
@@ -36,7 +36,7 @@ public class EditParser extends Command {
 
         //update core parameters
         if(editParams.containsKey("title")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     type, new QueryParameters().add("book_id",
                             documentCursor.get(chatId).getId()),
                     new QueryParameters().add("title", editParams.get("title")));
@@ -44,21 +44,21 @@ public class EditParser extends Command {
         }
 
         if(editParams.containsKey("copies")) {
-            SqlStorage.getInstance().updateAll(type,
+            LibraryStorage.getInstance().updateAll(type,
                     new QueryParameters().add(type.getTableKey(), documentCursor.get(chatId).getId())
                     ,new QueryParameters().add("copy_num", editParams.get("copies")));
             editParams.remove("copies");
         }
 
         if(editParams.containsKey("reference")) {
-            SqlStorage.getInstance().updateAll(type,
+            LibraryStorage.getInstance().updateAll(type,
                     new QueryParameters().add(type.getTableKey(), documentCursor.get(chatId).getId())
                     , new QueryParameters().add("is_reference", Boolean.valueOf(editParams.get("reference"))));
             editParams.remove("copies");
         }
 
         if(editParams.containsKey("keywords")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     type, new QueryParameters().add(type.getTableKey(),
                             documentCursor.get(chatId).getId()),
                     new QueryParameters().add("keywords",
@@ -66,7 +66,7 @@ public class EditParser extends Command {
             editParams.remove("keywords");
         }
         if(editParams.containsKey("price")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     type, new QueryParameters().add(type.getTableKey(),
                             documentCursor.get(chatId).getId()),
                     new QueryParameters().add("price",
@@ -92,7 +92,7 @@ public class EditParser extends Command {
 
             ItemEntry entry = null;
             if (itemId != -1) {
-                entry = (ItemEntry) SqlStorage.getInstance().find(type,
+                entry = (ItemEntry) LibraryStorage.getInstance().find(type,
                         new QueryParameters().add(type.getTableKey(), itemId)).get(0);
             }
 
@@ -113,20 +113,20 @@ public class EditParser extends Command {
     }
 
     private int applyEditParamsJournalIssue(Long chatId) {
-        if(editParams.containsKey("publisher")) SqlStorage.getInstance().updateAll(
+        if(editParams.containsKey("publisher")) LibraryStorage.getInstance().updateAll(
                 Resource.JournalIssue, new QueryParameters().add("journal_issue_id",
                         documentCursor.get(chatId).getId()),
                 new QueryParameters().add("publisher", editParams.get("publisher")));
 
         if(editParams.containsKey("publishdate")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.JournalIssue, new QueryParameters().add("journal_issue_id",
                             documentCursor.get(chatId).getId()),
                     new QueryParameters().add("publication_date",
                             parseDate(editParams.get("publishdate"))));
         }
 
-        if(editParams.containsKey("editors")) SqlStorage.getInstance().updateAll(
+        if(editParams.containsKey("editors")) LibraryStorage.getInstance().updateAll(
                 Resource.AvMaterial, new QueryParameters().add("journal_issue_id",
                         documentCursor.get(chatId).getId()),
                 new QueryParameters().add("editors",
@@ -137,7 +137,7 @@ public class EditParser extends Command {
     }
 
     private int applyEditParamsAvMaterial(Long chatId) {
-        if(editParams.containsKey("authors")) SqlStorage.getInstance().updateAll(
+        if(editParams.containsKey("authors")) LibraryStorage.getInstance().updateAll(
                 Resource.AvMaterial, new QueryParameters().add("av_material_id",
                         documentCursor.get(chatId).getId()),
                 new QueryParameters().add("authors",
@@ -148,27 +148,27 @@ public class EditParser extends Command {
     private int applyEditParamsBook(Long chatId) {
         System.out.println(editParams.toString());
 
-        if(editParams.containsKey("publisher")) SqlStorage.getInstance().updateAll(
+        if(editParams.containsKey("publisher")) LibraryStorage.getInstance().updateAll(
                 Resource.Book, new QueryParameters().add("book_id",
                         documentCursor.get(chatId).getId()),
                 new QueryParameters().add("publisher", editParams.get("publisher")));
 
         if(editParams.containsKey("bestseller")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.Book, new QueryParameters().add("book_id",
                             documentCursor.get(chatId).getId()),
                     new QueryParameters().add("is_bestseller",
                             Boolean.valueOf(editParams.get("bestseller"))));
         }
 
-        if(editParams.containsKey("authors")) SqlStorage.getInstance().updateAll(
+        if(editParams.containsKey("authors")) LibraryStorage.getInstance().updateAll(
                 Resource.Book, new QueryParameters().add("book_id",
                         documentCursor.get(chatId).getId()),
                 new QueryParameters().add("authors",
                         parseGroupItems(editParams.get("authors"))));
 
         if(editParams.containsKey("publishdate")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.Book, new QueryParameters().add("book_id",
                             documentCursor.get(chatId).getId()),
                             new QueryParameters().add("publication_date",
@@ -223,49 +223,49 @@ public class EditParser extends Command {
         //update parameters
 
         if(editParams.containsKey("name")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()),
                     new QueryParameters().add("name", editParams.get("name")));
         }
 
         if(editParams.containsKey("address")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()),
                     new QueryParameters().add("address", editParams.get("address")));
         }
 
         if(editParams.containsKey("phone")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()),
                     new QueryParameters().add("phone_number", editParams.get("phone")));
         }
 
         if(editParams.containsKey("type")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()),
                     new QueryParameters().add("type", editParams.get("type")));
         }
 
         if(editParams.containsKey("subtype")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()),
                     new QueryParameters().add("subtype", editParams.get("subtype")));
         }
 
         if(editParams.containsKey("login")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()),
                     new QueryParameters().add("login", editParams.get("login")));
         }
 
         if(editParams.containsKey("password")) {
-            SqlStorage.getInstance().updateAll(
+            LibraryStorage.getInstance().updateAll(
                     Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()),
                     new QueryParameters().add("password_hash", editParams.get("password").hashCode()));

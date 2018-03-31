@@ -4,8 +4,9 @@ import org.items.AvMaterial;
 import org.items.Book;
 import org.items.JournalArticle;
 import org.items.User;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
+import org.storage.LibraryStorage;
 import org.storage.resources.CheckoutEntry;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
@@ -62,7 +63,7 @@ public class ReturnItemCommand extends Command {
 
         //TODO: return item
         new org.controller.ReturnCommand(currentUser.get(chatId), entry.getItem()).execute(
-                SqlStorage.getInstance());
+                LibraryStorage.getInstance());
         keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), 
                 entry.getItem().getItem().toString() + " returned successfully!!");
 
@@ -95,15 +96,15 @@ public class ReturnItemCommand extends Command {
         System.out.println(type);
         List<CheckoutEntry> entries = null;
         if(type.equals("book")) {
-            entries = SqlStorage.getInstance().find(
+            entries = LibraryStorage.getInstance().find(
                     Resource.Checkout, new QueryParameters().add("item_type", "book")
             .add("user_id", user.getCardNumber()));
         }else if(type.equals("av_material")) {
-            entries = SqlStorage.getInstance().find(
+            entries = LibraryStorage.getInstance().find(
                     Resource.Checkout, new QueryParameters().add("user_id", user.getCardNumber())
                     .add("item_type", "av_material"));
         } else if(type.equals("journal_article")) {
-            entries = SqlStorage.getInstance().find(
+            entries = LibraryStorage.getInstance().find(
                     Resource.Checkout, new QueryParameters().add("user_id", user.getCardNumber())
                             .add("item_type", "journal_issue"));
         }

@@ -1,7 +1,7 @@
 package org.user_interface.commands;
 
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
@@ -94,7 +94,7 @@ public class EditCommand extends Command {
 
     private List<UserEntry> showUsersInDatabase(AbsSender sender, Update update, Long chatId) {
         sendMessage(sender, update, "Here's a list of all users: Select the user you want to edit.");
-        List<UserEntry> userEntryList = SqlStorage.getInstance().find(Resource.User,
+        List<UserEntry> userEntryList = LibraryStorage.getInstance().find(Resource.User,
                 new QueryParameters());
         if(userEntryList == null) {
             return null;
@@ -160,23 +160,23 @@ public class EditCommand extends Command {
 
             switch (type) {
                 case "book":
-                    item = SqlStorage.getInstance().find(Resource.Book,
+                    item = LibraryStorage.getInstance().find(Resource.Book,
                             new QueryParameters()).get(index - 1);
                     break;
                 case "avmaterial":
-                    item = SqlStorage.getInstance().find(Resource.AvMaterial,
+                    item = LibraryStorage.getInstance().find(Resource.AvMaterial,
                             new QueryParameters()).get(index - 1);
                     break;
                 case "journalissue":
-                    item = SqlStorage.getInstance().find(Resource.JournalIssue,
+                    item = LibraryStorage.getInstance().find(Resource.JournalIssue,
                             new QueryParameters()).get(index - 1);
                     break;
                 case "journalarticle":
-                    item = SqlStorage.getInstance().find(Resource.JournalArticle,
+                    item = LibraryStorage.getInstance().find(Resource.JournalArticle,
                             new QueryParameters()).get(index - 1);
                     break;
                 case "user":
-                    user = SqlStorage.getInstance().find(Resource.User,
+                    user = LibraryStorage.getInstance().find(Resource.User,
                             new QueryParameters()).get(index - 1);
                     break;
             }

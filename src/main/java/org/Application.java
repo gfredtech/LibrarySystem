@@ -1,6 +1,7 @@
 package org;
 
 
+import org.storage.LibraryStorage;
 import org.storage.SqlStorage;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
@@ -18,7 +19,8 @@ public class Application {
         TelegramBotsApi botsApi = new TelegramBotsApi();
 
         try {
-            SqlStorage.connect(databaseName, userName, password);
+           // SqlStorage.connect(databaseName, userName, password);
+            LibraryStorage.connect(databaseName, userName, password);
             botsApi.registerBot(new Bot());
 
         } catch (TelegramApiException e) {

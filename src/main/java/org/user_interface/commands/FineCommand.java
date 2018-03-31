@@ -1,13 +1,12 @@
 package org.user_interface.commands;
 
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
 import org.storage.resources.CheckoutEntry;
 import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,13 +19,13 @@ public class FineCommand extends Command {
         switch (info) {
             case  "startnext":
                 fineItems = displayFines(sender, update, chatId);
-                if(fineItems == null) return null;
+                if(fineItems == null) return "menu_main";
                 return "fine_select";
 
             case "select":
                 System.out.println("reached");
                 selectItemForFine(sender, update, chatId);
-                return "main_menu";
+                return "menu_main";
 
         }
 
@@ -41,7 +40,7 @@ public class FineCommand extends Command {
             builder.append(i).append(". ");
             builder.append(e.getItem().getItem().getTitle()).append(", ");
             builder.append(e.getPatron().getUser().getName()).append(", ");
-            builder.append(calculateFine(e)).append(" rubles");
+            builder.append(LibraryStorage.getInstance().caluclateFee(e)).append(" rubles");
             builder.append("\n");
         }
 
@@ -71,7 +70,7 @@ public class FineCommand extends Command {
        System.out.println(entry.getItem().getItem().getTitle());
 
        new org.controller.ReturnCommand(entry.getPatron(), entry.getItem()).execute(
-               SqlStorage.getInstance());
+               LibraryStorage.getInstance());
        keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                        "Fine paid successfully by " + entry.getPatron().getUser().getName() + " for "
                + entry.getItem().getItem().getTitle());
@@ -80,7 +79,7 @@ public class FineCommand extends Command {
 
     private List<CheckoutEntry> finesForUsers() {
 
-        List<CheckoutEntry> checkoutEntries = SqlStorage.getInstance().find(Resource.Checkout,
+        List<CheckoutEntry> checkoutEntries = LibraryStorage.getInstance().find(Resource.Checkout,
                 new QueryParameters());
 
         List<CheckoutEntry> overdue = new ArrayList<>();
@@ -93,16 +92,6 @@ public class FineCommand extends Command {
         return overdue;
 
     }
-
-   private int calculateFine(CheckoutEntry entry) {
-        LocalDate now = LocalDate.now();
-        Period diff = Period.between(entry.getDueDate(), now);
-        int fineAmount = diff.getDays() * 100;
-        if(fineAmount > entry.getItem().getItem().getPrice()) return entry.getItem().getItem().getPrice();
-        return fineAmount;
-    }
-
-
 
     static List<CheckoutEntry> fineItems;
 }

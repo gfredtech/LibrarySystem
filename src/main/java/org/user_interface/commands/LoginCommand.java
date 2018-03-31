@@ -1,6 +1,6 @@
 package org.user_interface.commands;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
@@ -26,7 +26,7 @@ public class LoginCommand extends Command {
                 String password = credentials.split("\\s")[1].trim();
 
 
-                UserEntry user = SqlStorage.getInstance().find(Resource.User,
+                UserEntry user = LibraryStorage.getInstance().find(Resource.User,
                         new QueryParameters().add("login", username)).get(0);
 
 
@@ -38,6 +38,8 @@ public class LoginCommand extends Command {
                         System.out.println(password.hashCode());
                         System.out.println(currentUser.get(chatId).getUser().getPasswordHash());
                         if (password.hashCode() == currentUser.get(chatId).getUser().getPasswordHash()) {
+                            String notifications = new NotificationHandler().init(currentUser.get(chatId).getId());
+                            if(notifications.length() > 0) sendMessage(sender, update, notifications);
                             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), "Success!");
                             return "menu_main";
                         } else {
