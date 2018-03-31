@@ -36,6 +36,8 @@ public class LibraryStorage extends SqlStorage {
         return patrons;
     }
 
+
+
     public static LibraryStorage getInstance() {
         if(instance == null)
             throw new RuntimeException("SQL Storage has not been initialized");

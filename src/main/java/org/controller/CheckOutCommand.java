@@ -30,26 +30,28 @@ public class CheckOutCommand implements Command {
 
 
 
+    @Override
     public Command.Result execute(Storage storage) {
         QueryParameters p = new QueryParameters()
                 .add("item_id", itemEntry.getId());
         int checkoutNum = storage.getNumOfEntries(Resource.Checkout, p);
+        int outstandingsNum = storage.getNumOfEntries(Resource.PendingRequest, p.add("is_outstanding", true));
         Item item = itemEntry.getItem();
 
-        if(item.isReference()) {
-            return  Result.failure(
-                    "A reference item cannot be checked out: "+item.getTitle());
+        if (item.isReference()) {
+            return Result.failure(
+                    "A reference item cannot be checked out: " + item.getTitle());
         }
 
         p = new QueryParameters()
                 .add("user_id", user.getId())
                 .add("item_id", itemEntry.getId());
         boolean itemIsAlreadyCheckedOutByTheUser =
-                ! storage.find(Resource.Checkout, p).isEmpty();
-        if(itemIsAlreadyCheckedOutByTheUser) {
+                !storage.find(Resource.Checkout, p).isEmpty();
+        if (itemIsAlreadyCheckedOutByTheUser) {
             final String result = String.format(
                     "A copy of the item %s is already checked out by the user %s",
-                            item.getTitle(), user.getUser().getCardNumber());
+                    item.getTitle(), user.getUser().getCardNumber());
             return Result.failure(result);
         }
 
@@ -58,13 +60,17 @@ public class CheckOutCommand implements Command {
                 .add("item_type", itemEntry.getResourceType().getTableName())
                 .add("user_id", user.getId());
 
-        if(checkoutNum >= item.getCopiesNum()) {
-            params.add("request_date", dateOfCheckout);
-            storage.add(Resource.PendingRequest, params);
+        if (checkoutNum >= item.getCopiesNum()) {
+            if (outstandingsNum < item.getCopiesNum()) {
+                params.add("request_date", dateOfCheckout);
+                storage.add(Resource.PendingRequest, params);
 
-            return Result.warning(
-                    "There are no copies available of "+ item.getTitle()+
-                    "; A request is placed in the queue.");
+                return Result.warning(
+                        "There are no copies available of " + item.getTitle() +
+                                "; A request is placed in the queue.");
+            } else {
+                return Result.failure("All items are under an outstanding request. Checking is not possible");
+            }
         }
 
         params.add("due_date", calculateOverdueDate(user, itemEntry, dateOfCheckout));

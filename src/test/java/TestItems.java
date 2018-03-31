@@ -82,6 +82,13 @@ public class TestItems {
         p3.setAddress("Via del Corso, 22");
         p3.setLogin("e.espindola");
         users.put("elvira", ItemSerializer.serialize(p3));
+
+        User alice = new User(
+                2017, "Alice", "Librarian", null);
+        alice.setPhoneNumber("...");
+        alice.setAddress("...");
+        alice.setLogin("alice.");
+        users.put("alice", ItemSerializer.serialize(alice));
     }
 
 }

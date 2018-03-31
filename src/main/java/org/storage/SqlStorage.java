@@ -72,14 +72,14 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
 
     @Override
     public int getNumOfEntries(Resource resource, QueryParameters params) {
-        try (Query q = select("checkout", params,
+        try (Query q = select(resource.getTableName(), params,
                 Collections.singletonList("count(*)"))){
             ResultSet rs = q.getResult();
             rs.next();
             return rs.getInt(1);
 
         } catch (SQLException e) {
-            final String errorMessage = "Error during retrieving the number of checkout";
+            final String errorMessage = "Error during retrieving the number of entries in "+resource.getTableName();
             throw new QueryExecutionError(errorMessage, e);
         }
 
