@@ -31,7 +31,7 @@ public class LoginCommand extends Command {
                     sendMessage(sender, update, "You have less/more than the required input.");
                     return "login_start";
                 }
-                
+
                 UserEntry user = LibraryStorage.getInstance().find(Resource.User,
                         new QueryParameters().add("login", username)).get(0);
 
@@ -55,6 +55,13 @@ public class LoginCommand extends Command {
                             return "login_password";
                         }
                     }
+
+
+            case "logout":
+                currentUser.remove(chatId);
+                documentCursor.remove(chatId);
+                sendMessage(sender, update, "Logout successful. You can use /login to sign back in.");
+                return "start_start";
         }
         return null;
     }

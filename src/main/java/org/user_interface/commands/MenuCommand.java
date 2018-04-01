@@ -27,7 +27,10 @@ public class MenuCommand extends Command {
                 } else if (message.equals("fine")) {
                     return new Interface().handleMessageUpdate(sender, update, "fine_startnext");
 
-                } else return new ErrorCommand().run(sender, update, null);
+                } else if(message.equals("logout")) {
+                    return new Interface().handleMessageUpdate(sender, update, "login_logout");
+                }
+                else return new ErrorCommand().run(sender, update, null);
 
             } else {
                 return new Interface().handleMessageUpdate(sender, update, null);

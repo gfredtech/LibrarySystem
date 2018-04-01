@@ -26,10 +26,12 @@ public class KeyboardUtils {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Checkout");
-        row.add("Return");
-        row.add("Renew");
-        keyboard.add(row);
+        if(!user.getType().equals("Librarian")) {
+            row.add("Checkout");
+            row.add("Return");
+            row.add("Renew");
+            keyboard.add(row);
+        }
 
         if(user.getType().equals("Librarian")) {
             row = new KeyboardRow();
