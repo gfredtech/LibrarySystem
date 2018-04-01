@@ -15,7 +15,6 @@ public class NotificationHandler {
                 new QueryParameters().add("user_id", userId));
 
         StringBuilder builder = new StringBuilder();
-        builder.append("**You have Notifications**");
         int i = 1;
         for(PendingRequestEntry e: entry) {
             String message = itemAvailableToCheckout(e);

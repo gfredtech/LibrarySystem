@@ -50,6 +50,7 @@ public class KeyboardUtils {
 
         SendMessage message = new SendMessage().setChatId(chatId).setText(msg);
         message.setReplyMarkup(keyboardMarkup);
+        message.enableMarkdown(true);
         try {
             sender.execute(message);
         } catch (TelegramApiException e) {

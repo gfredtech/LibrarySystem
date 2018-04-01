@@ -1,23 +1,30 @@
 package org.user_interface.commands;
 
+import org.controller.AddUserCommand;
+import org.items.User;
+import org.storage.LibraryStorage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SignUpCommand extends Command {
     private String credentials;
 
     @Override
     public String run(AbsSender sender, Update update, String info) {
+        Long chatId;
+        if(update.hasMessage()) chatId = update.getMessage().getChatId();
+        else chatId = update.getCallbackQuery().getMessage().getChatId();
         String message;
         switch (info) {
             case "startnext":
                 message = "Welcome to the signup section.\n" +
                         "Please Enter your signup info,\nseparated by commas.\n\n" +
-                        "[fullname], [addresss], [phone], [login], [password], [type]\n\n" +
+                        "`[fullname], [addresss], [phone], [login], [password], [type], [subtype]`\n\n" +
                         "Examples:\n" +
-                        "John Smith, Innopolis Street 7, +12345678912, johnsmith, secret, Faculty\n" +
+                        "John Smith, Innopolis Street 7, +12345678912, johnsmith, secret, Faculty, Instructor\n" +
                         "Jane Doe, Washington Street, +98765432101, janedoe, secret, Student";
                 sendMessage(sender, update, message);
                 return "signup_validator";
@@ -25,25 +32,38 @@ public class SignUpCommand extends Command {
             case "validator":
                 credentials = update.getMessage().getText();
                 System.out.println(credentials.split(",").toString());
-                if (credentials.split(",").length != 6) {
+                if (credentials.split(",").length != 7) {
                     sendMessage(sender, update, "Input mismatch. Enter details again.");
                     return "signup_validator";
                 } else {
-                    signUpConfirm(sender, update, credentials);
+                    signUpConfirm(sender, update, chatId, credentials);
                     return "signup_confirm";
                 }
 
-                //Handle if student or faculty
 
             case "confirm":
                 System.out.println("Callback " + update.getCallbackQuery().getData());
                 if (update.getCallbackQuery().getData().equals("Confirm")) {
                     //TODO: create account here
-                    sendMessage(sender, update, "Account created successfully! Use /login to login to your account");
-                    return "start_startnext";
+                    org.controller.Command.Result res =
+                            addUserEntryMap.get(chatId).execute(LibraryStorage.getInstance());
+                    switch (res) {
+                        case Success:
+                            keyboardUtils.showMainMenuKeyboard(sender, update,
+                                    currentUser.get(chatId).getUser(),
+                                    "Account created successfully!");
+
+                            return "menu_main";
+                        case Failure:
+                            keyboardUtils.showMainMenuKeyboard(sender, update,
+                                    currentUser.get(chatId).getUser(),
+                                    res.getInfo());
+
+                    }
+
                 } else {
                     sendMessage(sender, update,
-                            "Signup cancelled. Use /login, or /signup again if you want to create an account");
+                            "Signup cancelled.");
                     return "start";
                 }
         }
@@ -51,17 +71,37 @@ public class SignUpCommand extends Command {
         return null;
     }
 
-    void signUpConfirm(AbsSender sender, Update update, String info) {
-        String fullName = info.split(",")[0].trim();
-        String address = info.split(",")[1].trim();
-        String phoneNumber = info.split(",")[2].trim();
-        String userName = info.split(",")[3].trim();
-        String type = info.split(",")[5].trim();
+    void signUpConfirm(AbsSender sender, Update update,Long chatId, String info) {
+        String fullName = info.split("[,]+")[0].trim();
+        String address = info.split("[,]+")[1].trim();
+        String phoneNumber = info.split("[,]+")[2].trim();
+        String userName = info.split("[,]+")[3].trim();
+        String password = info.split("[,]+")[4].trim();
+        String type = info.split("[,]+")[5].trim();
 
         String accountDetails = "Name: " + fullName +
                 "\nAddress: " + address + "\nPhone Number: " + phoneNumber +
                 "\nLogin: " + userName
                 + "\nType:" + type;
+        User user = new User(0);
+        user.setName(fullName);
+        user.setAddress(address);
+        user.setPhoneNumber(phoneNumber);
+        user.setLogin(userName);
+
+        if(User.getTypes().contains(type)) {
+            user.setType(type);
+            }
+
+            if(!user.getType().equals("Librarian") ||
+                     !user.getType().equals("Student")) {
+            user.setSubtype(info.split("[,]+")[6].trim());
+            }
+            user.setPassword(password);
+         AddUserCommand command = new AddUserCommand(user);
+
+         addUserEntryMap.put(chatId, command);
+
         keyboardUtils.setInlineKeyBoard(sender, update, accountDetails, new ArrayList<String>() {{
             add("Confirm");
             add("Cancel");
@@ -70,13 +110,9 @@ public class SignUpCommand extends Command {
 
     void createAccount() {
 
-       // User user = new User(1001, fullName, "Patron", signupSubType);
-        //user.setLogin(username);
-        //user.setPassword(password);
-        //user.setPhoneNumber(phoneNumber);
-        //user.setAddress(address);
-        //System.out.println(user.toString());
 
-        // LibraryStorage.getInstance().addUser(user);
     }
+
+    private static HashMap<Long, AddUserCommand> addUserEntryMap = new
+            HashMap<>();
 }

@@ -36,7 +36,7 @@ public interface Command {
             return false;
         }
 
-        String getInfo() {
+       public String getInfo() {
             return info;
         }
         private String info;

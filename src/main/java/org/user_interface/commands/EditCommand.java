@@ -19,6 +19,9 @@ public class EditCommand extends Command {
 
         switch (info) {
             case "startnext":
+                UserEntry e = currentUser.get(chatId);
+                String auth = authorizationChecker(sender, update, e);
+                if(auth!= null) return auth;
                 keyboardUtils.showCRUDkeyboard(sender, update, "Edit");
                 return "edit_main";
 

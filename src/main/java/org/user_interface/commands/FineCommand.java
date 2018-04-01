@@ -4,6 +4,7 @@ import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.CheckoutEntry;
 import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 import java.time.LocalDate;
@@ -18,6 +19,9 @@ public class FineCommand extends Command {
         else chatId = update.getCallbackQuery().getMessage().getChatId();
         switch (info) {
             case  "startnext":
+                UserEntry e = currentUser.get(chatId);
+                String auth = authorizationChecker(sender, update, e);
+                if(auth!= null) return auth;
                 fineItems = displayFines(sender, update, chatId);
                 if(fineItems == null) return "menu_main";
                 return "fine_select";
@@ -92,6 +96,5 @@ public class FineCommand extends Command {
         return overdue;
 
     }
-
     static List<CheckoutEntry> fineItems;
 }
