@@ -15,6 +15,7 @@ public class OutstandingCommand extends Command {
     public String run(AbsSender sender, Update update, String info) {
         Long chatId = update.hasMessage() ? update.getMessage().getChatId():
                 update.getCallbackQuery().getMessage().getChatId();
+
         switch (info){
             case "start":
                 entries = showCheckoutQueue(sender, update, chatId);
@@ -39,7 +40,8 @@ public class OutstandingCommand extends Command {
         StringBuilder builder = new StringBuilder();
 
         if(pendingRequestEntries.size() != 0) {
-            sendMessage(sender, update, "here's a list of all documents pending request(s). select " +
+            sendMessage(sender, update,
+                    "here's a list of all documents pending request(s). select " +
                     "the one you'd like to place an outstanding request for");
             int i = 1;
             for(PendingRequestEntry e: pendingRequestEntries) {

@@ -1,6 +1,7 @@
 package org.user_interface.commands;
 
 
+import org.items.Book;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.ItemEntry;
@@ -79,7 +80,7 @@ public class EditParser extends Command {
             int itemId = -1;
             String itemType = type.getTableName();
             if (itemType.equals("book"))
-                itemId = applyEditParamsBook(chatId);
+                itemId = applyEditParamsBook(sender, update, chatId);
 
             else if (itemType.equals("av_material"))
                 itemId = applyEditParamsAvMaterial(chatId);
@@ -145,7 +146,7 @@ public class EditParser extends Command {
         return documentCursor.get(chatId).getId();
     }
 
-    private int applyEditParamsBook(Long chatId) {
+    private int applyEditParamsBook(AbsSender sender, Update update, Long chatId) {
         System.out.println(editParams.toString());
 
         if(editParams.containsKey("publisher")) LibraryStorage.getInstance().updateAll(
@@ -154,11 +155,19 @@ public class EditParser extends Command {
                 new QueryParameters().add("publisher", editParams.get("publisher")));
 
         if(editParams.containsKey("bestseller")) {
-            LibraryStorage.getInstance().updateAll(
-                    Resource.Book, new QueryParameters().add("book_id",
-                            documentCursor.get(chatId).getId()),
-                    new QueryParameters().add("is_bestseller",
-                            Boolean.valueOf(editParams.get("bestseller"))));
+            Book book = (Book) documentCursor.get(chatId).getItem();
+
+            if(!book.isReference()) {
+                LibraryStorage.getInstance().updateAll(
+                        Resource.Book, new QueryParameters().add("book_id",
+                                documentCursor.get(chatId).getId()),
+                        new QueryParameters().add("is_bestseller",
+                                Boolean.valueOf(editParams.get("bestseller"))));
+                } else {
+                if(Boolean.valueOf(editParams.get("bestseller")))
+                sendMessage(sender, update, "Cannot set a reference item as best seller.");
+            }
+
         }
 
         if(editParams.containsKey("authors")) LibraryStorage.getInstance().updateAll(
