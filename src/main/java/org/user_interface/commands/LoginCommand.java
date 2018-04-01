@@ -22,10 +22,16 @@ public class LoginCommand extends Command {
 
             case "password":
                 String credentials = update.getMessage().getText();
-                String username = credentials.split("\\s")[0].trim();
-                String password = credentials.split("\\s")[1].trim();
-
-
+                String tokens[] = credentials.split("\\s");
+                String username, password;
+                if(tokens.length == 2) {
+                    username = tokens[0].trim();
+                    password = tokens[1].trim();
+                } else {
+                    sendMessage(sender, update, "You have less/more than the required input.");
+                    return "login_start";
+                }
+                
                 UserEntry user = LibraryStorage.getInstance().find(Resource.User,
                         new QueryParameters().add("login", username)).get(0);
 

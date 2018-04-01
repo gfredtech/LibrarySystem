@@ -119,8 +119,7 @@ public class CheckoutItemCommand extends Command {
 
     private String displayItemsForCheckout(AbsSender sender, Update update) {
         String type = update.getCallbackQuery().getData();
-        sendMessage(sender, update, "Here's a " +
-                "list of all the specified documents in the library. Enter the number of the book you want:");
+
         switch (type) {
             case "Book":
                 listBooks(sender, update);

@@ -64,8 +64,11 @@ public abstract class Command {
                    .append(name)
                    .append("\n\n");
         }
-        if(builder.length() > 0)
-        sendMessage(sender, update, builder.toString());
+        if(builder.length() > 0) {
+            sendMessage(sender, update, "Here's a " +
+                    "list of all the specified documents in the library. Enter the number of the book you want:");
+            sendMessage(sender, update, builder.toString());
+        } else sendMessage(sender, update, "There are no books in the library.");
     }
 
     void listAvMaterials(AbsSender sender, Update update) {
@@ -78,7 +81,12 @@ public abstract class Command {
                    .append(name)
                    .append("\n");
         }
-        sendMessage(sender, update, builder.toString());
+
+        if(builder.length() > 0) {
+            sendMessage(sender, update, "Here's a " +
+                    "list of all the specified documents in the library. Enter the number of the book you want:");
+            sendMessage(sender, update, builder.toString());
+        } else sendMessage(sender, update, "There are no AV Materials in the library.");
     }
 
     void listJournalIssues(AbsSender sender, Update update) {
@@ -91,7 +99,11 @@ public abstract class Command {
                    .append(name)
                    .append("\n");
         }
-        sendMessage(sender, update, builder.toString());
+        if(builder.length() > 0) {
+            sendMessage(sender, update, "Here's a " +
+                    "list of all the specified documents in the library. Enter the number of the book you want:");
+            sendMessage(sender, update, builder.toString());
+        } else sendMessage(sender, update, "There are no Journal Issues in the library.");
     }
 
     void listJournalArticles(AbsSender sender, Update update) {
@@ -104,7 +116,11 @@ public abstract class Command {
                    .append(name)
                    .append("\n");
         }
-        sendMessage(sender, update, builder.toString());
+        if(builder.length() > 0) {
+            sendMessage(sender, update, "Here's a " +
+                    "list of all the specified documents in the library. Enter the number of the book you want:");
+            sendMessage(sender, update, builder.toString());
+        } else sendMessage(sender, update, "There are no Journal Articles in the library.");
     }
 
     void showDocumentDetails(AbsSender sender, Update update, ItemEntry item) {
