@@ -84,6 +84,7 @@ public class SignUpCommand extends Command {
                 "\nAddress: " + address + "\nPhone Number: " + phoneNumber +
                 "\nLogin: " + userName
                 + "\nType:" + type;
+        
         User user = new User(0);
         user.setName(fullName);
         user.setAddress(address);
@@ -92,11 +93,14 @@ public class SignUpCommand extends Command {
 
         if(User.getTypes().contains(type)) {
             user.setType(type);
+            System.out.println("... " + type);
             }
 
-            if(!user.getType().equals("Librarian") ||
-                     !user.getType().equals("Student")) {
-            user.setSubtype(info.split("[,]+")[6].trim());
+            if(type.equals("Librarian") || type.equals("Student")) {
+
+            }
+            else {
+                user.setSubtype(info.split("[,]+")[6].trim());
             }
             user.setPassword(password);
          AddUserCommand command = new AddUserCommand(user);
