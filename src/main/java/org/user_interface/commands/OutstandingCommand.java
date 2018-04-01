@@ -19,6 +19,7 @@ public class OutstandingCommand extends Command {
             case "start":
                 entries = showCheckoutQueue(sender, update, chatId);
                 if(entries == null) return "menu_main";
+
                 return "outstanding_select";
 
             case "select":
@@ -29,28 +30,32 @@ public class OutstandingCommand extends Command {
         return null;
     }
 
-
     List<PendingRequestEntry> showCheckoutQueue(AbsSender sender, Update update, Long chatId) {
 
         List<PendingRequestEntry> pendingRequestEntries =
                 LibraryStorage.getInstance().find(Resource.PendingRequest,
                         new QueryParameters());
+
         StringBuilder builder = new StringBuilder();
+
         if(pendingRequestEntries.size() != 0) {
             sendMessage(sender, update, "here's a list of all documents pending request(s). select " +
                     "the one you'd like to place an outstanding request for");
             int i = 1;
             for(PendingRequestEntry e: pendingRequestEntries) {
                 builder.append(i).append(". ")
-                        .append(e.getItem().getItem().getTitle())
+                        .append(e.getItem().getItem().getTitle()).append(" requested by ")
+                        .append(e.getUser().getUser().getName())
                         .append("\n");
             }
 
             sendMessage(sender, update, builder.toString());
+            return pendingRequestEntries;
         } else keyboardUtils.showMainMenuKeyboard(sender, update,
                 currentUser.get(chatId).getUser(),
                 "There are no documents pending request.");
-        return pendingRequestEntries;
+        return null;
+
     }
 
     void makeOutstandingRequest(AbsSender sender, Update update, Long chatId) {
@@ -81,6 +86,6 @@ public class OutstandingCommand extends Command {
                 message);
 
     }
-    
+
     static List<PendingRequestEntry> entries;
 }
