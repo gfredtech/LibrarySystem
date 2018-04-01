@@ -47,7 +47,7 @@ public class AddCommand extends Command{
             case "confirm":
                 message = update.getCallbackQuery().getData();
                 if(message.equals("Confirm")) {
-                    //TODO: add item to library
+
                     org.controller.Command.Result res =
                             addEntryMap.get(chatId).execute(LibraryStorage.getInstance());
 

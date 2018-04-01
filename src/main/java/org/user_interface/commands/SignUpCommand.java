@@ -45,7 +45,7 @@ public class SignUpCommand extends Command {
             case "confirm":
                 System.out.println("Callback " + update.getCallbackQuery().getData());
                 if (update.getCallbackQuery().getData().equals("Confirm")) {
-                    //TODO: create account here
+
                     org.controller.Command.Result res =
                             addUserEntryMap.get(chatId).execute(LibraryStorage.getInstance());
                     switch (res) {

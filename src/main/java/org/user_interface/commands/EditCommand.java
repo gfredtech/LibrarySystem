@@ -1,5 +1,6 @@
 package org.user_interface.commands;
 
+import org.postgresql.core.SqlCommand;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.ItemEntry;
@@ -32,7 +33,6 @@ public class EditCommand extends Command {
                     keyboardUtils.showEditDocumentKeyboard(sender, update);
                     return "edit_documenttype";
                 } else if (message != null && message.equals("Edit User")) {
-                    //TODO: EDIT users
                     showUsersInDatabase(sender, update, chatId);
                     return "edit_users";
                 }
@@ -126,11 +126,18 @@ public class EditCommand extends Command {
         if (input.equals("delete")) {
             switch (type) {
                 case "user_card":
-                    //TODO: remove user in `userCursor`
+
+                    LibraryStorage.getInstance().removeAll(
+                            Resource.User, new QueryParameters().add("user_id",
+                            userCursor.get(chatId).getId()));
                     default:
-                        //TODO: delete document in `documentCursor`
+
+                        ItemEntry e = documentCursor.get(chatId);
+                       LibraryStorage.getInstance().removeAll(
+                                e.getResourceType(), new QueryParameters().add(
+                                        e.getResourceType().getTableKey(), e.getId()));
+
             }
-//           SqlStorage.getInstance().removeBook(currentBook.getId());
             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
                       "Entity removed successfully");
             return;

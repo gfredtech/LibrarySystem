@@ -63,7 +63,7 @@ public class ReturnItemCommand extends Command {
         assert entry != null;
         System.out.println(entry.getItem().getItem().getTitle());
 
-        //TODO: return item
+
         ReturnCommand c = new ReturnCommand(currentUser.get(chatId), entry.getItem());
         Result result = c.execute(LibraryStorage.getInstance());
         String message = "";

@@ -1,5 +1,6 @@
 package org.user_interface.commands;
 
+import org.controller.RenewCommand;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.CheckoutEntry;
@@ -10,7 +11,7 @@ import org.telegram.telegrambots.bots.AbsSender;
 import java.util.HashMap;
 import java.util.List;
 
-public class RenewCommand extends Command {
+public class RenewItemCommand extends Command {
     @Override
     public String run(AbsSender sender, Update update, String info) {
         Long chatId;
@@ -27,7 +28,7 @@ public class RenewCommand extends Command {
 
             case "indexnumber":
                 selectItemToRenew(sender, update, chatId, checkoutEntryMap.get(chatId));
-                break;
+                return "menu_main";
         }
 
         return null;
@@ -41,11 +42,27 @@ public class RenewCommand extends Command {
         if (entry != null) documentCursor.put(chatId, entry.getItem());
 
         assert entry != null;
-        System.out.println(entry.getItem().getItem().getTitle());
 
         //TODO: renew item here
+        org.controller.Command.Result res = new RenewCommand(entry).execute(LibraryStorage.getInstance());
+
+        String message = "";
+        switch (res) {
+            case Success:
+                message = "You have renewed " + entry.getItem().getItem().getTitle() + " successfully!";
+                break;
+
+            case Failure:
+                message = "Failure: " + res.getInfo();
+                break;
+
+            case Warning:
+                message = "Warning: " + res.getInfo();
+                break;
+
+        }
         keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.
-                get(chatId).getUser(), entry.getItem().getItem().getTitle() + "renewed!");
+                get(chatId).getUser(),  message);
 
     }
 

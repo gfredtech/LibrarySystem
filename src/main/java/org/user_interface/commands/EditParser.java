@@ -79,17 +79,20 @@ public class EditParser extends Command {
         if(!editParams.isEmpty()) {
             int itemId = -1;
             String itemType = type.getTableName();
-            if (itemType.equals("book"))
-                itemId = applyEditParamsBook(sender, update, chatId);
-
-            else if (itemType.equals("av_material"))
-                itemId = applyEditParamsAvMaterial(chatId);
-
-            else if (itemType.equals("journal_issue"))
-                itemId = applyEditParamsJournalIssue(chatId);
-
-            else if (itemType.equals("journal_article"))
-                itemId = applyEditParamsArticle(chatId);
+            switch (itemType) {
+                case "book":
+                    itemId = applyEditParamsBook(sender, update, chatId);
+                    break;
+                case "av_material":
+                    itemId = applyEditParamsAvMaterial(chatId);
+                    break;
+                case "journal_issue":
+                    itemId = applyEditParamsJournalIssue(chatId);
+                    break;
+                case "journal_article":
+                    itemId = applyEditParamsArticle(chatId);
+                    break;
+            }
 
             ItemEntry entry = null;
             if (itemId != -1) {
@@ -222,7 +225,7 @@ public class EditParser extends Command {
         return null;
     }
 
-    public void parseUserParameters(AbsSender sender, Update update, Long chatId, String input) {
+    void parseUserParameters(AbsSender sender, Update update, Long chatId, String input) {
         String tokens[] = input.split("[;]+");
 
         for(String i: tokens) {

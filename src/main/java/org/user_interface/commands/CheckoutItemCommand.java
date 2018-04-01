@@ -137,7 +137,7 @@ public class CheckoutItemCommand extends Command {
     }
 
     private void checkOutItem(AbsSender sender, Update update, Long chatId){
-        //TODO: check out items
+
         if(update.getCallbackQuery().getData().equals("Checkout")) {
             CheckOutCommand command = new CheckOutCommand(currentUser.get(chatId),
                                                           documentCursor.get(chatId));

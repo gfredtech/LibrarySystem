@@ -19,7 +19,7 @@ public class Interface {
         commandHashMap.put("edit", new EditCommand());
         commandHashMap.put("add", new AddCommand());
         commandHashMap.put("fine", new FineCommand());
-        commandHashMap.put("renew", new RenewCommand());
+        commandHashMap.put("renew", new RenewItemCommand());
         commandHashMap.put("error", new ErrorCommand());
         commandHashMap.put("outstanding", new OutstandingCommand());
         return commandHashMap;
