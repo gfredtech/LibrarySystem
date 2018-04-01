@@ -1,6 +1,9 @@
 package org.user_interface.commands;
 
+import org.controller.AddItemCommand;
 import org.items.Item;
+import org.storage.LibraryStorage;
+import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.user_interface.ui.Interface;
@@ -18,6 +21,9 @@ public class AddCommand extends Command{
         switch (info) {
             case "startnext":
                 System.out.println(chatId);
+                UserEntry e = currentUser.get(chatId);
+                String auth = authorizationChecker(sender, update, e);
+                if(auth!= null) return auth;
                 keyboardUtils.showCRUDkeyboard(sender, update, "Add");
                 return "add_main";
 
@@ -42,18 +48,29 @@ public class AddCommand extends Command{
                 message = update.getCallbackQuery().getData();
                 if(message.equals("Confirm")) {
                     //TODO: add item to library
-                    keyboardUtils.showMainMenuKeyboard(sender,
-                            update, currentUser.get(chatId).getUser(),
-                            "Operation Successful");
+                    org.controller.Command.Result res =
+                            addEntryMap.get(chatId).execute(LibraryStorage.getInstance());
+
+                    switch (res) {
+                        case Success:
+                            keyboardUtils.showMainMenuKeyboard(sender,
+                                    update, currentUser.get(chatId).getUser(),
+                                    "Item has been added successfully.");
+                            break;
+
+                        case Failure:
+                            keyboardUtils.showMainMenuKeyboard(sender,
+                                    update, currentUser.get(chatId).getUser(),
+                                    res.getInfo());
+                            break;
+                    }
                 } else if(message.equals("Cancel")) {
                     keyboardUtils.showMainMenuKeyboard(sender,
                             update, currentUser.get(chatId).getUser(),
                             "Operation Cancelled");
                 }
-
                 return "menu_main";
         }
-        
         return null;
     }
 
@@ -82,6 +99,8 @@ public class AddCommand extends Command{
                     add("Confirm");
                     add("Cancel");
                 }});
+
+        addEntryMap.put(chatId, new AddItemCommand(item));
         return "add_confirm";
     }
 
@@ -129,5 +148,6 @@ public class AddCommand extends Command{
     
     private static HashMap<Long, String> type = new HashMap<>();
    private static AddParser addParser = new AddParser();
+   private static HashMap<Long, AddItemCommand> addEntryMap = new HashMap<>();
 
 }

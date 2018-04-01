@@ -136,10 +136,15 @@ public class CheckoutItemCommand extends Command {
             CheckOutCommand command = new CheckOutCommand(currentUser.get(chatId),
                     documentCursor.get(chatId));
 
-            command.execute(LibraryStorage.getInstance());
-
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    documentCursor.get(chatId).getItem().getTitle() + " Checked out successfully.");
+            org.controller.Command.Result res = command.execute(LibraryStorage.getInstance());
+            if (res.successful()) {
+                System.out.println("jjj " + res.getInfo());
+                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                        documentCursor.get(chatId).getItem().getTitle() + " Checked out successfully.");
+            } else {
+                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                        "`Failure:`" + res.getInfo());
+            }
 
         } else {
             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),

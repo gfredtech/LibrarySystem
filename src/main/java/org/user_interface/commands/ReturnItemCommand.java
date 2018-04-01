@@ -6,7 +6,6 @@ import org.items.JournalArticle;
 import org.items.User;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.LibraryStorage;
 import org.storage.resources.CheckoutEntry;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
@@ -62,12 +61,17 @@ public class ReturnItemCommand extends Command {
         System.out.println(entry.getItem().getItem().getTitle());
 
         //TODO: return item
-        new org.controller.ReturnCommand(currentUser.get(chatId), entry.getItem()).execute(
+        org.controller.Command.Result res = new org.controller.ReturnCommand(currentUser.get(chatId),
+                entry.getItem()).execute(
                 LibraryStorage.getInstance());
-        keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), 
-                entry.getItem().getItem().toString() + " returned successfully!!");
-
+        if (res.successful()) {
+            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                    entry.getItem().getItem().toString() + " returned successfully!!");
+        } else{
+            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                    res.getInfo());
         }
+    }
 
 
     private String showCheckedOutDocuments(AbsSender sender, Update update, Long chatId) {

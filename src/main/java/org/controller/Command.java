@@ -13,6 +13,7 @@ public interface Command {
 
     enum Result {
         Success, Failure, Warning;
+
         static Result success(String info) {
             Result r = Success;
             r.info = info;
@@ -39,7 +40,8 @@ public interface Command {
         public boolean successful() {
             return this == Success;
         }
-        String getInfo() {
+
+       public String getInfo() {
             return info;
         }
         private String info;

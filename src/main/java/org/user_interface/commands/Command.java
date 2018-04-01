@@ -6,6 +6,7 @@ import org.storage.resources.*;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -116,5 +117,14 @@ public abstract class Command {
         }
         if(result != null) return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return null;
+    }
+
+    String authorizationChecker(AbsSender sender, Update update, UserEntry e) {
+        if(!e.getUser().getType().equals("Librarian")) {
+            keyboardUtils.showMainMenuKeyboard(sender, update, e.getUser(),
+                    "You're not allowed to perform this operation");
+            return "menu_main";
+        }
+        else return null;
     }
 }

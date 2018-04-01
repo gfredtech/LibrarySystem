@@ -39,7 +39,9 @@ public class LoginCommand extends Command {
                         System.out.println(currentUser.get(chatId).getUser().getPasswordHash());
                         if (password.hashCode() == currentUser.get(chatId).getUser().getPasswordHash()) {
                             String notifications = new NotificationHandler().init(currentUser.get(chatId).getId());
-                            if(notifications.length() > 0) sendMessage(sender, update, notifications);
+                            if(notifications.length() > 0)
+                                sendMessage(sender, update, "*You have Notifications*\n"
+                                        + notifications);
                             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), "Success!");
                             return "menu_main";
                         } else {

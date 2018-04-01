@@ -17,7 +17,6 @@ public class RenewCommand extends Command {
         if(update.hasMessage()) chatId = update.getMessage().getChatId();
         else chatId = update.getCallbackQuery().getMessage().getChatId();
 
-
         switch (info) {
             case "startnext":
 
