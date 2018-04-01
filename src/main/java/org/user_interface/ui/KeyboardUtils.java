@@ -44,7 +44,7 @@ public class KeyboardUtils {
 
         row = new KeyboardRow();
         row.add("Search");
-        row.add("️Settings");
+        //row.add("️Settings");
         row.add("Logout");
         keyboard.add(row);
 

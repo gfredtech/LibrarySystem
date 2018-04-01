@@ -124,18 +124,21 @@ public class EditCommand extends Command {
                 : userCursor.get(chatId).getResourceType().getTableName();
 
         if (input.equals("delete")) {
+            System.out.println("i" + type);
             switch (type) {
                 case "user_card":
 
                     LibraryStorage.getInstance().removeAll(
                             Resource.User, new QueryParameters().add("user_id",
                             userCursor.get(chatId).getId()));
+                    break;
                     default:
 
                         ItemEntry e = documentCursor.get(chatId);
                        LibraryStorage.getInstance().removeAll(
                                 e.getResourceType(), new QueryParameters().add(
                                         e.getResourceType().getTableKey(), e.getId()));
+                       break;
 
             }
             keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),

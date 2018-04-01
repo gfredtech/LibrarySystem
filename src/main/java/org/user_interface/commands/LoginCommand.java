@@ -27,8 +27,8 @@ public class LoginCommand extends Command {
                     username = tokens[0].trim();
                     password = tokens[1].trim();
                 } else {
-                    sendMessage(sender, update, "You have less/more than the required input.");
-                    return "login_start";
+                    sendMessage(sender, update, "You have less/more than the required input. Try again.");
+                    return "login_password";
                 }
 
                 UserEntry user = LibraryStorage.getInstance().find(Resource.User,
