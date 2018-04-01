@@ -5,7 +5,6 @@ import org.storage.resources.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,10 +19,12 @@ public class LibraryStorage extends SqlStorage {
      */
     public int caluclateFee(CheckoutEntry c) {
         final int feePerDay = 100;
-        if(LocalDate.now().isAfter(c.getDueDate()))
-            return c.getDueDate().until(LocalDate.now()).getDays()*feePerDay;
-        else
-            return 0;
+        if(LocalDate.now().isAfter(c.getDueDate())) {
+            final int dateDifference = c.getDueDate().until(LocalDate.now()).getDays();
+            final int calculated = dateDifference * feePerDay;
+            return Math.min(calculated, c.getItem().getItem().getPrice());
+
+        } else return 0;
     }
 
     public List<UserEntry> getQueueFor(ItemEntry item) {
