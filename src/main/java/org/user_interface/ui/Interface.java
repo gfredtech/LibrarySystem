@@ -21,6 +21,7 @@ public class Interface {
         commandHashMap.put("fine", new FineCommand());
         commandHashMap.put("renew", new RenewCommand());
         commandHashMap.put("error", new ErrorCommand());
+        commandHashMap.put("outstanding", new OutstandingCommand());
         return commandHashMap;
 
     }

@@ -6,7 +6,6 @@ import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
-
 public class LoginCommand extends Command {
 
     @Override

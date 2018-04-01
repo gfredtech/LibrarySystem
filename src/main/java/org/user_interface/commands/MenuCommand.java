@@ -14,23 +14,27 @@ public class MenuCommand extends Command {
 
             message = message.split("\\s")[0].trim().toLowerCase();
             if(update.hasMessage()) {
-                if (message.equals("checkout")) {
-                    return new Interface().handleMessageUpdate(sender, update, "checkout_startnext");
-                } else if (message.equals("return")) {
-                    return new Interface().handleMessageUpdate(sender, update, "return_startnext");
-                } else if (message.equals("edit")) {
-                    return new Interface().handleMessageUpdate(sender, update, "edit_startnext");
-                } else if (message.equals("add")) {
-                    return new Interface().handleMessageUpdate(sender, update, "add_startnext");
-                } else if (message.equals("renew")) {
-                    return new Interface().handleMessageUpdate(sender, update, "renew_startnext");
-                } else if (message.equals("fine")) {
-                    return new Interface().handleMessageUpdate(sender, update, "fine_startnext");
+                switch (message) {
+                    case "checkout":
+                        return new Interface().handleMessageUpdate(sender, update, "checkout_startnext");
+                    case "return":
+                        return new Interface().handleMessageUpdate(sender, update, "return_startnext");
+                    case "edit":
+                        return new Interface().handleMessageUpdate(sender, update, "edit_startnext");
+                    case "add":
+                        return new Interface().handleMessageUpdate(sender, update, "add_startnext");
+                    case "renew":
+                        return new Interface().handleMessageUpdate(sender, update, "renew_startnext");
+                    case "fine":
+                        return new Interface().handleMessageUpdate(sender, update, "fine_startnext");
 
-                } else if(message.equals("logout")) {
-                    return new Interface().handleMessageUpdate(sender, update, "login_logout");
+                    case "logout":
+                        return new Interface().handleMessageUpdate(sender, update, "login_logout");
+                    case "outstanding":
+                        return new Interface().handleMessageUpdate(sender, update, "outstanding_start");
+                    default:
+                        return new ErrorCommand().run(sender, update, null);
                 }
-                else return new ErrorCommand().run(sender, update, null);
 
             } else {
                 return new Interface().handleMessageUpdate(sender, update, null);
