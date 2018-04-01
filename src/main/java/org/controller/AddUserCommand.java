@@ -5,6 +5,10 @@ import org.storage.ItemSerializer;
 import org.storage.Storage;
 import org.storage.resources.Resource;
 
+/**
+ * This command adds a user to a storage
+ * @see Command
+ */
 public class AddUserCommand implements Command {
 
     public AddUserCommand(User user) {

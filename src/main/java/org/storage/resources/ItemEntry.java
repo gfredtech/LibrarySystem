@@ -2,14 +2,18 @@ package org.storage.resources;
 
 import org.items.Item;
 import org.items.ItemFactory;
-import org.storage.QueryParameters;
 import org.storage.ItemSerializer;
+import org.storage.QueryParameters;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A database entry of a library item
+ * @see Item
+ */
 public abstract class ItemEntry<T extends Item> extends DatabaseEntry {
 
     ItemEntry(ResultSet rs) throws SQLException {

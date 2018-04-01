@@ -1,15 +1,22 @@
 package org.storage;
 
 
-import org.storage.resources.*;
+import org.storage.resources.DatabaseEntry;
+import org.storage.resources.Resource;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.*;
-import java.util.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
- * This class encapsulates the communication between the database and the system
+ * Interacts with the database described in the Resource enumeration.
+ * Able to search for, add, remove, and update records
+ * and also perform some simple operations like counting records that fit some parameters.
  */
 public class SqlStorage extends SqlQueryExecutor implements Storage {
 
@@ -31,7 +38,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
      * Calls the constructor of the superclass
      * @see SqlQueryExecutor#SqlQueryExecutor(String, String, String)
      */
-    protected SqlStorage(String databaseName, String userName, String userPassword)
+    SqlStorage(String databaseName, String userName, String userPassword)
             throws SQLException {
         super(databaseName, userName, userPassword);
     }

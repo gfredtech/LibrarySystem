@@ -4,14 +4,14 @@ import javafx.util.Pair;
 
 import java.sql.Types;
 import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * @author Vladimir Shcherba
+ * Stores a database row.
+ * Widely used in the module for its simplicity and versatility.
  */
 
 public class QueryParameters {
@@ -74,8 +74,8 @@ public class QueryParameters {
 
     /**
      * adds a Date parameter
-     * @param key
-     * @param value
+     * @param key to address a database column
+     * @param value to be stored
      * @return this object
      */
     public QueryParameters add(String key, LocalDate value) {
@@ -88,7 +88,7 @@ public class QueryParameters {
 
     /**
      * adds a parameter with default value
-     * @param key
+     * @param key to address a database column
      * @return this object
      */
     public QueryParameters add(String key) {

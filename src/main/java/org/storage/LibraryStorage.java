@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+/**
+ * This class is a wrapper for the Storage class. It contains some auxiliary methods
+ * which manage the database according to the library needs.
+ */
 public class LibraryStorage extends SqlStorage {
 
     /**

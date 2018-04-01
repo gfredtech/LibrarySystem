@@ -1,13 +1,12 @@
 package org.storage;
 
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author Developed by Vladimir Scherba
+ * Designed to handle low-level interactions with a database.
  */
 class SqlQueryExecutor {
 
@@ -17,7 +16,6 @@ class SqlQueryExecutor {
      * @param userName username of database
      * @param userPassword password of database system
      * @throws SQLException Connection/Authentication error
-     * @throws ClassNotFoundException Dependencies not added
      */
     SqlQueryExecutor(String databaseName, String userName, String userPassword)
             throws SQLException {
@@ -30,7 +28,7 @@ class SqlQueryExecutor {
      * The returned set will be closed upon a new call to the statement or closing it
      */
     Query select(String tableName, QueryParameters searchParameters) throws SQLException {
-        return select(tableName, searchParameters, Arrays.asList("*"));
+        return select(tableName, searchParameters, Collections.singletonList("*"));
     }
 
     Query select(String tableName, QueryParameters searchParameters, List<String> columns) throws SQLException {
@@ -67,7 +65,7 @@ class SqlQueryExecutor {
      * @param tableName name of table to be updated
      * @param updateParameters features to be updated
      * @param whatToUpdate distinctive features of items to be updated
-     * @throws SQLException
+     * @throws SQLException in case of an exception from JDBC
      */
     void update(String tableName, QueryParameters updateParameters, QueryParameters whatToUpdate) throws SQLException {
         StringBuilder query = new StringBuilder();
@@ -81,9 +79,6 @@ class SqlQueryExecutor {
         System.out.println(query.toString());
         try(Statement s = connection.createStatement()) {
             s.executeUpdate(query.toString());
-
-        } catch (SQLException e) {
-            throw e;
         }
     }
 
@@ -92,7 +87,7 @@ class SqlQueryExecutor {
      * inserts an a value into database based on parameters
      * @param tableName name of database
      * @param parameters parameters to insert data
-     * @throws SQLException
+     * @throws SQLException in case of an exception from JDBC
      */
     void insert(String tableName, QueryParameters parameters) throws SQLException {
         StringBuilder query = new StringBuilder();
@@ -106,8 +101,6 @@ class SqlQueryExecutor {
         try(Statement s = connection.createStatement()) {
             s.executeUpdate(query.toString());
 
-        } catch (SQLException e) {
-            throw e;
         }
     }
 
@@ -115,7 +108,7 @@ class SqlQueryExecutor {
      * Deletes an entry in table based on query parameters
      * @param tableName name of table to deleted item from
      * @param parameters QueryParameters to delete item
-     * @throws SQLException
+     * @throws SQLException in case of an exception from JDBC
      */
     void deleteAll(String tableName, QueryParameters parameters) throws SQLException {
         StringBuilder query = new StringBuilder();
@@ -128,8 +121,6 @@ class SqlQueryExecutor {
         try(Statement s = connection.createStatement()) {
             s.executeUpdate(query.toString());
 
-        } catch (SQLException e) {
-            throw e;
         }
     }
 

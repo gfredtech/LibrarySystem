@@ -3,6 +3,12 @@ package org.storage.resources;
 
 import org.items.Item;
 
+
+/**
+ * A key class of the storage module. It is a map from the database tables to
+ * Java objects, specifically Entry classes, and vice versa.
+ * @see DatabaseEntry
+ */
 public class Resource<T extends DatabaseEntry> {
 
     private Resource(String tableName, String tableKey, Class<T> entryClass) {
@@ -25,14 +31,6 @@ public class Resource<T extends DatabaseEntry> {
             new Resource<>("checkout", "checkout_item_id_user_id_pk", CheckoutEntry.class);
     public static final Resource<PendingRequestEntry> PendingRequest =
             new Resource<>("checkout_queue", null, PendingRequestEntry.class);
-
-    private String tableName;
-    private String tableKey;
-    private Class<T> entryClass;
-
-    public String getTableName() {
-        return tableName;
-    }
 
     public String getTableKey() {
         return tableKey;
@@ -74,4 +72,12 @@ public class Resource<T extends DatabaseEntry> {
             throw new IllegalArgumentException("Invalid item type");
         }
     }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    private String tableName;
+    private String tableKey;
+    private Class<T> entryClass;
 }

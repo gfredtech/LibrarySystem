@@ -1,15 +1,15 @@
 package org.storage;
 
-import org.items.*;
-import org.storage.resources.Resource;
 import org.storage.resources.DatabaseEntry;
+import org.storage.resources.Resource;
 
 import java.util.List;
 import java.util.Optional;
 
 
 /**
- * Represents an abstract storage of library materials and records (both user and checkout)
+ * Represents an interface to an abstract data storage.
+ * Allows searching, modification, craetion and removal of records.
  */
 public interface Storage {
     <T extends DatabaseEntry>

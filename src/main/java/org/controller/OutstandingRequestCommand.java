@@ -8,6 +8,12 @@ import org.storage.resources.UserEntry;
 
 import java.time.LocalDate;
 
+
+/**
+ * A command which makes an outstanding request.
+ * It may be performed only by a librarian.
+ * Users are removed from the queue for the item in case of the request
+ */
 public class OutstandingRequestCommand implements Command {
 
     public OutstandingRequestCommand(UserEntry librarian, ItemEntry item) {
@@ -35,6 +41,6 @@ public class OutstandingRequestCommand implements Command {
     }
 
 
-    UserEntry user;
-    ItemEntry item;
+    private UserEntry user;
+    private ItemEntry item;
 }

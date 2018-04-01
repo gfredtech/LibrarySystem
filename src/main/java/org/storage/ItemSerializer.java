@@ -2,6 +2,10 @@ package org.storage;
 
 import org.items.*;
 
+
+/**
+ * This class creates a query parameters instance based on the data of an item.
+ */
 public class ItemSerializer {
 
     public static QueryParameters serialize(Item item) {

@@ -2,16 +2,18 @@ package org.controller;
 
 import org.items.Book;
 import org.items.Item;
-import org.items.User;
-import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.Storage;
-import org.storage.resources.*;
+import org.storage.resources.ItemEntry;
+import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
 
 import java.time.LocalDate;
 
 /**
- * @author Developed by Vladimir Scherba
+ * /**
+ * This command checks an item out for a user
+ * @see Command
  */
 
 public class CheckOutCommand implements Command {
@@ -22,14 +24,25 @@ public class CheckOutCommand implements Command {
         this.dateOfCheckout = LocalDate.now();
     }
 
+    /**
+     * @param user the patron
+     * @param itemEntry the item to be checked out
+     * @param dateOfCheckout the date when checkout attempt is performed
+     */
     public CheckOutCommand(UserEntry user, ItemEntry itemEntry, LocalDate dateOfCheckout) {
         this.user = user;
         this.itemEntry = itemEntry;
         this.dateOfCheckout = dateOfCheckout;
     }
 
-
-
+    /**
+     * @return
+     * - Result.Failure if the item is reference
+     *   or all item copies are under an outstanding request
+     *   or another copy of the item is already checked out by the user.
+     * - Result.Warning if there are no available copies of the item and the user is put to a queue
+     * - Result.Success if check out is successful
+     */
     @Override
     public Command.Result execute(Storage storage) {
         QueryParameters p = new QueryParameters()
@@ -79,7 +92,13 @@ public class CheckOutCommand implements Command {
     }
 
 
-
+    /**
+     * Calculates the date when the item becomes overdue
+     * @param user the patron
+     * @param itemEntry the item checked out
+     * @param dateOfCheckout the date when the item was checked out
+     * @return the date when the item becomes overdue
+     */
     static LocalDate calculateOverdueDate(UserEntry user, ItemEntry itemEntry,
                                           LocalDate dateOfCheckout) {
         LocalDate overdue;

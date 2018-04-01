@@ -5,13 +5,15 @@ import org.storage.ItemSerializer;
 import org.storage.Storage;
 import org.storage.resources.Resource;
 
-
+/**
+ * This command adds an item to a storage
+ * @see Command
+ */
 public class AddItemCommand implements Command {
 
     public AddItemCommand(Item item) {
         this.item = item;
     }
-
 
 
     @Override

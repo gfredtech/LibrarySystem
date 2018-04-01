@@ -7,6 +7,14 @@ import org.storage.resources.Resource;
 
 import java.time.LocalDate;
 
+
+
+/**
+ * This command renews an item check out.
+ * It cannot be performed in case of an outstanding request of the item
+ * @see CheckOutCommand
+ * @see OutstandingRequestCommand
+ */
 public class RenewCommand implements Command {
 
     public RenewCommand(CheckoutEntry c) {
@@ -51,5 +59,5 @@ public class RenewCommand implements Command {
         return Result.Success;
     }
 
-    CheckoutEntry checkout;
+    private CheckoutEntry checkout;
 }

@@ -2,10 +2,13 @@ package org.controller;
 
 import org.storage.QueryParameters;
 import org.storage.Storage;
-import org.storage.resources.*;
+import org.storage.resources.ItemEntry;
+import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
 
 /**
- * @author Developed by Vladimir Scherba
+ * This command cancels an item check out
+ * @see CheckOutCommand
  */
 
 public class ReturnCommand implements Command {
