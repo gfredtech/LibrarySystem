@@ -7,6 +7,7 @@ import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class FineCommand extends Command {
         }
     }
 
-   void selectItemForFine(AbsSender sender, Update update, Long chatId) {
+   private void selectItemForFine(AbsSender sender, Update update, Long chatId) {
        CheckoutEntry entry;
        String number = update.getMessage().getText();
        int index;
@@ -96,5 +97,5 @@ public class FineCommand extends Command {
         return overdue;
 
     }
-    static List<CheckoutEntry> fineItems;
+    private static List<CheckoutEntry> fineItems;
 }

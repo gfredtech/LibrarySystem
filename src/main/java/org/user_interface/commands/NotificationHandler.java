@@ -27,7 +27,7 @@ public class NotificationHandler {
 
     }
 
-    String itemAvailableToCheckout(PendingRequestEntry entry) {
+    private String itemAvailableToCheckout(PendingRequestEntry entry) {
         if(entry.isOutstanding()) return "Checking out for " + entry.getItem().getItem().getTitle() + " will " +
                 "not be available due to an outstanding request";
         else if(isAvailableForUser(entry))
@@ -35,11 +35,10 @@ public class NotificationHandler {
         else return null;
     }
 
-    boolean isAvailableForUser(PendingRequestEntry entry) {
+    private boolean isAvailableForUser(PendingRequestEntry entry) {
         List<UserEntry> userEntries =
                 LibraryStorage.getInstance().getQueueFor(entry.getItem());
-        if(userEntries.get(0).getUser().getCardNumber()
-                == entry.getUser().getUser().getCardNumber()) return true;
-        else return false;
+        final UserEntry topQueryUser = userEntries.get(0);
+        return topQueryUser.getId() == entry.getUser().getId();
     }
 }

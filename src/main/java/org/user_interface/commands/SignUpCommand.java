@@ -7,6 +7,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class SignUpCommand extends Command {
@@ -31,7 +32,7 @@ public class SignUpCommand extends Command {
 
             case "validator":
                 credentials = update.getMessage().getText();
-                System.out.println(credentials.split(",").toString());
+                System.out.println(Arrays.toString(credentials.split(",")));
                 if (credentials.split(",").length != 7) {
                     sendMessage(sender, update, "Input mismatch. Enter details again.");
                     return "signup_validator";
@@ -71,7 +72,7 @@ public class SignUpCommand extends Command {
         return null;
     }
 
-    void signUpConfirm(AbsSender sender, Update update,Long chatId, String info) {
+    private void signUpConfirm(AbsSender sender, Update update,Long chatId, String info) {
         String fullName = info.split("[,]+")[0].trim();
         String address = info.split("[,]+")[1].trim();
         String phoneNumber = info.split("[,]+")[2].trim();

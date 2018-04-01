@@ -30,8 +30,8 @@ public interface Command {
             r.info = info;
             return r;
         }
-        // will throw if failure
 
+        // will throw if failure
         public void validate() {
             if (this == Failure)
                 throw new RuntimeException("The command execution resulted in a failure: " + this.info);
@@ -41,11 +41,10 @@ public interface Command {
             return this == Success;
         }
 
-       public String getInfo() {
+        public String getInfo() {
             return info;
         }
+
         private String info;
-
     }
-
 }

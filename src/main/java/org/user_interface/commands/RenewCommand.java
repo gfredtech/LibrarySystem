@@ -34,7 +34,7 @@ public class RenewCommand extends Command {
     }
 
     private void selectItemToRenew(AbsSender sender, Update update, Long chatId, List<CheckoutEntry> checkoutEntries) {
-        CheckoutEntry entry = null;
+        CheckoutEntry entry;
         int index = Integer.valueOf(update.getMessage().getText());
 
         entry = checkoutEntries.get(index - 1);
@@ -49,7 +49,9 @@ public class RenewCommand extends Command {
 
     }
 
-    List<CheckoutEntry> listCheckedOutMaterials(AbsSender sender, Update update, Long chatId) {
+    private List<CheckoutEntry> listCheckedOutMaterials(AbsSender sender,
+                                                        Update update,
+                                                        Long chatId) {
         List<CheckoutEntry> entries = LibraryStorage.getInstance().find(
                 Resource.Checkout, new QueryParameters());
 
@@ -72,5 +74,5 @@ public class RenewCommand extends Command {
         return entries;
     }
 
-    static HashMap<Long, List<CheckoutEntry>> checkoutEntryMap = new HashMap<>();
+    private static HashMap<Long, List<CheckoutEntry>> checkoutEntryMap = new HashMap<>();
 }

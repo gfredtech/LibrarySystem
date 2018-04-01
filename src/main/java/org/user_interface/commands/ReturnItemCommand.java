@@ -1,5 +1,6 @@
 package org.user_interface.commands;
 
+import org.controller.ReturnCommand;
 import org.items.AvMaterial;
 import org.items.Book;
 import org.items.JournalArticle;
@@ -15,6 +16,8 @@ import org.telegram.telegrambots.bots.AbsSender;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static org.controller.Command.Result;
 
 public class ReturnItemCommand extends Command {
 
@@ -61,16 +64,22 @@ public class ReturnItemCommand extends Command {
         System.out.println(entry.getItem().getItem().getTitle());
 
         //TODO: return item
-        org.controller.Command.Result res = new org.controller.ReturnCommand(currentUser.get(chatId),
-                entry.getItem()).execute(
-                LibraryStorage.getInstance());
-        if (res.successful()) {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    entry.getItem().getItem().toString() + " returned successfully!!");
-        } else{
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    res.getInfo());
+        ReturnCommand c = new ReturnCommand(currentUser.get(chatId), entry.getItem());
+        Result result = c.execute(LibraryStorage.getInstance());
+        String message = "";
+        switch (result) {
+            case Success:
+                message = entry.getItem().getItem().getTitle() + " returned successfully!";
+                break;
+            case Warning:
+                message = "Warning: " + result.getInfo();
+                break;
+            case Failure:
+                message = "Failure: " + result.getInfo();
+                break;
         }
+        keyboardUtils.showMainMenuKeyboard(sender, update,
+                currentUser.get(chatId).getUser(),message);
     }
 
 
@@ -96,21 +105,29 @@ public class ReturnItemCommand extends Command {
                 }});
     }
 
-    List<CheckoutEntry> listCheckedOutDocs(AbsSender sender, Update update, User user, Long chatId, String type) {
+    private List<CheckoutEntry> listCheckedOutDocs(AbsSender sender, Update update,
+                                                   User user, Long chatId, String type) {
         System.out.println(type);
         List<CheckoutEntry> entries = null;
-        if(type.equals("book")) {
-            entries = LibraryStorage.getInstance().find(
-                    Resource.Checkout, new QueryParameters().add("item_type", "book")
-            .add("user_id", user.getCardNumber()));
-        }else if(type.equals("av_material")) {
-            entries = LibraryStorage.getInstance().find(
-                    Resource.Checkout, new QueryParameters().add("user_id", user.getCardNumber())
-                    .add("item_type", "av_material"));
-        } else if(type.equals("journal_article")) {
-            entries = LibraryStorage.getInstance().find(
-                    Resource.Checkout, new QueryParameters().add("user_id", user.getCardNumber())
-                            .add("item_type", "journal_issue"));
+        switch (type) {
+            case "book":
+                entries = LibraryStorage.getInstance().find(
+                        Resource.Checkout, new QueryParameters()
+                                .add("item_type", "book")
+                                .add("user_id", user.getCardNumber()));
+                break;
+            case "av_material":
+                entries = LibraryStorage.getInstance().find(
+                        Resource.Checkout, new QueryParameters()
+                                .add("user_id", user.getCardNumber())
+                                .add("item_type", "av_material"));
+                break;
+            case "journal_article":
+                entries = LibraryStorage.getInstance().find(
+                        Resource.Checkout, new QueryParameters()
+                                .add("user_id", user.getCardNumber())
+                                .add("item_type", "journal_issue"));
+                break;
         }
         StringBuilder items = new StringBuilder();
         int i = 1;
@@ -150,6 +167,6 @@ public class ReturnItemCommand extends Command {
         return entries;
     }
 
-    static HashMap<Long, String> type = new HashMap<>();
-    static HashMap<Long, List<CheckoutEntry>> checkoutEntryMap = new HashMap<>();
+    private static HashMap<Long, String> type = new HashMap<>();
+    private static HashMap<Long, List<CheckoutEntry>> checkoutEntryMap = new HashMap<>();
 }

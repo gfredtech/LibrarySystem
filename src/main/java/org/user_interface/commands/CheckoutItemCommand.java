@@ -9,7 +9,10 @@ import org.storage.resources.JournalIssueEntry;
 import org.storage.resources.Resource;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
+
 import java.util.ArrayList;
+
+import static org.controller.Command.Result;
 
 public class CheckoutItemCommand extends Command {
 
@@ -56,7 +59,7 @@ public class CheckoutItemCommand extends Command {
                 }});
     }
 
-    void selectBookForCheckout(AbsSender sender, Update update, Long chatId) {
+    private void selectBookForCheckout(AbsSender sender, Update update, Long chatId) {
         BookEntry bookSelected;
         String msg = update.getMessage().getText();
         int position;
@@ -74,7 +77,7 @@ public class CheckoutItemCommand extends Command {
         }
     }
 
-    void selectAvMaterialForCheckout(AbsSender sender, Update update, Long chatId) {
+    private void selectAvMaterialForCheckout(AbsSender sender, Update update, Long chatId) {
         AvMaterialEntry selected;
         String msg1 = update.getMessage().getText();
         int position1;
@@ -94,7 +97,7 @@ public class CheckoutItemCommand extends Command {
         }
     }
 
-    void selectJournalIssueForCheckout(AbsSender sender, Update update, Long chatId) {
+    private void selectJournalIssueForCheckout(AbsSender sender, Update update, Long chatId) {
         JournalIssueEntry selectedJournal;
         String msg1 = update.getMessage().getText();
         int position;
@@ -118,37 +121,48 @@ public class CheckoutItemCommand extends Command {
         String type = update.getCallbackQuery().getData();
         sendMessage(sender, update, "Here's a " +
                 "list of all the specified documents in the library. Enter the number of the book you want:");
-        if(type.equals("Book")) {
-            listBooks(sender, update);
-            return "book";
-        } else if(type.equals("AV Material")) {
-            listAvMaterials(sender, update);
-            return "avmaterial";
-        } else {
-            listJournalIssues(sender, update);
-            return "journalissue";
+        switch (type) {
+            case "Book":
+                listBooks(sender, update);
+                return "book";
+            case "AV Material":
+                listAvMaterials(sender, update);
+                return "avmaterial";
+            case "Journal Issue":
+                listJournalIssues(sender, update);
+                return "journalissue";
+            default:
+                //TODO
+                throw new RuntimeException("Invalid type");
         }
     }
 
-    void checkOutItem(AbsSender sender, Update update, Long chatId){
+    private void checkOutItem(AbsSender sender, Update update, Long chatId){
         //TODO: check out items
         if(update.getCallbackQuery().getData().equals("Checkout")) {
             CheckOutCommand command = new CheckOutCommand(currentUser.get(chatId),
-                    documentCursor.get(chatId));
+                                                          documentCursor.get(chatId));
 
-            org.controller.Command.Result res = command.execute(LibraryStorage.getInstance());
-            if (res.successful()) {
-                System.out.println("jjj " + res.getInfo());
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                        documentCursor.get(chatId).getItem().getTitle() + " Checked out successfully.");
-            } else {
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                        "`Failure:`" + res.getInfo());
+            Result result = command.execute(LibraryStorage.getInstance());
+            String message = "";
+            switch (result) {
+                case Success:
+                    message = documentCursor.get(chatId).getItem().getTitle()
+                              + " is checked out successfully.";
+                    break;
+                case Warning:
+                    message = "Warning: " + result.getInfo();
+                    break;
+                case Failure:
+                    message = "Failure: " + result.getInfo();
+                    break;
             }
+            keyboardUtils.showMainMenuKeyboard(sender, update,
+                    currentUser.get(chatId).getUser(), message);
 
         } else {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
-                    "Checkout cancelled");
+            keyboardUtils.showMainMenuKeyboard(sender, update,
+                    currentUser.get(chatId).getUser(), "Checkout cancelled");
         }
     }
 }

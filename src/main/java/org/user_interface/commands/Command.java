@@ -6,11 +6,11 @@ import org.storage.resources.*;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.user_interface.ui.KeyboardUtils;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,7 +59,10 @@ public abstract class Command {
         for (int i = 0; i < books.size(); i++) {
             String name = books.get(i).getItem().getTitle();
             System.out.println(name);
-            builder.append((i + 1) + ". " + name + "\n\n");
+            builder.append(i + 1)
+                   .append(". ")
+                   .append(name)
+                   .append("\n\n");
         }
         if(builder.length() > 0)
         sendMessage(sender, update, builder.toString());
@@ -70,7 +73,10 @@ public abstract class Command {
         List<AvMaterialEntry> avMaterials = LibraryStorage.getInstance().find(Resource.AvMaterial, new QueryParameters());
         for (int i = 0; i < avMaterials.size(); i++) {
             String name = avMaterials.get(i).getItem().getTitle();
-            builder.append((i + 1) + ". " + name + "\n");
+            builder.append(i + 1)
+                   .append(". ")
+                   .append(name)
+                   .append("\n");
         }
         sendMessage(sender, update, builder.toString());
     }
@@ -80,7 +86,10 @@ public abstract class Command {
         List<JournalIssueEntry> journalIssues = LibraryStorage.getInstance().find(Resource.JournalIssue, new QueryParameters());
         for(int i = 0; i < journalIssues.size(); i++) {
             String name = journalIssues.get(i).getItem().getTitle();
-            builder.append((i+1) + ". " + name + "\n");
+            builder.append(i + 1)
+                   .append(". ")
+                   .append(name)
+                   .append("\n");
         }
         sendMessage(sender, update, builder.toString());
     }
@@ -90,7 +99,10 @@ public abstract class Command {
         List<JournalArticleEntry> articles = LibraryStorage.getInstance().find(Resource.JournalArticle, new QueryParameters());
         for(int i = 0; i < articles.size(); i++) {
             String name = articles.get(i).getItem().getTitle();
-            builder.append((i+1) + ". " + name + "\n");
+            builder.append(i+1)
+                   .append(". ")
+                   .append(name)
+                   .append("\n");
         }
         sendMessage(sender, update, builder.toString());
     }
