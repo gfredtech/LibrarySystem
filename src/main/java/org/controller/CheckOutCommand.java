@@ -64,7 +64,7 @@ public class CheckOutCommand implements Command {
         if (itemIsAlreadyCheckedOutByTheUser) {
             final String result = String.format(
                     "A copy of the item %s is already checked out by the user %s",
-                    item.getTitle(), user.getUser().getCardNumber());
+                    item.getTitle(), user.getUser().getName());
             return Result.failure(result);
         }
 
