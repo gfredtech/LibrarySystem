@@ -2,6 +2,7 @@ package org.controller;
 
 import org.items.Item;
 import org.storage.ItemSerializer;
+import org.storage.LibraryStorage;
 import org.storage.Storage;
 import org.storage.resources.Resource;
 
@@ -17,7 +18,7 @@ public class AddItemCommand implements Command {
 
 
     @Override
-    public Result execute(Storage storage) {
+    public Result execute(LibraryStorage storage) {
         try {
             storage.add(Resource.fromItem(item),
                     ItemSerializer.serialize(item));

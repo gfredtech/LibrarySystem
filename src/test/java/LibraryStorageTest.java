@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LibraryStorageTest {
+class LibraryStorageTest {
 
     @BeforeAll
     void initStorage() {
@@ -41,7 +41,7 @@ public class LibraryStorageTest {
         CheckoutEntry co = storage.find(Resource.Checkout,
                 new QueryParameters().add("user_id", user.getId())
                                      .add("item_id", item.getId())).get(0);
-        assert storage.caluclateFee(co) == 700 : storage.caluclateFee(co);
+        assert storage.caluclateFee(co) == Math.min(700, co.getItem().getItem().getPrice()) : storage.caluclateFee(co);
 
     }
 
@@ -78,7 +78,7 @@ public class LibraryStorageTest {
         storage.removeAll(Resource.Book, data.books.get("cormen").subset("title"));
     }
 
-    LibraryManager manager;
-    LibraryStorage storage;
-    TestItems data;
+    private LibraryManager manager;
+    private LibraryStorage storage;
+    private TestItems data;
 }

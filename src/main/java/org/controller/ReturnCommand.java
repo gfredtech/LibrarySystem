@@ -1,5 +1,6 @@
 package org.controller;
 
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.Storage;
 import org.storage.resources.ItemEntry;
@@ -19,7 +20,7 @@ public class ReturnCommand implements Command {
     }
 
     @Override
-    public Result execute(Storage storage) {
+    public Result execute(LibraryStorage storage) {
         QueryParameters p = new QueryParameters()
                         .add("user_id", user.getUser().getCardNumber())
                         .add("item_id", item.getId());

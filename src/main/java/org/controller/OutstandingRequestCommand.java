@@ -1,7 +1,7 @@
 package org.controller;
 
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.Storage;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
@@ -22,7 +22,7 @@ public class OutstandingRequestCommand implements Command {
     }
 
     @Override
-    public Result execute(Storage storage) {
+    public Result execute(LibraryStorage storage) {
         if( !user.getUser().getType().equals("Librarian") ) {
             return Result.failure("Only a librarian can put an outstanding request");
         }

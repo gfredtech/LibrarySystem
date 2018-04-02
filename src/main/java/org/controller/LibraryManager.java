@@ -1,11 +1,11 @@
 package org.controller;
 
 
-import org.storage.Storage;
+import org.storage.LibraryStorage;
 
 public class LibraryManager {
 
-    public LibraryManager(Storage storage) {
+    public LibraryManager(LibraryStorage storage) {
         this.storage = storage;
     }
 
@@ -13,5 +13,5 @@ public class LibraryManager {
         return command.execute(storage);
     }
 
-    private final Storage storage;
+    private final LibraryStorage storage;
 }

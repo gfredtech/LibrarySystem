@@ -1,6 +1,6 @@
 package org.controller;
 
-import org.storage.Storage;
+import org.storage.LibraryStorage;
 
 /**
  * A command that should be executed by LibraryManager
@@ -9,7 +9,7 @@ import org.storage.Storage;
  */
 public interface Command {
 
-    Result execute(Storage storage);
+    Result execute(LibraryStorage storage);
 
     enum Result {
         Success, Failure, Warning;

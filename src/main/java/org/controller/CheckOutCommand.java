@@ -2,13 +2,14 @@ package org.controller;
 
 import org.items.Book;
 import org.items.Item;
+import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.Storage;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * /**
@@ -42,9 +43,10 @@ public class CheckOutCommand implements Command {
      *   or another copy of the item is already checked out by the user.
      * - Result.Warning if there are no available copies of the item and the user is put to a queue
      * - Result.Success if check out is successful
+     * @param storage an interface to the library data storage
      */
     @Override
-    public Command.Result execute(Storage storage) {
+    public Command.Result execute(LibraryStorage storage) {
         QueryParameters p = new QueryParameters()
                 .add("item_id", itemEntry.getId());
         int checkoutNum = storage.getNumOfEntries(Resource.Checkout, p);
@@ -73,7 +75,18 @@ public class CheckOutCommand implements Command {
                 .add("item_type", itemEntry.getResourceType().getTableName())
                 .add("user_id", user.getId());
 
-        if (checkoutNum >= item.getCopiesNum()) {
+        boolean alreadyInQueue = ! storage.find(
+                Resource.PendingRequest,
+                new QueryParameters()
+                        .add("user_id", user.getId())
+                        .add("item_id", itemEntry.getId())
+            ).isEmpty();
+
+        boolean noAvailableItems = checkoutNum >= item.getCopiesNum();
+        if (noAvailableItems) {
+            if(alreadyInQueue) {
+                return Result.failure("You are already in the queue for the item. Please wait.");
+            }
             if (outstandingsNum < item.getCopiesNum()) {
                 params.add("request_date", dateOfCheckout);
                 storage.add(Resource.PendingRequest, params);
@@ -86,9 +99,23 @@ public class CheckOutCommand implements Command {
             }
         }
 
-        params.add("due_date", calculateOverdueDate(user, itemEntry, dateOfCheckout));
-        storage.add(Resource.Checkout, params);
-        return Result.Success;
+        List<UserEntry> queue = storage.getQueueFor(itemEntry);
+        if (queue.isEmpty() || (queue.get(0).getId() == user.getId())) {
+            params.add("due_date", calculateOverdueDate(user, itemEntry, dateOfCheckout));
+            storage.add(Resource.Checkout, params);
+            return Result.Success;
+
+        } else if (alreadyInQueue) {
+            return Result.failure("You are already in the queue for the item. Please wait.");
+
+        } else {
+            params.add("request_date", dateOfCheckout);
+            storage.add(Resource.PendingRequest, params);
+
+            return Result.warning(
+                    "There are no copies available of " + item.getTitle() +
+                            "; A request is placed in the queue.");
+        }
     }
 
 
