@@ -55,7 +55,7 @@ public class CheckoutItemCommand extends Command {
                 ArrayList<String>() {{
                     add("Book");
                     add("AV Material");
-                    add("Journal Article");
+                    add("Journal Issue");
                 }});
     }
 

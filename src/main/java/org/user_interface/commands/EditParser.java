@@ -112,8 +112,13 @@ public class EditParser extends Command {
     }
 
     private int applyEditParamsArticle(Long chatId) {
-        //TODO: article_id
-        return 0;
+        if (editParams.containsKey("journal")) LibraryStorage.getInstance().updateAll(
+                Resource.JournalArticle, new QueryParameters().add("article_id",
+                        documentCursor.get(chatId).getId()),
+                        new QueryParameters().add("journal_id",
+                                Integer.valueOf(editParams.get("journal"))));
+
+        return documentCursor.get(chatId).getId();
     }
 
     private int applyEditParamsJournalIssue(Long chatId) {

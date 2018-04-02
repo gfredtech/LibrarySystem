@@ -3,12 +3,16 @@ package org.user_interface.commands;
 import org.controller.AddUserCommand;
 import org.items.User;
 import org.storage.LibraryStorage;
+import org.storage.QueryParameters;
+import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.AbsSender;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class SignUpCommand extends Command {
     private String credentials;
@@ -84,8 +88,9 @@ public class SignUpCommand extends Command {
                 "\nAddress: " + address + "\nPhone Number: " + phoneNumber +
                 "\nLogin: " + userName
                 + "\nType:" + type;
-        
-        User user = new User(0);
+
+
+        User user = new User(newUserCardNumber());
         user.setName(fullName);
         user.setAddress(address);
         user.setPhoneNumber(phoneNumber);
@@ -93,15 +98,14 @@ public class SignUpCommand extends Command {
 
         if(User.getTypes().contains(type)) {
             user.setType(type);
-            System.out.println("... " + type);
-            }
-
-            if(type.equals("Librarian") || type.equals("Student")) {
 
             }
-            else {
+
+            if(!(type.equals("Librarian") || type.equals("Student"))) {
+
                 user.setSubtype(info.split("[,]+")[6].trim());
             }
+
             user.setPassword(password);
          AddUserCommand command = new AddUserCommand(user);
 
@@ -113,9 +117,15 @@ public class SignUpCommand extends Command {
         }});
     }
 
-    void createAccount() {
-
-
+    int newUserCardNumber() {
+        List<UserEntry> entryList =
+                LibraryStorage.getInstance().find(Resource.User, new QueryParameters());
+        int result = 0;
+        for(UserEntry e: entryList) {
+            if(e.getUser().getCardNumber() > result)
+                result = e.getUser().getCardNumber();
+        }
+        return result + 1;
     }
 
     private static HashMap<Long, AddUserCommand> addUserEntryMap = new
