@@ -17,8 +17,14 @@ import java.time.LocalDate;
  */
 public class RenewCommand implements Command {
 
+    public RenewCommand(CheckoutEntry c, LocalDate renewDate) {
+        checkout = c;
+        this.renewDate = renewDate;
+    }
+
     public RenewCommand(CheckoutEntry c) {
         checkout = c;
+        renewDate = LocalDate.now();
     }
 
     @Override
@@ -33,11 +39,10 @@ public class RenewCommand implements Command {
             return Result.failure("The item is under an outstanding request and cannot be renewed");
         }
 
-        QueryParameters updated = new QueryParameters();
         LocalDate newDue;
         switch (checkout.getPatron().getUser().getType()) {
             case "Visiting":
-                newDue = LocalDate.now().plusWeeks(1);
+                newDue = renewDate.plusWeeks(1);
                 break;
             case "Faculty":
             case "Student":
@@ -46,7 +51,7 @@ public class RenewCommand implements Command {
                 }
                 newDue = CheckOutCommand.calculateOverdueDate(
                             checkout.getPatron(),
-                            checkout.getItem(), LocalDate.now());
+                            checkout.getItem(), renewDate);
                 break;
             default:
                 return Result.failure("Invalid user type: " +
@@ -60,4 +65,5 @@ public class RenewCommand implements Command {
     }
 
     private CheckoutEntry checkout;
+    private LocalDate renewDate;
 }

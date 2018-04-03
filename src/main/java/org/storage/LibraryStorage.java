@@ -41,7 +41,9 @@ public class LibraryStorage extends SqlStorage {
         return patrons;
     }
 
-
+    public CheckoutEntry getCheckoutRecord(UserEntry u, ItemEntry i) {
+        return find(Resource.Checkout, new QueryParameters().add("user_id", u.getId()).add("item_id", i.getId())).get(0);
+    }
 
     public static LibraryStorage getInstance() {
         if(instance == null)

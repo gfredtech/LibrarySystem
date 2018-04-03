@@ -3,17 +3,20 @@ import org.storage.ItemSerializer;
 import org.storage.QueryParameters;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class TestItems {
 
-    public Map<String, QueryParameters> users = new HashMap();
-    public Map<String, QueryParameters> books = new HashMap();
-    public Map<String, QueryParameters> av = new HashMap();
-    public Map<String, QueryParameters> articles = new HashMap();
+    public Map<String, QueryParameters> users = new HashMap<>();
+    public Map<String, QueryParameters> books = new HashMap<>();
+    public Map<String, QueryParameters> av = new HashMap<>();
+    public Map<String, QueryParameters> articles = new HashMap<>();
 
-    public TestItems() {
+    TestItems() {
         QueryParameters b1 = new QueryParameters()
                 .add("title", "Introduction to Algorithms, Third edition")
                 .add("authors", Arrays.asList("Thomas H. Cormen", "Charles E. Leiserson",
@@ -21,7 +24,7 @@ public class TestItems {
                 .add("publisher", "MIT Press")
                 .add("publication_date", LocalDate.of(2009, 1, 1))
                 .add("copy_num", 3)
-                .add("price", 0)
+                .add("price", 5000)
                 .add("keywords", Collections.emptyList());
         books.put("cormen", b1);
 
@@ -31,8 +34,8 @@ public class TestItems {
                 .add("publisher", "Addison-Wesley Professional")
                 .add("publication_date", LocalDate.of(2003, 1, 1))
                 .add("is_bestseller", true)
-                .add("price", 0)
-                .add("copy_num", 2)
+                .add("price", 1700)
+                .add("copy_num", 3)
                 .add("keywords", Collections.emptyList());
         books.put("patterns", b2);
 
@@ -44,14 +47,14 @@ public class TestItems {
                 .add("publication_date", LocalDate.of(1995, 1, 1))
                 .add("is_reference", true)
                 .add("price", 0)
-                .add("copy_num", 1)
+                .add("copy_num", 2)
                 .add("keywords", Collections.emptyList());
         books.put("brooks", b3);
         QueryParameters av1 = new QueryParameters()
                 .add("title", "Null References: The Billion Dollar Mistake")
                 .add("authors", Collections.singletonList("Tony Hoare"))
-                .add("price", 0)
-                .add("copy_num", 1)
+                .add("price", 700)
+                .add("copy_num", 2)
                 .add("keywords", Collections.emptyList());
         av.put("null", av1);
         QueryParameters av2 = new QueryParameters()
@@ -70,14 +73,14 @@ public class TestItems {
         users.put("sergey", ItemSerializer.serialize(p1));
 
         User p2 = new User(
-                1011, "Nadia Teixeira", "Student", null);
+                1011, "Nadia Teixeira", "Faculty", "Professor");
         p2.setPhoneNumber("30002");
         p2.setAddress("Via Sacra, 13");
         p2.setLogin("n.teixeira");
         users.put("nadia", ItemSerializer.serialize(p2));
 
         User p3 = new User(
-                1100, "Elvira Espindola", "Student", null);
+                1100, "Elvira Espindola", "Faculty", "Professor");
         p3.setPhoneNumber("30003");
         p3.setAddress("Via del Corso, 22");
         p3.setLogin("e.espindola");
@@ -87,8 +90,22 @@ public class TestItems {
                 2017, "Alice", "Librarian", null);
         alice.setPhoneNumber("...");
         alice.setAddress("...");
-        alice.setLogin("alice.");
+        alice.setLogin("alice");
         users.put("alice", ItemSerializer.serialize(alice));
+
+        User p4 = new User(
+                1101, "Andrey Velo", "Student", null);
+        p4.setPhoneNumber("30004");
+        p4.setAddress("Avenida Mazatlan 250");
+        p4.setLogin("a.velo");
+        users.put("andrey", ItemSerializer.serialize(p4));
+
+        User p5 = new User(
+                1110, "Veronika Rama", "Visiting", null);
+        p5.setPhoneNumber("30005");
+        p5.setAddress("Stret Atocha, 27");
+        p5.setLogin("v.rama");
+        users.put("rama", ItemSerializer.serialize(p5));
     }
 
 }

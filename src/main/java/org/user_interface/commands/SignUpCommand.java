@@ -117,7 +117,7 @@ public class SignUpCommand extends Command {
         }});
     }
 
-    int newUserCardNumber() {
+    private int newUserCardNumber() {
         List<UserEntry> entryList =
                 LibraryStorage.getInstance().find(Resource.User, new QueryParameters());
         int result = 0;

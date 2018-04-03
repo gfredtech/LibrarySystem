@@ -135,10 +135,10 @@ public class CheckOutCommand implements Command {
 
         } else if(itemEntry.getResourceType() == Resource.Book) {
             Book b = (Book)itemEntry.getItem();
-            if(b.isBestseller()) {
-                overdue = dateOfCheckout.plusWeeks(2);
-            } else if (user.getUser().getType().equals("Faculty")) {
+            if (user.getUser().getType().equals("Faculty")) {
                 overdue = dateOfCheckout.plusWeeks(4);
+            } else if(b.isBestseller()) {
+                overdue = dateOfCheckout.plusWeeks(2);
             } else {
                 overdue = dateOfCheckout.plusWeeks(3);
             }
