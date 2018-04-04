@@ -3,6 +3,7 @@ package org.user_interface.ui;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+
 import java.util.HashMap;
 
 public class Bot extends TelegramLongPollingBot {
@@ -19,7 +20,7 @@ public class Bot extends TelegramLongPollingBot {
 
             currentState.put(chatId, handler.handleMessageUpdate(this, update, userState));
 
-        }else if(update.hasCallbackQuery()) {
+        } else if(update.hasCallbackQuery()) {
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
             currentState.put(chatId, handler.handleCallbackUpdate(
                     this, update, currentState.getOrDefault(chatId, "error")));
