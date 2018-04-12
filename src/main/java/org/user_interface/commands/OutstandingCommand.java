@@ -12,26 +12,26 @@ import java.util.List;
 
 public class OutstandingCommand extends Command {
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
         Long chatId = update.hasMessage() ? update.getMessage().getChatId():
                 update.getCallbackQuery().getMessage().getChatId();
 
         switch (info){
             case "start":
-                entries = showCheckoutQueue(sender, update, chatId);
+                entries = showCheckoutQueue(chatId);
                 if(entries == null) return "menu_main";
 
                 return "outstanding_select";
 
             case "select":
-                makeOutstandingRequest(sender, update, chatId);
+                makeOutstandingRequest(chatId);
                 return "menu_main";
         }
 
         return null;
     }
 
-    List<PendingRequestEntry> showCheckoutQueue(AbsSender sender, Update update, Long chatId) {
+    List<PendingRequestEntry> showCheckoutQueue(Long chatId) {
 
         List<PendingRequestEntry> pendingRequestEntries =
                 LibraryStorage.getInstance().find(Resource.PendingRequest,
@@ -40,8 +40,7 @@ public class OutstandingCommand extends Command {
         StringBuilder builder = new StringBuilder();
 
         if(pendingRequestEntries.size() != 0) {
-            sendMessage(sender, update,
-                    "here's a list of all documents pending request(s). select " +
+            sendMessage("here's a list of all documents pending request(s). select " +
                     "the one you'd like to place an outstanding request for");
             int i = 1;
             for(PendingRequestEntry e: pendingRequestEntries) {
@@ -51,16 +50,16 @@ public class OutstandingCommand extends Command {
                         .append("\n");
             }
 
-            sendMessage(sender, update, builder.toString());
+            sendMessage(builder.toString());
             return pendingRequestEntries;
-        } else keyboardUtils.showMainMenuKeyboard(sender, update,
+        } else keyboardUtils.showMainMenuKeyboard(
                 currentUser.get(chatId).getUser(),
                 "There are no documents pending request.");
         return null;
 
     }
 
-    void makeOutstandingRequest(AbsSender sender, Update update, Long chatId) {
+    void makeOutstandingRequest(Long chatId) {
         int index = Integer.parseInt(update.getMessage().getText());
         PendingRequestEntry e = entries.get(index);
 
@@ -84,7 +83,7 @@ public class OutstandingCommand extends Command {
                 break;
         }
 
-        keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+        keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser(),
                 message);
 
     }

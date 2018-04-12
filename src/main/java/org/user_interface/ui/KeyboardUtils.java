@@ -14,13 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeyboardUtils {
-    public void showMainMenuKeyboard(AbsSender sender, Update update, User user, String msg) {
-        Long chatId;
-        if(update.hasMessage()) {
-            chatId = update.getMessage().getChatId();
-        } else {
-            chatId = update.getCallbackQuery().getMessage().getChatId();
-        }
+
+
+    private static AbsSender sender = new Bot();
+    Long chatId;
+
+
+    public void showMainMenuKeyboard(Long chatId, User user, String msg) {
+        this.chatId = chatId;
+        showMainMenuKeyboard(user, msg);
+    }
+    public void showMainMenuKeyboard(User user, String msg) {
 
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboard = new ArrayList<>();
@@ -61,13 +65,8 @@ public class KeyboardUtils {
         }
     }
 
-    public void setInlineKeyBoard(AbsSender sender, Update update, String message, List<String> commands) {
-        Long chatId = 0L;
-        if(update.hasCallbackQuery()) {
-            chatId = update.getCallbackQuery().getMessage().getChatId();
-        } else if(update.hasMessage()) {
-            chatId = update.getMessage().getChatId();
-        }
+    public void setInlineKeyBoard(String message, List<String> commands) {
+
         SendMessage msg = new SendMessage();
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
@@ -93,7 +92,7 @@ public class KeyboardUtils {
         }
     }
 
-    public   void showCRUDkeyboard(AbsSender sender, Update update, String type) {
+    public   void showCRUDkeyboard(String type) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
@@ -106,7 +105,7 @@ public class KeyboardUtils {
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(keyboard);
 
-        SendMessage message = new SendMessage().setChatId(update.getMessage().getChatId()).setText("Choose an option");
+        SendMessage message = new SendMessage().setChatId(chatId).setText("Choose an option");
         message.setReplyMarkup(keyboardMarkup);
         try {
             sender.execute(message);
@@ -117,7 +116,7 @@ public class KeyboardUtils {
     }
 
 
-    public void showEditDocumentKeyboard(AbsSender sender, Update update) {
+    public void showEditDocumentKeyboard() {
 
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
 
@@ -136,12 +135,17 @@ public class KeyboardUtils {
         markup.setResizeKeyboard(true);
         markup.setKeyboard(keyb);
 
-        SendMessage message = new SendMessage().setChatId(update.getMessage().getChatId()).setText("Choose an option");
+        SendMessage message = new SendMessage().setChatId(chatId).setText("Choose an option");
         message.setReplyMarkup(markup);
         try {
             sender.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    public KeyboardUtils(Update update) {
+        this.chatId = update.hasMessage() ? update.getMessage().getChatId()
+                : update.getCallbackQuery().getMessage().getChatId();
     }
 }

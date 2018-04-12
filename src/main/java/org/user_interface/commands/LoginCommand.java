@@ -3,19 +3,19 @@ import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
+
+import java.util.List;
 
 public class LoginCommand extends Command {
 
     @Override
-    public String run(AbsSender sender, Update update, String currentState) {
+    public String run(String info) {
         Long chatId = update.getMessage().getChatId();
         String data;
-        switch (currentState) {
+        switch (info) {
             case "start":
                 String message = "Enter your username and password, separated by a space:";
-                sendMessage(sender, update, message);
+                sendMessage(message);
                 data = "login_password";
                 return data;
 
@@ -27,17 +27,24 @@ public class LoginCommand extends Command {
                     username = tokens[0].trim();
                     password = tokens[1].trim();
                 } else {
-                    sendMessage(sender, update, "You have less/more than the required input. Try again.");
+                    sendMessage("You have less/more than the required input. Try again.");
                     return "login_password";
                 }
 
-                UserEntry user = LibraryStorage.getInstance().find(Resource.User,
-                        new QueryParameters().add("login", username)).get(0);
+                List<UserEntry> users = LibraryStorage.getInstance().find(Resource.User,
+                        new QueryParameters().add("login", username));
 
+                if(users.size() == 0) {
+                    sendMessage("User not found! Please use /login to try again.");
+                    return "start_start";
+                }
+
+                UserEntry user = users.get(0);
 
                      if (user == null) {
-                        sendMessage(sender, update, "User not found! Please use /login to try again.");
-                        return "start_start";
+                         sendMessage("User not found! Please use /login to try again.");
+                         return "start_start";
+
                     } else {
                         currentUser.put(chatId, user);
                         System.out.println(password.hashCode());
@@ -45,12 +52,13 @@ public class LoginCommand extends Command {
                         if (password.hashCode() == currentUser.get(chatId).getUser().getPasswordHash()) {
                             String notifications = new NotificationHandler().init(currentUser.get(chatId).getId());
                             if(notifications.length() > 0)
-                                sendMessage(sender, update, "*You have Notifications*\n"
+                                sendMessage("*You have Notifications*\n"
                                         + notifications);
-                            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), "Success!");
+
+                            keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser(), "Success!");
                             return "menu_main";
                         } else {
-                            sendMessage(sender, update, "Password is incorrect. Please try again.");
+                            sendMessage("Password is incorrect. Please try again.");
                             return "login_password";
                         }
                     }
@@ -59,7 +67,7 @@ public class LoginCommand extends Command {
             case "logout":
                 currentUser.remove(chatId);
                 documentCursor.remove(chatId);
-                sendMessage(sender, update, "Logout successful. You can use /login to sign back in.");
+                sendMessage("Logout successful. You can use /login to sign back in.");
                 return "start_start";
         }
         return null;

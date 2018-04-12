@@ -26,11 +26,11 @@ public class Interface {
 
     }
 
-   public String handleMessageUpdate(AbsSender sender, Update update, String currentState) {
+   public String handleMessageUpdate(Update update, String currentState) {
         String message = update.hasMessage() ? update.getMessage().getText()
                 :update.getCallbackQuery().getData();
 
-        if(currentState == null) return new ErrorCommand().run(sender, update, message);
+        if(currentState == null) return new ErrorCommand().run(update, message);
 
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
@@ -38,21 +38,21 @@ public class Interface {
        if(message.equals("/login") || message.equals("/start")) {
            message = message.substring(message.lastIndexOf("/") + 1);
 
-           return initialize().get(message).run(sender, update, "start");
+           return initialize().get(message).run(update, "start");
        } else {
            System.out.println(userCommand + " from " + userState);
-           return initialize().getOrDefault(userState, new ErrorCommand()).run(sender, update, userCommand);
+           return initialize().getOrDefault(userState, new ErrorCommand()).run(update, userCommand);
        }
     }
 
-    String handleCallbackUpdate(AbsSender sender, Update update, String currentState) {
+    String handleCallbackUpdate(Update update, String currentState) {
         System.out.println("editrr "  + currentState);
         if(currentState.equals("error")) return initialize().getOrDefault(
-                "error", new ErrorCommand()).run(sender, update, "error");
+                "error", new ErrorCommand()).run(update, "error");
 
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
 
-        return initialize().getOrDefault(userState, new ErrorCommand()).run(sender, update, userCommand);
+        return initialize().getOrDefault(userState, new ErrorCommand()).run(update, userCommand);
     }
 }

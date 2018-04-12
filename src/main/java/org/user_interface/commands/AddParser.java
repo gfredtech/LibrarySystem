@@ -1,14 +1,12 @@
 package org.user_interface.commands;
 
 import org.items.*;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AddParser extends Command{
 
-    Book parseBookParameters(Update update) {
+    Book parseBookParameters() {
         String message = update.getMessage().getText();
         String [] params = message.split("[;]+");
 
@@ -28,7 +26,7 @@ public class AddParser extends Command{
         return bookFactory.build();
     }
 
-    Item parseAvMaterialParameters(Update update) {
+    Item parseAvMaterialParameters() {
         String message = update.getMessage().getText();
         String[] params = message.split("[;]+");
 
@@ -46,7 +44,7 @@ public class AddParser extends Command{
         return factory.build();
     }
 
-    Item parseJournalIssueParameters(Update update) {
+    Item parseJournalIssueParameters() {
         String message = update.getMessage().getText();
         String[] params = message.split("[;]+");
 
@@ -79,7 +77,7 @@ public class AddParser extends Command{
     }
 
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
         return null;
     }
 }

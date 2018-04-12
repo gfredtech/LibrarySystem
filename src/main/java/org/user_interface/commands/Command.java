@@ -9,6 +9,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.user_interface.ui.Bot;
 import org.user_interface.ui.KeyboardUtils;
 
 import java.text.DateFormat;
@@ -20,19 +21,26 @@ import java.util.*;
 
 public abstract class Command {
 
-    public KeyboardUtils keyboardUtils = new KeyboardUtils();
-
+    public static KeyboardUtils keyboardUtils;
     static HashMap<Long, UserEntry> currentUser = new HashMap<>();
+    static AbsSender sender = new Bot();
+    public Update update;
 
     static HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
     static HashMap<Long, UserEntry> userCursor = new HashMap<>();
 
     //executes an action, then returns an object that contains some
     //information back to the Bot class
-    public abstract String run(AbsSender sender, Update update, String info);
+    public String run(Update update, String info) {
+        this.update = update;
+        keyboardUtils = new KeyboardUtils(update);
+        return run(info);
+    }
+
+    protected abstract String run(String info);
 
 
-    void sendMessage(AbsSender sender, Update update, String text) {
+    void sendMessage(String text) {
         Chat chat;
         if (update.hasMessage()) {
             chat = update.getMessage().getChat();
@@ -53,7 +61,7 @@ public abstract class Command {
         }
     }
 
-    void listBooks(AbsSender sender, Update update) {
+    void listBooks() {
         StringBuilder builder = new StringBuilder();
         List<BookEntry> books = LibraryStorage.getInstance().find(Resource.Book, new QueryParameters());
         for (int i = 0; i < books.size(); i++) {
@@ -65,13 +73,13 @@ public abstract class Command {
                    .append("\n\n");
         }
         if(builder.length() > 0) {
-            sendMessage(sender, update, "Here's a " +
+            sendMessage("Here's a " +
                     "list of all the specified documents in the library. Enter the number of the book you want:");
-            sendMessage(sender, update, builder.toString());
-        } else sendMessage(sender, update, "There are no books in the library.");
+            sendMessage(builder.toString());
+        } else sendMessage("There are no books in the library.");
     }
 
-    void listAvMaterials(AbsSender sender, Update update) {
+    void listAvMaterials() {
         StringBuilder builder = new StringBuilder();
         List<AvMaterialEntry> avMaterials = LibraryStorage.getInstance().find(Resource.AvMaterial, new QueryParameters());
         for (int i = 0; i < avMaterials.size(); i++) {
@@ -83,13 +91,13 @@ public abstract class Command {
         }
 
         if(builder.length() > 0) {
-            sendMessage(sender, update, "Here's a " +
+            sendMessage("Here's a " +
                     "list of all the specified documents in the library. Enter the number of the book you want:");
-            sendMessage(sender, update, builder.toString());
-        } else sendMessage(sender, update, "There are no AV Materials in the library.");
+            sendMessage(builder.toString());
+        } else sendMessage("There are no AV Materials in the library.");
     }
 
-    void listJournalIssues(AbsSender sender, Update update) {
+    void listJournalIssues() {
         StringBuilder builder = new StringBuilder();
         List<JournalIssueEntry> journalIssues = LibraryStorage.getInstance().find(Resource.JournalIssue, new QueryParameters());
         for(int i = 0; i < journalIssues.size(); i++) {
@@ -100,13 +108,13 @@ public abstract class Command {
                    .append("\n");
         }
         if(builder.length() > 0) {
-            sendMessage(sender, update, "Here's a " +
+            sendMessage("Here's a " +
                     "list of all the specified documents in the library. Enter the number of the book you want:");
-            sendMessage(sender, update, builder.toString());
-        } else sendMessage(sender, update, "There are no Journal Issues in the library.");
+            sendMessage(builder.toString());
+        } else sendMessage("There are no Journal Issues in the library.");
     }
 
-    void listJournalArticles(AbsSender sender, Update update) {
+    void listJournalArticles() {
         StringBuilder builder = new StringBuilder();
         List<JournalArticleEntry> articles = LibraryStorage.getInstance().find(Resource.JournalArticle, new QueryParameters());
         for(int i = 0; i < articles.size(); i++) {
@@ -117,17 +125,17 @@ public abstract class Command {
                    .append("\n");
         }
         if(builder.length() > 0) {
-            sendMessage(sender, update, "Here's a " +
+            sendMessage("Here's a " +
                     "list of all the specified documents in the library. Enter the number of the book you want:");
-            sendMessage(sender, update, builder.toString());
-        } else sendMessage(sender, update, "There are no Journal Articles in the library.");
+            sendMessage(builder.toString());
+        } else sendMessage("There are no Journal Articles in the library.");
     }
 
-    void showDocumentDetails(AbsSender sender, Update update, ItemEntry item) {
+    void showDocumentDetails(ItemEntry item) {
         String bookDetails = item.getItem().toString() +
                 "\nCopies: " + item.getItem().getCopiesNum();
 
-        keyboardUtils.setInlineKeyBoard(sender, update, bookDetails, new ArrayList<String>(){{
+        keyboardUtils.setInlineKeyBoard(bookDetails, new ArrayList<String>(){{
             add("Checkout");
             add("Cancel Checkout");
         }});
@@ -147,9 +155,9 @@ public abstract class Command {
         return null;
     }
 
-    String authorizationChecker(AbsSender sender, Update update, UserEntry e) {
+    String authorizationChecker(UserEntry e) {
         if(!e.getUser().getType().equals("Librarian")) {
-            keyboardUtils.showMainMenuKeyboard(sender, update, e.getUser(),
+            keyboardUtils.showMainMenuKeyboard(e.getUser(),
                     "You're not allowed to perform this operation");
             return "menu_main";
         }

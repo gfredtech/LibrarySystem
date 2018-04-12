@@ -18,7 +18,7 @@ public class SignUpCommand extends Command {
     private String credentials;
 
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
         Long chatId;
         if(update.hasMessage()) chatId = update.getMessage().getChatId();
         else chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -31,17 +31,17 @@ public class SignUpCommand extends Command {
                         "Examples:\n" +
                         "John Smith, Innopolis Street 7, +12345678912, johnsmith, secret, Faculty, Instructor\n" +
                         "Jane Doe, Washington Street, +98765432101, janedoe, secret, Student";
-                sendMessage(sender, update, message);
+                sendMessage(message);
                 return "signup_validator";
 
             case "validator":
                 credentials = update.getMessage().getText();
                 System.out.println(Arrays.toString(credentials.split(",")));
                 if (credentials.split(",").length != 7) {
-                    sendMessage(sender, update, "Input mismatch. Enter details again.");
+                    sendMessage("Input mismatch. Enter details again.");
                     return "signup_validator";
                 } else {
-                    signUpConfirm(sender, update, chatId, credentials);
+                    signUpConfirm(chatId, credentials);
                     return "signup_confirm";
                 }
 
@@ -54,20 +54,20 @@ public class SignUpCommand extends Command {
                             addUserEntryMap.get(chatId).execute(LibraryStorage.getInstance());
                     switch (res) {
                         case Success:
-                            keyboardUtils.showMainMenuKeyboard(sender, update,
+                            keyboardUtils.showMainMenuKeyboard(
                                     currentUser.get(chatId).getUser(),
                                     "Account created successfully!");
 
                             return "menu_main";
                         case Failure:
-                            keyboardUtils.showMainMenuKeyboard(sender, update,
+                            keyboardUtils.showMainMenuKeyboard(
                                     currentUser.get(chatId).getUser(),
                                     res.getInfo());
 
                     }
 
                 } else {
-                    sendMessage(sender, update,
+                    sendMessage(
                             "Signup cancelled.");
                     return "start";
                 }
@@ -76,7 +76,7 @@ public class SignUpCommand extends Command {
         return null;
     }
 
-    private void signUpConfirm(AbsSender sender, Update update,Long chatId, String info) {
+    private void signUpConfirm(Long chatId, String info) {
         String fullName = info.split("[,]+")[0].trim();
         String address = info.split("[,]+")[1].trim();
         String phoneNumber = info.split("[,]+")[2].trim();
@@ -111,7 +111,7 @@ public class SignUpCommand extends Command {
 
          addUserEntryMap.put(chatId, command);
 
-        keyboardUtils.setInlineKeyBoard(sender, update, accountDetails, new ArrayList<String>() {{
+        keyboardUtils.setInlineKeyBoard(accountDetails, new ArrayList<String>() {{
             add("Confirm");
             add("Cancel");
         }});

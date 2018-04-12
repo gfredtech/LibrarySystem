@@ -14,16 +14,16 @@ import java.util.List;
 
 public class FineCommand extends Command {
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
         Long chatId;
         if(update.hasMessage()) chatId = update.getMessage().getChatId();
         else chatId = update.getCallbackQuery().getMessage().getChatId();
         switch (info) {
             case  "startnext":
                 UserEntry e = currentUser.get(chatId);
-                String auth = authorizationChecker(sender, update, e);
+                String auth = authorizationChecker(e);
                 if(auth!= null) return auth;
-                fineItems = displayFines(sender, update, chatId);
+                fineItems = displayFines(chatId);
                 if(fineItems == null) return "menu_main";
                 return "fine_select";
 
@@ -37,7 +37,7 @@ public class FineCommand extends Command {
         return null;
     }
 
-    private List<CheckoutEntry> displayFines(AbsSender sender, Update update, Long chatId) {
+    private List<CheckoutEntry> displayFines(Long chatId) {
         List<CheckoutEntry> items = finesForUsers();
         int i = 1;
         StringBuilder builder = new StringBuilder();
@@ -50,12 +50,12 @@ public class FineCommand extends Command {
         }
 
         if(builder.length() > 0) {
-            sendMessage(sender, update, "These are the current overdue items with the name of patron and" +
+            sendMessage("These are the current overdue items with the name of patron and" +
                     " fine amount. Select the item you'd like to pay the fine for:\n\n" + builder.toString());
             return items;
 
         } else {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+            keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser(),
                     "There are no overdue items");
             return null;
         }
@@ -76,7 +76,7 @@ public class FineCommand extends Command {
 
        new org.controller.ReturnCommand(entry.getPatron(), entry.getItem()).execute(
                LibraryStorage.getInstance());
-       keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+       keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser(),
                        "Fine paid successfully by " + entry.getPatron().getUser().getName() + " for "
                + entry.getItem().getItem().getTitle());
 
