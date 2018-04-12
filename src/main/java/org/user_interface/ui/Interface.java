@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class Interface {
 
-    public static HashMap<String, Command> initialize() {
+    private static HashMap<String, Command> initialize() {
         HashMap<String, Command> commandHashMap = new HashMap<>();
         commandHashMap.put("menu", new MenuCommand());
         commandHashMap.put("start", new StartCommand());
@@ -22,6 +22,7 @@ public class Interface {
         commandHashMap.put("renew", new RenewItemCommand());
         commandHashMap.put("error", new ErrorCommand());
         commandHashMap.put("outstanding", new OutstandingCommand());
+        commandHashMap.put("search", new SearchCommand());
         return commandHashMap;
 
     }
@@ -46,7 +47,7 @@ public class Interface {
     }
 
     String handleCallbackUpdate(Update update, String currentState) {
-        System.out.println("editrr "  + currentState);
+
         if(currentState.equals("error")) return initialize().getOrDefault(
                 "error", new ErrorCommand()).run(update, "error");
 

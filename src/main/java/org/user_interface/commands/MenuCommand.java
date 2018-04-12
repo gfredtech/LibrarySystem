@@ -25,7 +25,8 @@ public class MenuCommand extends Command {
                         return new Interface().handleMessageUpdate(update, "renew_startnext");
                     case "fine":
                         return new Interface().handleMessageUpdate(update, "fine_startnext");
-
+                    case "search":
+                        return new Interface().handleMessageUpdate(update, "start_startnext");
                     case "logout":
                         return new Interface().handleMessageUpdate(update, "login_logout");
                     case "outstanding":
