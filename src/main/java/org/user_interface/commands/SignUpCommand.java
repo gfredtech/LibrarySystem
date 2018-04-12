@@ -63,7 +63,6 @@ public class SignUpCommand extends Command {
                             keyboardUtils.showMainMenuKeyboard(sender, update,
                                     currentUser.get(chatId).getUser(),
                                     res.getInfo());
-
                     }
 
                 } else {

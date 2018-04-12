@@ -2,6 +2,7 @@ package org.controller;
 
 import org.items.Book;
 import org.items.Item;
+import org.items.User;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.ItemEntry;
@@ -46,7 +47,7 @@ public class CheckOutCommand implements Command {
      * @param storage an interface to the library data storage
      */
     @Override
-    public Command.Result execute(LibraryStorage storage) {
+    public Command.Result execute(LibraryStorage storage, User executor) {
         QueryParameters p = new QueryParameters()
                 .add("item_id", itemEntry.getId());
         int checkoutNum = storage.getNumOfEntries(Resource.Checkout, p);

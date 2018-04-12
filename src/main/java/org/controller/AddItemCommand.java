@@ -1,6 +1,7 @@
 package org.controller;
 
 import org.items.Item;
+import org.items.User;
 import org.storage.ItemSerializer;
 import org.storage.LibraryStorage;
 import org.storage.Storage;
@@ -18,7 +19,10 @@ public class AddItemCommand implements Command {
 
 
     @Override
-    public Result execute(LibraryStorage storage) {
+    public Result execute(LibraryStorage storage, User executor) {
+        if(!executor.hasPrivilege(User.Privilege.Addition)) {
+            return Result.failure("Access denied; the 'Addition' privilege is required");
+        }
         try {
             storage.add(Resource.fromItem(item),
                     ItemSerializer.serialize(item));

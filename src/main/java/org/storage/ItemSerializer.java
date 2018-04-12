@@ -2,6 +2,8 @@ package org.storage;
 
 import org.items.*;
 
+import java.util.stream.Collectors;
+
 
 /**
  * This class creates a query parameters instance based on the data of an item.
@@ -32,6 +34,7 @@ public class ItemSerializer {
         p.add("type", user.getType());
         p.add("subtype", user.getSubtype());
         p.add("user_id", user.getCardNumber());
+        p.add("privileges", user.getPrivileges().stream().map(Enum::ordinal).collect(Collectors.toList()));
         return p;
     }
 

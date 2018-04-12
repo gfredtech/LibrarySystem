@@ -1,16 +1,18 @@
 package org.items;
 
 
-import jdk.nashorn.internal.ir.annotations.Immutable;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Data structure representing a user record in the system
  */
 
 public class User {
+
+    public enum Privilege {Modification, Addition, Deletion};
 
     public User(int cardNumber) {
         this.cardNumber = cardNumber;
@@ -32,7 +34,7 @@ public class User {
     }
 
     public static List<String> getTypes() {
-        return Arrays.asList("Librarian", "Student", "Faculty", "Visiting");
+        return Arrays.asList("Admin", "Librarian", "Student", "Faculty", "Visiting");
     }
 
     public void setType(String type) {
@@ -54,6 +56,22 @@ public class User {
             throw new IllegalArgumentException(
                     "Invalid subtype: "+subtype+"; Should be one of "+getSubypes());
         }
+    }
+
+    public boolean hasPrivilege(Privilege privilege) {
+        return privileges.contains(privilege);
+    }
+
+    public void setPrivilege(Privilege privilege, boolean isGranted) {
+        if(isGranted) {
+            privileges.add(privilege);
+        } else {
+            privileges.remove(privilege);
+        }
+    }
+
+    public Set<Privilege> getPrivileges() {
+        return privileges;
     }
 
     @Override
@@ -119,5 +137,5 @@ public class User {
     private String phoneNumber;
     private String address;
     private int passwordHash;
-
+    final private Set<Privilege> privileges = new TreeSet<>();
 }

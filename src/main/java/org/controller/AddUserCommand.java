@@ -17,7 +17,16 @@ public class AddUserCommand implements Command {
     }
 
     @Override
-    public Command.Result execute(LibraryStorage storage) {
+    public Command.Result execute(LibraryStorage storage, User executor) {
+        if(user.getType().equals("Admin")) {
+            return Result.failure("There can be only one admin");
+        }
+        if(user.getType().equals("Librarian") && !executor.getType().equals("Admin")) {
+            return Result.failure("A librarian can be added by the admin only");
+        }
+        if(!executor.hasPrivilege(User.Privilege.Addition)) {
+            return Result.failure("Access denied; the 'Addition' privilege is required");
+        }
         try {
             storage.add(Resource.User, ItemSerializer.serialize(user));
             return Result.Success;
