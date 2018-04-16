@@ -4,9 +4,9 @@ import java.util.List;
 
 
 
-public abstract class ItemFactory<T extends Item> {
+public abstract class ItemFactory<F extends ItemFactory<F, T>, T extends Item> {
 
-    protected ItemFactory(T i) {
+    ItemFactory(T i) {
         item = i;
     }
 
@@ -16,34 +16,34 @@ public abstract class ItemFactory<T extends Item> {
         return item;
     }
 
-    public ItemFactory<T> title(String title) {
+    public F title(String title) {
         item.title = title;
-        return this;
+        return (F)this;
     }
 
-    public ItemFactory<T> copiesNum(int copiesNum) {
+    public F copiesNum(int copiesNum) {
         item.copiesNum = copiesNum;
-        return this;
+        return (F)this;
     }
 
-    public ItemFactory<T> price(int price) {
+    public F price(int price) {
         item.price = price;
-        return this;
+        return (F)this;
     }
 
-    public ItemFactory<T> keywords(List<String> keywords) {
+    public F keywords(List<String> keywords) {
         item.keywords = keywords;
-        return this;
+        return (F)this;
     }
 
-    public ItemFactory<T> isReference() {
+    public F isReference() {
         item.reference = true;
-        return this;
+        return (F)this;
     }
 
-    public ItemFactory<T> isNotReference() {
+    public F isNotReference() {
         item.reference = false;
-        return this;
+        return (F)this;
     }
 
     protected T item;

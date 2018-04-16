@@ -11,7 +11,7 @@ import java.util.List;
  * @author Reviewed and improved by Vladimir Scherba
  */
 
-public class AvMaterialFactory extends ItemFactory<AvMaterial> {
+public class AvMaterialFactory extends ItemFactory<AvMaterialFactory, AvMaterial> {
 
     public AvMaterialFactory() {
         super(new AvMaterial());

@@ -1,22 +1,25 @@
 import org.controller.CheckOutCommand;
 import org.controller.Command;
 import org.controller.LibraryManager;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
-import org.storage.Storage;
-import org.storage.resources.*;
-import java.util.*;
+import org.storage.resources.BookEntry;
+import org.storage.resources.Resource;
+import org.storage.resources.UserEntry;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BookReturnEditSystemTests {
 
     @BeforeAll
-    void init() throws ClassNotFoundException {
+    void init() {
         LibraryStorage.connect("library", "librarian", "tabula_rasa");
         storage = LibraryStorage.getInstance();
         manager = new LibraryManager(storage);
@@ -98,17 +101,20 @@ class BookReturnEditSystemTests {
     void test6() {
         initStorage();
         modifyStorage();
+        UserEntry user = storage.get(Resource.User,1010).get();
         Command checkout = new CheckOutCommand(
-                storage.get(Resource.User,1010).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
         manager.execute(checkout).validate();
+        user = storage.get(Resource.User, 1100).get();
         Command failingCheckout = new CheckOutCommand(
-                storage.get(Resource.User, 1100).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
 
         assert manager.execute(failingCheckout) == Command.Result.Warning;
+        user = storage.get(Resource.User, 1010).get();
         checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1010).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("patterns").subset("title")).get(0));
         manager.execute(checkout).validate();
         cleanUp();
@@ -118,32 +124,35 @@ class BookReturnEditSystemTests {
     @Test
     void test7() {
         initStorage();
+        UserEntry user = storage.get(Resource.User, 1010).get();
         Command checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1010).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
         manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1010).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("patterns").subset("title")).get(0));
         manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1010).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("brooks").subset("title")).get(0));
         assert manager.execute(checkout) == Command.Result.Failure;
         checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1010).get(),
+                user,
                 storage.find(Resource.AvMaterial, data.av.get("null").subset("title")).get(0));
         manager.execute(checkout).validate();
+
+        user = storage.get(Resource.User, 1011).get();
         checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1011).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("cormen").subset("title")).get(0));
         manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1011).get(),
+                user,
                 storage.find(Resource.Book, data.books.get("patterns").subset("title")).get(0));
         manager.execute(checkout).validate();
         checkout = new CheckOutCommand(
-                storage.get(Resource.User, 1011).get(),
+                user,
                 storage.find(Resource.AvMaterial, data.av.get("entropy").subset("title")).get(0));
         manager.execute(checkout).validate();
         cleanUp();

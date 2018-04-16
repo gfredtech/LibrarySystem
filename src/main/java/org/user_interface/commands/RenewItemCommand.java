@@ -44,7 +44,8 @@ public class RenewItemCommand extends Command {
         assert entry != null;
 
         //TODO: renew item here
-        org.controller.Command.Result res = new RenewCommand(entry).execute(LibraryStorage.getInstance());
+        org.controller.Command.Result res =
+                new RenewCommand(entry).execute(LibraryStorage.getInstance());
 
         String message = "";
         switch (res) {

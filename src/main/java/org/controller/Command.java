@@ -1,6 +1,5 @@
 package org.controller;
 
-import org.items.User;
 import org.storage.LibraryStorage;
 
 /**
@@ -10,7 +9,7 @@ import org.storage.LibraryStorage;
  */
 public interface Command {
 
-    Result execute(LibraryStorage storage, User executor);
+    Result execute(LibraryStorage storage);
 
     enum Result {
         Success, Failure, Warning;

@@ -1,6 +1,5 @@
 package org.controller;
 
-import org.items.User;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.CheckoutEntry;
@@ -29,7 +28,7 @@ public class RenewCommand implements Command {
     }
 
     @Override
-    public Result execute(LibraryStorage storage, User executor) {
+    public Result execute(LibraryStorage storage) {
         boolean outstandingRequest =
                 storage.find(Resource.PendingRequest,
                         new QueryParameters()

@@ -12,7 +12,7 @@ import java.util.TreeSet;
 
 public class User {
 
-    public enum Privilege {Modification, Addition, Deletion};
+    public enum Privilege {Modification, Addition, Deletion}
 
     public User(int cardNumber) {
         this.cardNumber = cardNumber;
@@ -50,7 +50,7 @@ public class User {
     }
 
     public void setSubtype(String subtype) {
-        if (subtype == null || getSubypes().contains(subtype)) {
+        if (subtype == null || subtype.isEmpty() || getSubypes().contains(subtype)) {
             this.subtype = subtype;
         } else {
             throw new IllegalArgumentException(

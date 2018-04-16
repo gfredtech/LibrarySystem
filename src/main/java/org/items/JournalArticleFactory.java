@@ -2,7 +2,7 @@ package org.items;
 
 import java.util.List;
 
-public class JournalArticleFactory extends ItemFactory<JournalArticle> {
+public class JournalArticleFactory extends ItemFactory<JournalArticleFactory, JournalArticle> {
 
     public JournalArticleFactory() {
         super(new JournalArticle());

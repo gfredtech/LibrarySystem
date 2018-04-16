@@ -23,8 +23,8 @@ public class OutstandingRequestCommand implements Command {
     }
 
     @Override
-    public Result execute(LibraryStorage storage, User executor) {
-        if(!executor.hasPrivilege(User.Privilege.Addition)) {
+    public Result execute(LibraryStorage storage) {
+        if(!user.getUser().hasPrivilege(User.Privilege.Addition)) {
             return Result.failure("The 'Addition' privilege is required for the outstanding request");
         }
 

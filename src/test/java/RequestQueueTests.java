@@ -2,8 +2,6 @@ import org.controller.*;
 import org.junit.jupiter.api.*;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.SqlStorage;
-import org.storage.Storage;
 import org.storage.resources.BookEntry;
 import org.storage.resources.CheckoutEntry;
 import org.storage.resources.Resource;
@@ -11,9 +9,9 @@ import org.storage.resources.UserEntry;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RequestQueueTests {
+class RequestQueueTests {
     @BeforeAll
-    void initStorage() throws ClassNotFoundException {
+    void initStorage() {
         LibraryStorage.connect("library", "librarian", "tabula_rasa");
         storage = LibraryStorage.getInstance();
         manager = new LibraryManager(storage);

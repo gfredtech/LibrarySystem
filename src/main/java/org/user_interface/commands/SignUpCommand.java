@@ -106,7 +106,7 @@ public class SignUpCommand extends Command {
             }
 
             user.setPassword(password);
-         AddUserCommand command = new AddUserCommand(user);
+         AddUserCommand command = new AddUserCommand(user, currentUser.get(chatId).getUser());
 
          addUserEntryMap.put(chatId, command);
 

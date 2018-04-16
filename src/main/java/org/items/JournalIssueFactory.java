@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A factory intended to create instances of the JournalIssue class
  */
-public class JournalIssueFactory extends ItemFactory<JournalIssue> {
+public class JournalIssueFactory extends ItemFactory<JournalIssueFactory, JournalIssue> {
     public JournalIssueFactory() {
         super(new JournalIssue());
     }

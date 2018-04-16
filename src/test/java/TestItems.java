@@ -1,4 +1,4 @@
-import org.items.User;
+import org.items.*;
 import org.storage.ItemSerializer;
 import org.storage.QueryParameters;
 
@@ -9,103 +9,109 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class TestItems {
+class TestItems {
 
-    public Map<String, QueryParameters> users = new HashMap<>();
-    public Map<String, QueryParameters> books = new HashMap<>();
-    public Map<String, QueryParameters> av = new HashMap<>();
-    public Map<String, QueryParameters> articles = new HashMap<>();
+    Map<String, QueryParameters> users = new HashMap<>();
+    Map<String, QueryParameters> books = new HashMap<>();
+    Map<String, QueryParameters> av = new HashMap<>();
+    Map<String, QueryParameters> articles = new HashMap<>();
+
+    User alice, p1, p2, p3, v, s;
+    Book b1, b2, b3;
+    AvMaterial av1, av2;
 
     TestItems() {
-        QueryParameters b1 = new QueryParameters()
-                .add("title", "Introduction to Algorithms, Third edition")
-                .add("authors", Arrays.asList("Thomas H. Cormen", "Charles E. Leiserson",
+        b1 = new BookFactory()
+                .authors(Arrays.asList("Thomas H. Cormen", "Charles E. Leiserson",
                         "Ronald L. Rivest", "Clifford Stein"))
-                .add("publisher", "MIT Press")
-                .add("publication_date", LocalDate.of(2009, 1, 1))
-                .add("copy_num", 3)
-                .add("price", 5000)
-                .add("keywords", Collections.emptyList());
-        books.put("cormen", b1);
+                .publisher("MIT Press")
+                .publicationDate(LocalDate.of(2009, 1, 1))
+                .title("Introduction to Algorithms, Third edition")
+                .copiesNum(3)
+                .price(5000)
+                .keywords(Collections.emptyList()).build();
+        books.put("cormen", ItemSerializer.serialize(b1));
 
-        QueryParameters b2 = new QueryParameters()
-                .add("title", "Design Patterns: Elements of Reusable Object-Oriented Software, First edition")
-                .add("authors", Arrays.asList("Erich Gamma", "Ralph Johnson", "John Vlissides", "Richard Helm"))
-                .add("publisher", "Addison-Wesley Professional")
-                .add("publication_date", LocalDate.of(2003, 1, 1))
-                .add("is_bestseller", true)
-                .add("price", 1700)
-                .add("copy_num", 3)
-                .add("keywords", Collections.emptyList());
-        books.put("patterns", b2);
+        b2 = new BookFactory()
+                .title("Design Patterns: Elements of Reusable Object-Oriented Software, First edition")
+                .authors(Arrays.asList("Erich Gamma", "Ralph Johnson", "John Vlissides", "Richard Helm"))
+                .publisher("Addison-Wesley Professional")
+                .publicationDate(LocalDate.of(2003, 1, 1))
+                .isBestseller()
+                .price(1700)
+                .copiesNum(3)
+                .keywords(Collections.emptyList()).build();
+        books.put("patterns", ItemSerializer.serialize(b2));
 
+        b3 = new BookFactory()
+                .title("The Mythical Man-month, Second edition")
+                .authors(Arrays.asList("Brooks", "Jr.", "Frederick P."))
+                .publisher("Addison-Wesley Longman Publishing Co., Inc.")
+                .publicationDate(LocalDate.of(1995, 1, 1))
+                .isReference()
+                .price(0)
+                .copiesNum(2)
+                .keywords(Collections.emptyList()).build();
+        books.put("brooks", ItemSerializer.serialize(b3));
 
-        QueryParameters b3 = new QueryParameters()
-                .add("title", "The Mythical Man-month, Second edition")
-                .add("authors", Arrays.asList("Brooks", "Jr.", "Frederick P."))
-                .add("publisher", "Addison-Wesley Longman Publishing Co., Inc.")
-                .add("publication_date", LocalDate.of(1995, 1, 1))
-                .add("is_reference", true)
-                .add("price", 0)
-                .add("copy_num", 2)
-                .add("keywords", Collections.emptyList());
-        books.put("brooks", b3);
-        QueryParameters av1 = new QueryParameters()
-                .add("title", "Null References: The Billion Dollar Mistake")
-                .add("authors", Collections.singletonList("Tony Hoare"))
-                .add("price", 700)
-                .add("copy_num", 2)
-                .add("keywords", Collections.emptyList());
-        av.put("null", av1);
-        QueryParameters av2 = new QueryParameters()
-                .add("title", "Information Entropy")
-                .add("authors", Arrays.asList("Claude Shannon"))
-                .add("price", 0)
-                .add("copy_num", 1)
-                .add("keywords", Collections.emptyList());
-        av.put("entropy", av2);
+        av1 = new AvMaterialFactory()
+                .title("Null References: The Billion Dollar Mistake")
+                .authors(Collections.singletonList("Tony Hoare"))
+                .price(700)
+                .copiesNum(2)
+                .keywords(Collections.emptyList()).build();
+        av.put("null", ItemSerializer.serialize(av1));
 
-        User p1 = new User(
+        av2 = new AvMaterialFactory()
+                .title("Information Entropy")
+                .authors(Arrays.asList("Claude Shannon"))
+                .price(0)
+                .copiesNum(1)
+                .keywords(Collections.emptyList()).build();
+        av.put("entropy", ItemSerializer.serialize(av2));
+
+        p1 = new User(
                 1010, "Sergey Afonso", "Faculty", "Professor");
         p1.setPhoneNumber("30001");
         p1.setAddress("Via Margutta, 3");
         p1.setLogin("s.afonso");
         users.put("sergey", ItemSerializer.serialize(p1));
 
-        User p2 = new User(
+        p2 = new User(
                 1011, "Nadia Teixeira", "Faculty", "Professor");
         p2.setPhoneNumber("30002");
         p2.setAddress("Via Sacra, 13");
         p2.setLogin("n.teixeira");
         users.put("nadia", ItemSerializer.serialize(p2));
 
-        User p3 = new User(
+        p3 = new User(
                 1100, "Elvira Espindola", "Faculty", "Professor");
         p3.setPhoneNumber("30003");
         p3.setAddress("Via del Corso, 22");
         p3.setLogin("e.espindola");
-        users.put("elvira", ItemSerializer.serialize(p3));
+        users.put("elvira",ItemSerializer.serialize(p3));
 
-        User alice = new User(
+        alice = new User(
                 2017, "Alice", "Librarian", null);
         alice.setPhoneNumber("...");
         alice.setAddress("...");
         alice.setLogin("alice");
+        alice.setPrivilege(User.Privilege.Addition, true);
         users.put("alice", ItemSerializer.serialize(alice));
 
-        User p4 = new User(
+        s = new User(
                 1101, "Andrey Velo", "Student", null);
-        p4.setPhoneNumber("30004");
-        p4.setAddress("Avenida Mazatlan 250");
-        p4.setLogin("a.velo");
-        users.put("andrey", ItemSerializer.serialize(p4));
+        s.setPhoneNumber("30004");
+        s.setAddress("Avenida Mazatlan 250");
+        s.setLogin("a.velo");
+        users.put("andrey", ItemSerializer.serialize(s));
 
-        User p5 = new User(
+        v = new User(
                 1110, "Veronika Rama", "Visiting", null);
-        p5.setPhoneNumber("30005");
-        p5.setAddress("Stret Atocha, 27");
-        p5.setLogin("v.rama");
-        users.put("rama", ItemSerializer.serialize(p5));
+        v.setPhoneNumber("30005");
+        v.setAddress("Stret Atocha, 27");
+        v.setLogin("v.rama");
+        users.put("rama", ItemSerializer.serialize(v));
     }
 
 }

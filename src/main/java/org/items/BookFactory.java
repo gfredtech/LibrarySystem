@@ -10,7 +10,7 @@ import java.util.List;
  * @author Developed by Roberto Chavez
  * @author Reviewed and improved by Vladimir Scherba
  */
-public class BookFactory extends ItemFactory<Book> {
+public class BookFactory extends ItemFactory<BookFactory, Book> {
 
     /**
      * Constructor of the class

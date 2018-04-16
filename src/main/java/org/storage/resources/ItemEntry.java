@@ -18,7 +18,7 @@ public abstract class ItemEntry<T extends Item> extends DatabaseEntry {
 
     ItemEntry(ResultSet rs) throws SQLException {
         super(rs);
-        ItemFactory<T> factory = initFactory(rs);
+        ItemFactory<?, T> factory = initFactory(rs);
         factory.title(rs.getString("title"));
         factory.copiesNum(rs.getInt("copy_num"));
         String[] keywordsArray =
@@ -47,7 +47,7 @@ public abstract class ItemEntry<T extends Item> extends DatabaseEntry {
         return id;
     }
 
-    abstract protected ItemFactory<T> initFactory(ResultSet rs) throws SQLException;
+    abstract protected ItemFactory<?, T> initFactory(ResultSet rs) throws SQLException;
 
     protected T item;
     private int id;

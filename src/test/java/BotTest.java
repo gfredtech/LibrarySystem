@@ -38,7 +38,6 @@ class BotTest {
         login.run(bot, u, "password");
 
         SignUpCommand command = new SignUpCommand();
-
         m = Mockito.mock(Message.class);
         Mockito.when(m.getText()).thenReturn("qwerty, somewhere, +42, qwerty, ytrewq, Student, null");
         Mockito.when(m.getChat()).thenReturn(chat);
@@ -51,6 +50,7 @@ class BotTest {
         Mockito.when(c.getData()).thenReturn("Confirm");
         Mockito.when(u.getCallbackQuery()).thenReturn(c);
         command.run(bot, u, "confirm");
+
         assert !LibraryStorage.getInstance().find(Resource.User, new QueryParameters().add("login","qwerty")).isEmpty();
         LibraryStorage.getInstance().removeAll(Resource.User, new QueryParameters().add("login","qwerty"));
 

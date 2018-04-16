@@ -100,7 +100,7 @@ public class AddCommand extends Command{
                     add("Cancel");
                 }});
 
-        addEntryMap.put(chatId, new AddItemCommand(item));
+        addEntryMap.put(chatId, new AddItemCommand(item, currentUser.get(chatId).getUser()));
         return "add_confirm";
     }
 
