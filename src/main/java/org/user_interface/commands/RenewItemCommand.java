@@ -13,7 +13,7 @@ import java.util.List;
 
 public class RenewItemCommand extends Command {
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
         Long chatId;
         if(update.hasMessage()) chatId = update.getMessage().getChatId();
         else chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -21,20 +21,20 @@ public class RenewItemCommand extends Command {
         switch (info) {
             case "startnext":
 
-                List<CheckoutEntry> checkoutEntries = listCheckedOutMaterials(sender, update, chatId);
+                List<CheckoutEntry> checkoutEntries = listCheckedOutMaterials(chatId);
                 if(checkoutEntries == null) return "menu_main";
                 checkoutEntryMap.put(chatId, checkoutEntries);
                 return "renew_indexnumber";
 
             case "indexnumber":
-                selectItemToRenew(sender, update, chatId, checkoutEntryMap.get(chatId));
+                selectItemToRenew(chatId, checkoutEntryMap.get(chatId));
                 return "menu_main";
         }
 
         return null;
     }
 
-    private void selectItemToRenew(AbsSender sender, Update update, Long chatId, List<CheckoutEntry> checkoutEntries) {
+    private void selectItemToRenew(Long chatId, List<CheckoutEntry> checkoutEntries) {
         CheckoutEntry entry;
         int index = Integer.valueOf(update.getMessage().getText());
 
@@ -43,9 +43,7 @@ public class RenewItemCommand extends Command {
 
         assert entry != null;
 
-        //TODO: renew item here
-        org.controller.Command.Result res =
-                new RenewCommand(entry).execute(LibraryStorage.getInstance());
+        org.controller.Command.Result res = new RenewCommand(entry).execute(LibraryStorage.getInstance());
 
         String message = "";
         switch (res) {
@@ -62,19 +60,18 @@ public class RenewItemCommand extends Command {
                 break;
 
         }
-        keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.
+        keyboardUtils.showMainMenuKeyboard(currentUser.
                 get(chatId).getUser(),  message);
 
     }
 
-    private List<CheckoutEntry> listCheckedOutMaterials(AbsSender sender,
-                                                        Update update,
+    private List<CheckoutEntry> listCheckedOutMaterials(
                                                         Long chatId) {
         List<CheckoutEntry> entries = LibraryStorage.getInstance().find(
                 Resource.Checkout, new QueryParameters());
 
         if(entries == null || entries.isEmpty()) {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+            keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser(),
                     "You have no checked out documents");
             return null;
         }
@@ -85,10 +82,10 @@ public class RenewItemCommand extends Command {
             builder.append(i).append(". ");
             builder.append(e.getItem().getItem().getTitle()).append("\n");
         }
-        sendMessage(sender, update,
+        sendMessage(
                 "This is the current list of items checked out by you: select the one" +
                         " you want to renew");
-        sendMessage(sender, update, builder.toString());
+        sendMessage(builder.toString());
         return entries;
     }
 

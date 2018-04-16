@@ -6,8 +6,7 @@ import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -15,6 +14,7 @@ import static org.user_interface.commands.EditCommand.editParams;
 import static org.user_interface.commands.EditCommand.editParser;
 
 public class EditParser extends Command {
+
 
     private ArrayList<String> parseGroupItems(String a) {
         if(a == null) return null;
@@ -28,7 +28,7 @@ public class EditParser extends Command {
         editParams.put(a.substring(0, a.indexOf(" ")).trim(), a.substring(a.indexOf(" ")).trim());
     }
 
-    void coreParser(AbsSender sender, Update update, Resource type, Long chatId, String input) {
+    void coreParser(Resource type, Long chatId, String input) {
         String tokens[] = input.split("[;]+");
 
         for(String i: tokens) {
@@ -81,7 +81,7 @@ public class EditParser extends Command {
             String itemType = type.getTableName();
             switch (itemType) {
                 case "book":
-                    itemId = applyEditParamsBook(sender, update, chatId);
+                    itemId = applyEditParamsBook(chatId);
                     break;
                 case "av_material":
                     itemId = applyEditParamsAvMaterial(chatId);
@@ -103,8 +103,10 @@ public class EditParser extends Command {
             if (entry != null) {
                 documentCursor.put(chatId, entry);
 
-                sendMessage(sender, update, entry.toString());
-                keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+                sendMessage(entry.toString());
+
+
+                keyboardUtils.showMainMenuKeyboard(chatId, currentUser.get(chatId).getUser(),
                         "Book updated successfully");
             }
         }
@@ -154,7 +156,7 @@ public class EditParser extends Command {
         return documentCursor.get(chatId).getId();
     }
 
-    private int applyEditParamsBook(AbsSender sender, Update update, Long chatId) {
+    private int applyEditParamsBook(Long chatId) {
         System.out.println(editParams.toString());
 
         if(editParams.containsKey("publisher")) LibraryStorage.getInstance().updateAll(
@@ -173,7 +175,7 @@ public class EditParser extends Command {
                                 Boolean.valueOf(editParams.get("bestseller"))));
                 } else {
                 if(Boolean.valueOf(editParams.get("bestseller")))
-                sendMessage(sender, update, "Cannot set a reference item as best seller.");
+                sendMessage("Cannot set a reference item as best seller.");
             }
 
         }
@@ -195,10 +197,7 @@ public class EditParser extends Command {
        return documentCursor.get(chatId).getId();
     }
 
-    @Override
-    public String run(AbsSender sender, Update update, String info) {
-        return null;
-    }
+
 
     String showEditFormat(String type) {
         if(type.equals("book")) return "title `Name`\ncopies `new number of copies` \n" +
@@ -230,7 +229,7 @@ public class EditParser extends Command {
         return null;
     }
 
-    void parseUserParameters(AbsSender sender, Update update, Long chatId, String input) {
+    void parseUserParameters(Long chatId, String input) {
         String tokens[] = input.split("[;]+");
 
         for(String i: tokens) {
@@ -288,8 +287,15 @@ public class EditParser extends Command {
                     new QueryParameters().add("password_hash", editParams.get("password").hashCode()));
         }
 
-        keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+        System.out.println(currentUser.get(chatId).getUser().toString());
+
+        keyboardUtils.showMainMenuKeyboard(chatId, currentUser.get(chatId).getUser(),
                 "User updated successfully!");
 
+    }
+
+    @Override
+    protected String run(String info) {
+        return null;
     }
 }

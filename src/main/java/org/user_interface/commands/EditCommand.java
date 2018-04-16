@@ -1,20 +1,17 @@
 package org.user_interface.commands;
 
-import org.postgresql.core.SqlCommand;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class EditCommand extends Command {
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
         Long chatId;
         if (update.hasMessage()) chatId = update.getMessage().getChatId();
         else chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -22,18 +19,18 @@ public class EditCommand extends Command {
         switch (info) {
             case "startnext":
                 UserEntry e = currentUser.get(chatId);
-                String auth = authorizationChecker(sender, update, e);
+                String auth = authorizationChecker(e);
                 if(auth!= null) return auth;
-                keyboardUtils.showCRUDkeyboard(sender, update, "Edit");
+                keyboardUtils.showCRUDkeyboard("Edit");
                 return "edit_main";
 
             case "main":
                 String message = update.getMessage().getText();
                 if (message != null && message.equals("Edit Document")) {
-                    keyboardUtils.showEditDocumentKeyboard(sender, update);
+                    keyboardUtils.showEditDocumentKeyboard();
                     return "edit_documenttype";
                 } else if (message != null && message.equals("Edit User")) {
-                    showUsersInDatabase(sender, update, chatId);
+                    showUsersInDatabase();
                     return "edit_users";
                 }
 
@@ -41,54 +38,54 @@ public class EditCommand extends Command {
                 message = update.getMessage().getText();
                 switch (message) {
                     case "Book":
-                        sendMessage(sender, update, "Here's a list of books. " +
+                        sendMessage("Here's a list of books. " +
                                 "Select the one you'd like to edit");
-                        listBooks(sender, update);
+                        listBooks();
                         return "edit_booklist";
 
                     case "AV Material":
-                        sendMessage(sender, update, "Here's a list of AV Materials. Select the " +
+                        sendMessage("Here's a list of AV Materials. Select the " +
                                 "one you'd like to edit.");
-                        listAvMaterials(sender, update);
+                        listAvMaterials();
                         return "edit_avmateriallist";
 
                     case "Journal Issue":
-                        sendMessage(sender, update,
+                        sendMessage(
                                 "Here's a list of Journal Issues. Select the " +
                                         "one you'd like to edit");
-                        listJournalIssues(sender, update);
+                        listJournalIssues();
                         return "edit_journalissuelist";
 
                     case "Journal Article":
-                        sendMessage(sender, update,
+                        sendMessage(
                                 "Here's a list of Journal Articles. Select the " +
                                         "one you'd like to edit");
-                        listJournalArticles(sender, update);
+                        listJournalArticles();
                         return "edit_journalarticlelist";
                 }
 
             case "booklist":
-                selectDocToEdit(sender, update, chatId, "book");
+                selectDocToEdit(chatId, "book");
                 return "edit_params";
 
             case "avmateriallist":
-                selectDocToEdit(sender, update, chatId, "avmaterial");
+                selectDocToEdit(chatId, "avmaterial");
                 return "edit_params";
 
             case "journalissuelist":
-                selectDocToEdit(sender, update, chatId, "journalissue");
+                selectDocToEdit(chatId, "journalissue");
                 return "edit_params";
 
             case "journalarticlelist":
-                selectDocToEdit(sender, update, chatId, "journalarticlelist");
+                selectDocToEdit(chatId, "journalarticlelist");
                 return "edit_params";
 
             case "users":
-                selectDocToEdit(sender, update, chatId, "user");
+                selectDocToEdit(chatId, "user");
                 return "edit_params";
 
             case "params":
-                parseParameters(sender, update, chatId);
+                parseParameters(chatId);
                 return "menu_main";
 
 
@@ -96,8 +93,8 @@ public class EditCommand extends Command {
         return null;
     }
 
-    private List<UserEntry> showUsersInDatabase(AbsSender sender, Update update, Long chatId) {
-        sendMessage(sender, update, "Here's a list of all users: Select the user you want to edit.");
+    private List<UserEntry> showUsersInDatabase() {
+        sendMessage("Here's a list of all users: Select the user you want to edit.");
         List<UserEntry> userEntryList = LibraryStorage.getInstance().find(Resource.User,
                 new QueryParameters());
         if(userEntryList == null) {
@@ -113,11 +110,11 @@ public class EditCommand extends Command {
             i += 1;
         }
 
-        sendMessage(sender, update, builder.toString());
+        sendMessage(builder.toString());
         return userEntryList;
     }
 
-    private void parseParameters(AbsSender sender, Update update, Long chatId) {
+    private void parseParameters(Long chatId) {
         String input = update.getMessage().getText().trim();
         String type = userCursor.get(chatId) == null
                 ? documentCursor.get(chatId).getResourceType().getTableName()
@@ -141,32 +138,33 @@ public class EditCommand extends Command {
                        break;
 
             }
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(),
+            keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser(),
                       "Entity removed successfully");
             return;
         }
 
         switch (type) {
             case "book":
-                editParser.coreParser(sender, update, Resource.Book, chatId, input);
+                editParser.coreParser(Resource.Book, chatId, input);
                 break;
             case "av_material":
-                editParser.coreParser(sender, update, Resource.AvMaterial, chatId, input);
+                editParser.coreParser(Resource.AvMaterial, chatId, input);
                 break;
             case "journal_issue":
-                editParser.coreParser(sender, update, Resource.JournalIssue, chatId, input);
+                editParser.coreParser(Resource.JournalIssue, chatId, input);
                 break;
             case "article":
-                editParser.coreParser(sender, update, Resource.JournalArticle, chatId, input);
+                editParser.coreParser(Resource.JournalArticle, chatId, input);
                 break;
             case "user_card":
-                editParser.parseUserParameters(sender, update, chatId, input);
+                editParser.parseUserParameters(chatId, input);
+                break;
 
         }
 
     }
 
-    private void selectDocToEdit(AbsSender sender, Update update, Long chatId, String type) {
+    private void selectDocToEdit(Long chatId, String type) {
         ItemEntry item = null;
         UserEntry user = null;
         String input = update.getMessage().getText();
@@ -196,15 +194,15 @@ public class EditCommand extends Command {
             }
 
 
-        if (user != null) { userCursor.put(chatId, user); sendMessage(sender, update, user.getUser().toString());}
-        else if(item != null) { documentCursor.put(chatId, item); sendMessage(sender, update, item.getItem().toString());}
+        if (user != null) { userCursor.put(chatId, user); sendMessage(user.getUser().toString());}
+        else if(item != null) { documentCursor.put(chatId, item); sendMessage(item.getItem().toString());}
 
             String details = "This is the parameter list for editing; first type the key of the " +
                     "parameter you want to edit, followed by its new value, then separate each with a semicolon(;)\n" +
                     editParser.showEditFormat(type) + "\n*If you want to delete the item, type* `delete`\n" +
                                         "Example below:\n"
                     + editParser.showEditExample(type);
-            sendMessage(sender, update, details);
+            sendMessage(details);
     }
 
     static HashMap<String, String> editParams = new HashMap<>();

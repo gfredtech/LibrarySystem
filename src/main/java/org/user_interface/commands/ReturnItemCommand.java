@@ -23,29 +23,29 @@ public class ReturnItemCommand extends Command {
 
 
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
         Long chatId;
         if(update.hasMessage()) chatId = update.getMessage().getChatId();
         else chatId = update.getCallbackQuery().getMessage().getChatId();
 
         switch (info) {
             case "startnext":
-                showReturnType(sender, update);
+                showReturnType();
             return  "return_document";
 
             case "document":
-                String s = showCheckedOutDocuments(sender, update, chatId);
+                String s = showCheckedOutDocuments(chatId);
                 System.out.println("stuff " + s);
                 return s;
 
             case "indexnumber":
-                returnDocument(sender, update, chatId);
+                returnDocument(chatId);
                 return "menu_main";
         }
         return null;
     }
 
-    private void returnDocument(AbsSender sender, Update update, Long chatId) {
+    private void returnDocument(Long chatId) {
         CheckoutEntry entry;
         String number = update.getMessage().getText();
         int index;
@@ -53,7 +53,7 @@ public class ReturnItemCommand extends Command {
             index = Integer.parseInt(number);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            sendMessage(sender, update, "Invalid");
+            sendMessage("Invalid");
             return;
         }
 
@@ -78,25 +78,25 @@ public class ReturnItemCommand extends Command {
                 message = "Failure: " + result.getInfo();
                 break;
         }
-        keyboardUtils.showMainMenuKeyboard(sender, update,
+        keyboardUtils.showMainMenuKeyboard(
                 currentUser.get(chatId).getUser(),message);
     }
 
 
-    private String showCheckedOutDocuments(AbsSender sender, Update update, Long chatId) {
+    private String showCheckedOutDocuments(Long chatId) {
         List<CheckoutEntry> listOfItems;
         String t = update.getCallbackQuery().getData();
         t = t.substring(t.indexOf(" ")).
                 toLowerCase().trim().replace(" ", "_");
         type.put(chatId, t);
-        listOfItems = listCheckedOutDocs(sender, update, currentUser.get(chatId).getUser(), chatId, t);
+        listOfItems = listCheckedOutDocs(update, currentUser.get(chatId).getUser(), chatId, t);
         if(listOfItems == null) return "menu_main";
 
         checkoutEntryMap.put(chatId, listOfItems);
         return "return_indexnumber";
     }
-    private void showReturnType(AbsSender sender, Update update) {
-        keyboardUtils.setInlineKeyBoard(sender, update, "Select the type of document you want to return",
+    private void showReturnType() {
+        keyboardUtils.setInlineKeyBoard("Select the type of document you want to return",
                 new ArrayList<String>() {{
                     add("Return Book");
                     add("Return Av Material");
@@ -105,7 +105,7 @@ public class ReturnItemCommand extends Command {
                 }});
     }
 
-    private List<CheckoutEntry> listCheckedOutDocs(AbsSender sender, Update update,
+    private List<CheckoutEntry> listCheckedOutDocs(Update update,
                                                    User user, Long chatId, String type) {
         System.out.println(type);
         List<CheckoutEntry> entries = null;
@@ -133,11 +133,11 @@ public class ReturnItemCommand extends Command {
         int i = 1;
         Book book; AvMaterial avMaterial; JournalArticle article;
         if (entries != null && entries.size() > 0) {
-            sendMessage(sender, update,
+            sendMessage(
                     "This is the list of current items checked out by you:\n" );
 
         } else {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser(), "You have no items  checked out");
+            keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser(), "You have no items  checked out");
             return null;
         }
 
@@ -162,7 +162,7 @@ public class ReturnItemCommand extends Command {
                 i+=1;
             }
 
-        sendMessage(sender, update, items.toString());
+        sendMessage(items.toString());
 
         return entries;
     }

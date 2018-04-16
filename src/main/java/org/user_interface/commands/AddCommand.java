@@ -4,8 +4,6 @@ import org.controller.AddItemCommand;
 import org.items.Item;
 import org.storage.LibraryStorage;
 import org.storage.resources.UserEntry;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
 import org.user_interface.ui.Interface;
 
 import java.util.ArrayList;
@@ -13,7 +11,7 @@ import java.util.HashMap;
 
 public class AddCommand extends Command{
     @Override
-    public String run(AbsSender sender, Update update, String info) {
+    public String run(String info) {
 
         Long chatId;
         if (update.hasMessage()) chatId = update.getMessage().getChatId();
@@ -21,28 +19,27 @@ public class AddCommand extends Command{
         switch (info) {
             case "startnext":
                 System.out.println(chatId);
-                UserEntry e = currentUser.get(chatId);
-                String auth = authorizationChecker(sender, update, e);
+                String auth = authorizationChecker(currentUser.get(chatId));
                 if(auth!= null) return auth;
-                keyboardUtils.showCRUDkeyboard(sender, update, "Add");
+                keyboardUtils.showCRUDkeyboard("Add");
                 return "add_main";
 
             case "main":
                 String message = update.getMessage().getText();
                 if (message != null && message.equals("Add Document")) {
-                    keyboardUtils.showEditDocumentKeyboard(sender, update);
+                    keyboardUtils.showEditDocumentKeyboard();
                     return "add_documenttype";
                 } else if (message != null && message.equals("Add User")) {
                     System.out.println("user add executed");
-                    return new Interface().handleMessageUpdate(sender, update, "signup_startnext");
+                    return new Interface().handleMessageUpdate(update, "signup_startnext");
                 }
 
             case "documenttype":
-                showInstructions(sender, update, chatId);
+                showInstructions(chatId);
                 return "add_params";
 
             case "params":
-                return parseParameters(sender, update, chatId);
+                return parseParameters(chatId);
 
             case "confirm":
                 message = update.getCallbackQuery().getData();
@@ -53,20 +50,20 @@ public class AddCommand extends Command{
 
                     switch (res) {
                         case Success:
-                            keyboardUtils.showMainMenuKeyboard(sender,
-                                    update, currentUser.get(chatId).getUser(),
+                            keyboardUtils.showMainMenuKeyboard(
+                                    currentUser.get(chatId).getUser(),
                                     "Item has been added successfully.");
                             break;
 
                         case Failure:
-                            keyboardUtils.showMainMenuKeyboard(sender,
-                                    update, currentUser.get(chatId).getUser(),
+                            keyboardUtils.showMainMenuKeyboard(
+                                    currentUser.get(chatId).getUser(),
                                     res.getInfo());
                             break;
                     }
                 } else if(message.equals("Cancel")) {
-                    keyboardUtils.showMainMenuKeyboard(sender,
-                            update, currentUser.get(chatId).getUser(),
+                    keyboardUtils.showMainMenuKeyboard(
+                            currentUser.get(chatId).getUser(),
                             "Operation Cancelled");
                 }
                 return "menu_main";
@@ -74,28 +71,28 @@ public class AddCommand extends Command{
         return null;
     }
 
-    private String parseParameters(AbsSender sender, Update update, Long chatId) {
+    private String parseParameters(Long chatId) {
         Item item = null;
         switch (type.get(chatId)) {
             case "Book":
-               item =  addParser.parseBookParameters(update);
+               item =  addParser.parseBookParameters();
                 break;
             case "AV Material":
-               item =  addParser.parseAvMaterialParameters(update);
+               item =  addParser.parseAvMaterialParameters();
                 break;
             case "Journal Issue":
-               item = addParser.parseJournalIssueParameters(update);
+               item = addParser.parseJournalIssueParameters();
                 break;
         }
 
         if(item == null) {
-            keyboardUtils.showMainMenuKeyboard(sender, update, currentUser.get(chatId).getUser()
+            keyboardUtils.showMainMenuKeyboard(currentUser.get(chatId).getUser()
             ,"There was a problem parsing your input. Please try again");
             return "menu_main";
         }
 
-        keyboardUtils.setInlineKeyBoard(sender,
-                update, item.toString(), new ArrayList<String>() {{
+        keyboardUtils.setInlineKeyBoard(
+                item.toString(), new ArrayList<String>() {{
                     add("Confirm");
                     add("Cancel");
                 }});
@@ -105,7 +102,7 @@ public class AddCommand extends Command{
     }
 
 
-    private void showInstructions(AbsSender sender, Update update, Long chatId) {
+    private void showInstructions(Long chatId) {
 
         String message = update.getMessage().getText();
         String builder = ("To add a document, type the following information in the " +
@@ -114,7 +111,7 @@ public class AddCommand extends Command{
                 "\n\nExample below:\n" +
                 showAddExample(message);
 
-        sendMessage(sender, update, builder);
+        sendMessage(builder);
         type.put(chatId, message);
     }
 
