@@ -93,12 +93,12 @@ public class EditCommand extends Command {
         return null;
     }
 
-    private List<UserEntry> showUsersInDatabase() {
+    private void showUsersInDatabase() {
         sendMessage("Here's a list of all users: Select the user you want to edit.");
         List<UserEntry> userEntryList = LibraryStorage.getInstance().find(Resource.User,
                 new QueryParameters());
         if(userEntryList == null) {
-            return null;
+            return;
         }
 
         StringBuilder builder = new StringBuilder();
@@ -111,7 +111,6 @@ public class EditCommand extends Command {
         }
 
         sendMessage(builder.toString());
-        return userEntryList;
     }
 
     private void parseParameters(Long chatId) {

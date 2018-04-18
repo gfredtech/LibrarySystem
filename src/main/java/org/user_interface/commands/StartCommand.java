@@ -1,8 +1,6 @@
 package org.user_interface.commands;
 
-import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
-import org.telegram.telegrambots.bots.AbsSender;
 
 public class StartCommand extends Command {
 

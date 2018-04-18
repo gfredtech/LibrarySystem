@@ -12,6 +12,7 @@ public class Bot extends TelegramLongPollingBot {
     // entry point of bot
     @Override
     public void onUpdateReceived(Update update) {
+        System.out.println("started");
         Message message = update.getMessage();
 
         if (update.hasMessage() && message.hasText()) {
@@ -24,6 +25,10 @@ public class Bot extends TelegramLongPollingBot {
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
             currentState.put(chatId, handler.handleCallbackUpdate(update, currentState.getOrDefault(chatId, "error")));
         }
+    }
+
+    public Bot getBot() {
+        return this;
     }
 
     @Override

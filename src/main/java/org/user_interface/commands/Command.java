@@ -23,7 +23,7 @@ public abstract class Command {
 
     public static KeyboardUtils keyboardUtils;
     static HashMap<Long, UserEntry> currentUser = new HashMap<>();
-    static AbsSender sender = new Bot();
+    private AbsSender sender = new Bot();
     public Update update;
 
     static HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
@@ -55,6 +55,7 @@ public abstract class Command {
         message.setReplyMarkup(new ReplyKeyboardRemove()); // hides keyboard in case it's showing already
 
         try {
+
             sender.execute(message);
         }catch (TelegramApiException e) {
             e.printStackTrace();

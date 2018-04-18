@@ -8,9 +8,9 @@ import org.storage.resources.UserEntry;
 
 import java.util.List;
 
-public class NotificationHandler {
+class NotificationHandler {
 
-    public String init(int userId) {
+    String init(int userId) {
         List<PendingRequestEntry> entry = LibraryStorage.getInstance().find(Resource.PendingRequest,
                 new QueryParameters().add("user_id", userId));
 

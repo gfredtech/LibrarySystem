@@ -17,7 +17,7 @@ public class KeyboardUtils {
 
 
     private static AbsSender sender = new Bot();
-    Long chatId;
+    private Long chatId;
 
 
     public void showMainMenuKeyboard(Long chatId, User user, String msg) {

@@ -64,7 +64,7 @@ public class AddParser extends Command{
         return factory.build();
     }
 
-    List<String> parseGroups(String a) {
+    private List<String> parseGroups(String a) {
         a = a.replaceAll("[\\[\\]]+", "");
         String tokens[] = a.split("[,]+");
 

@@ -35,7 +35,7 @@ class BotTest {
         Update u = Mockito.mock(Update.class);
         Mockito.when(u.getMessage()).thenReturn(m);
         Mockito.when(u.hasMessage()).thenReturn(true);
-        login.run(bot, u, "password");
+        login.run("password");
 
         SignUpCommand command = new SignUpCommand();
         m = Mockito.mock(Message.class);

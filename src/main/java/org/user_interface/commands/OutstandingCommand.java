@@ -5,8 +5,6 @@ import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.PendingRequestEntry;
 import org.storage.resources.Resource;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
 
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class OutstandingCommand extends Command {
         return null;
     }
 
-    List<PendingRequestEntry> showCheckoutQueue(Long chatId) {
+    private List<PendingRequestEntry> showCheckoutQueue(Long chatId) {
 
         List<PendingRequestEntry> pendingRequestEntries =
                 LibraryStorage.getInstance().find(Resource.PendingRequest,
@@ -59,7 +57,7 @@ public class OutstandingCommand extends Command {
 
     }
 
-    void makeOutstandingRequest(Long chatId) {
+    private void makeOutstandingRequest(Long chatId) {
         int index = Integer.parseInt(update.getMessage().getText());
         PendingRequestEntry e = entries.get(index);
 
@@ -88,5 +86,5 @@ public class OutstandingCommand extends Command {
 
     }
 
-    static List<PendingRequestEntry> entries;
+    private static List<PendingRequestEntry> entries;
 }

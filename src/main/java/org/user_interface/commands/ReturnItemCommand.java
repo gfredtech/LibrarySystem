@@ -10,8 +10,6 @@ import org.storage.QueryParameters;
 import org.storage.resources.CheckoutEntry;
 import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +87,7 @@ public class ReturnItemCommand extends Command {
         t = t.substring(t.indexOf(" ")).
                 toLowerCase().trim().replace(" ", "_");
         type.put(chatId, t);
-        listOfItems = listCheckedOutDocs(update, currentUser.get(chatId).getUser(), chatId, t);
+        listOfItems = listCheckedOutDocs(currentUser.get(chatId).getUser(), chatId, t);
         if(listOfItems == null) return "menu_main";
 
         checkoutEntryMap.put(chatId, listOfItems);
@@ -105,8 +103,7 @@ public class ReturnItemCommand extends Command {
                 }});
     }
 
-    private List<CheckoutEntry> listCheckedOutDocs(Update update,
-                                                   User user, Long chatId, String type) {
+    private List<CheckoutEntry> listCheckedOutDocs(User user, Long chatId, String type) {
         System.out.println(type);
         List<CheckoutEntry> entries = null;
         switch (type) {

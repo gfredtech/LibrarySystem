@@ -3,7 +3,6 @@ package org.user_interface.commands;
 import org.controller.AddItemCommand;
 import org.items.Item;
 import org.storage.LibraryStorage;
-import org.storage.resources.UserEntry;
 import org.user_interface.ui.Interface;
 
 import java.util.ArrayList;

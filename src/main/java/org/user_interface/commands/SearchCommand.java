@@ -1,10 +1,8 @@
 package org.user_interface.commands;
 
-import org.items.Book;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
-import org.storage.resources.BookEntry;
-import org.storage.resources.Resource;
+import org.storage.resources.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,91 +12,95 @@ public class SearchCommand extends Command {
     protected String run(String info) {
         switch (info) {
             case "startnext":
-                sendMessage("Welcome to the search page. Enter your query.");
+                showSearchExample();
                 return "search_search";
             case "search":
-               List<BookEntry> bookEntries = getSearchList();
-                displaySearchResults(bookEntries);
+               getSearchList();
                 return "search_index";
             case "index":
-                //TODO
+
                 break;
         }
 
         return null;
     }
 
-    private void displaySearchResults(List<BookEntry> entries) {
+
+    private <T extends ItemEntry>
+    String displaySearchResults(int i, List<T> entries) {
         StringBuilder builder = new StringBuilder();
-        int i = 1;
-        for (BookEntry e : entries) {
+        if(i == 0) i += 1;
+
+        for (T e : entries) {
             builder.append(i).append(". ");
             builder.append(e.getItem().getTitle());
             builder.append("\n");
             i += 1;
         }
 
-        if (builder.length() > 0) {
-            sendMessage("This is the list of items matching your query: Enter the index of the item you want");
-            sendMessage(builder.toString());
-        }
+        return builder.toString();
     }
 
-    private List<BookEntry> getSearchList() {
+
+    private void getSearchList() {
         String message = update.getMessage().getText();
+
+        //Books
         List<BookEntry> books = LibraryStorage.getInstance().find(Resource.Book, new QueryParameters());
-        List<BookEntry> queries = new ArrayList<>();
-        for(BookEntry e: books) {
-            if(filterBasedOnDistance(message, e.getItem())) {
-                queries.add(e);
+        List<BookEntry> bookQueries = new ArrayList<>();
+        for (BookEntry e : books) {
+            if (SearchUtils.filterBasedOnDistance(message, e.getItem())) {
+                bookQueries.add(e);
             }
         }
 
-        System.out.println(queries.toString());
-        return queries;
+        // Av Material search
+        List<AvMaterialEntry> avMaterials = LibraryStorage.getInstance().find(Resource.AvMaterial,
+                new QueryParameters());
+        List<AvMaterialEntry> avMaterialQueries = new ArrayList<>();
+        for (AvMaterialEntry e : avMaterials) {
+            if (SearchUtils.filterBasedOnDistance(message, e.getItem())) {
+                avMaterialQueries.add(e);
+            }
+        }
+
+        // Journal Issue Search
+        List<JournalIssueEntry> issues = LibraryStorage.getInstance().find(Resource.JournalIssue,
+                new QueryParameters());
+        List<JournalIssueEntry> issueQueries = new ArrayList<>();
+        for(JournalIssueEntry e: issues) {
+            if(SearchUtils.filterBasedOnDistance(message, e.getItem())) {
+                issueQueries.add(e);
+            }
+        }
+
+
+        String bookResults = displaySearchResults(1, bookQueries);
+        String avMaterialResults = displaySearchResults(bookQueries.size() == 0 ? 1 : bookQueries.size(), avMaterialQueries);
+        String issueResults = displaySearchResults(avMaterialQueries.size() == 0 ? bookQueries.size()
+                : avMaterialQueries.size(), issueQueries);
+
+        if(bookResults.length() + avMaterialResults.length() + issueResults.length()<= 0) {
+            sendMessage("Sorry, no items matched your query.");
+        } else {
+
+            if (bookResults.length() > 0)
+                sendMessage("Here are books matching your query:\n" + bookResults);
+            if (avMaterialResults.length() > 0)
+                sendMessage("Here are Av materials matching your query:\n" + avMaterialResults);
+            if (issueResults.length() > 0)
+                sendMessage("Here are Journal Issues matching your query:\n" + issueResults);
+        }
+
     }
 
+    private void showSearchExample() {
+        String message = "Welcome to the search page. Enter your query.\n" +
+                "Remember that you can also build advanced queries. For example. if you want to query all " +
+                " items documents created by Alan Turing before 1970, type `author: Alan Turing date: 1970`" +
+                " The search parameters are shown below\n" +
+                "";
+        sendMessage(message);
 
-    private static int distance(String a, String b) {
-        a = a.toLowerCase();
-        b = b.toLowerCase();
-        // i == 0
-        int [] costs = new int [b.length() + 1];
-        for (int j = 0; j < costs.length; j++)
-            costs[j] = j;
-        for (int i = 1; i <= a.length(); i++) {
-            // j == 0; nw = lev(i - 1, j)
-            costs[0] = i;
-            int nw = i - 1;
-            for (int j = 1; j <= b.length(); j++) {
-                int cj = Math.min(1 + Math.min(costs[j], costs[j - 1]), a.charAt(i - 1) == b.charAt(j - 1) ? nw : nw + 1);
-                nw = costs[j];
-                costs[j] = cj;
-            }
-        }
-        return costs[b.length()];
-    }
-
-    private boolean filterBasedOnDistance(String text, Book e) {
-        String[] titles = e.getTitle().split("\\s");
-        for(String t: titles) {
-            System.out.println(distance(text, t));
-            if (distance(t, text) <= 3)
-                return true;
-        }
-
-        if(distance(e.getPublisher(), text) <= 3)
-            return true;
-
-        else {
-            List<String> authors = e.getAuthors();
-            for (String a : authors) {
-                if (distance(a, text) <= 3) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }

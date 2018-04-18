@@ -1,7 +1,6 @@
 package org.user_interface.ui;
 
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
 import org.user_interface.commands.*;
 
 import java.util.HashMap;

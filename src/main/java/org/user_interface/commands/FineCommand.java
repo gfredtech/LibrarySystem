@@ -6,7 +6,6 @@ import org.storage.resources.CheckoutEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.AbsSender;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class FineCommand extends Command {
 
             case "select":
                 System.out.println("reached");
-                selectItemForFine(sender, update, chatId);
+                selectItemForFine(update, chatId);
                 return "menu_main";
 
         }
@@ -61,7 +60,7 @@ public class FineCommand extends Command {
         }
     }
 
-   private void selectItemForFine(AbsSender sender, Update update, Long chatId) {
+   private void selectItemForFine(Update update, Long chatId) {
        CheckoutEntry entry;
        String number = update.getMessage().getText();
        int index;
