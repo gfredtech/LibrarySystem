@@ -5,6 +5,7 @@ import org.storage.QueryParameters;
 import org.storage.resources.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SearchCommand extends Command {
@@ -18,11 +19,15 @@ public class SearchCommand extends Command {
                getSearchList();
                 return "search_index";
             case "index":
-
+                getIndex();
                 break;
         }
 
         return null;
+    }
+
+    private void getIndex() {
+        //TODO:
     }
 
 
@@ -54,6 +59,8 @@ public class SearchCommand extends Command {
             }
         }
 
+        if(bookQueries.size() > 0) items.put("book", bookQueries);
+
         // Av Material search
         List<AvMaterialEntry> avMaterials = LibraryStorage.getInstance().find(Resource.AvMaterial,
                 new QueryParameters());
@@ -64,6 +71,8 @@ public class SearchCommand extends Command {
             }
         }
 
+        if(avMaterialQueries.size() > 0) items.put("avmaterial", avMaterialQueries);
+
         // Journal Issue Search
         List<JournalIssueEntry> issues = LibraryStorage.getInstance().find(Resource.JournalIssue,
                 new QueryParameters());
@@ -73,6 +82,8 @@ public class SearchCommand extends Command {
                 issueQueries.add(e);
             }
         }
+
+        if(issueQueries.size() > 0) items.put("issue", issueQueries);
 
 
         String bookResults = displaySearchResults(1, bookQueries);
@@ -103,4 +114,7 @@ public class SearchCommand extends Command {
         sendMessage(message);
 
     }
+
+
+    static HashMap<String, List<? extends ItemEntry>> items = new HashMap<>();
 }
