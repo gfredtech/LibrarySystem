@@ -8,6 +8,7 @@ import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 
 /**
@@ -37,10 +38,19 @@ public class OutstandingRequestCommand implements Command {
                         .add("request_date", LocalDate.now())
                         .add("is_outstanding", true)
                         .add("item_type", item.getResourceType().getTableName()));
-
+        storage.add(Resource.ActionLog, getLog());
         return Result.Success;
     }
 
+    private QueryParameters getLog() {
+        return new QueryParameters()
+                .add("user_id", user.getId())
+                .add("action_type", "OutstandingRequest")
+                .add("action_parameters",
+                        Arrays.asList(
+                                item.getResourceType().getTableName()
+                                        +" {"+item.getId()+"}"));
+    }
 
     private UserEntry user;
     private ItemEntry item;

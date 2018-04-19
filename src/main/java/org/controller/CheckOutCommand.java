@@ -9,6 +9,7 @@ import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -103,6 +104,7 @@ public class CheckOutCommand implements Command {
         if (queue.isEmpty() || (queue.get(0).getId() == user.getId())) {
             params.add("due_date", calculateOverdueDate(user, itemEntry, dateOfCheckout));
             storage.add(Resource.Checkout, params);
+            storage.add(Resource.ActionLog, getLog());
             return Result.Success;
 
         } else if (alreadyInQueue) {
@@ -146,6 +148,16 @@ public class CheckOutCommand implements Command {
             overdue = dateOfCheckout.plusWeeks(2);
         }
         return overdue;
+    }
+    private QueryParameters getLog() {
+        return new QueryParameters()
+                .add("user_id", user.getId())
+                .add("action_type", "CheckOut")
+                .add("action_parameters",
+                        Arrays.asList(
+                                itemEntry.getResourceType().getTableName()
+                                +" {"+itemEntry.getId()+"}",
+                                dateOfCheckout.toString()));
     }
 
     private UserEntry user;

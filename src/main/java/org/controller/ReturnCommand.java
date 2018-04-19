@@ -7,6 +7,8 @@ import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 
+import java.util.Arrays;
+
 /**
  * This command cancels an item check out
  * @see CheckOutCommand
@@ -31,6 +33,15 @@ public class ReturnCommand implements Command {
         } catch (Storage.QueryExecutionError e) {
             return Result.failure(e.getMessage());
         }
+    }
+
+    private QueryParameters getLog() {
+        return new QueryParameters()
+                .add("user_id", user.getId())
+                .add("action_type", "Return")
+                .add("action_parameters", Arrays.asList(
+                        item.getResourceType().getTableName()+" {"+item.getId()+"}"
+                ));
     }
 
     private UserEntry user;

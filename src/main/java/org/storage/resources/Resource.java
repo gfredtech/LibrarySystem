@@ -31,6 +31,8 @@ public class Resource<T extends DatabaseEntry> {
             new Resource<>("checkout", "checkout_item_id_user_id_pk", CheckoutEntry.class);
     public static final Resource<PendingRequestEntry> PendingRequest =
             new Resource<>("checkout_queue", null, PendingRequestEntry.class);
+    public static final Resource<ActionLogEntry> ActionLog =
+            new Resource<>("action_log", null, ActionLogEntry.class);
 
     public String getTableKey() {
         return tableKey;

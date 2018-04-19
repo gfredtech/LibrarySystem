@@ -2,8 +2,8 @@ package org.storage.resources;
 
 import org.items.JournalArticle;
 import org.items.JournalArticleFactory;
-import org.storage.QueryParameters;
 import org.storage.ItemSerializer;
+import org.storage.QueryParameters;
 import org.storage.SqlStorage;
 
 import java.sql.ResultSet;

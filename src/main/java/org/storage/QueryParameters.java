@@ -217,13 +217,24 @@ public class QueryParameters {
 
             case Types.ARRAY:
                 List array = (List)value;
-                s.append("'{");
-                for(Object e: array) {
-                    s.append("\"").append(e).append("\",");
+                if(array.isEmpty()) {
+                    s.append("'{}'");
+                    break;
                 }
-                if(!array.isEmpty())
+                s.append("ARRAY[");
+                for(Object e: array) {
+                    if(e instanceof String)
+                        s.append("'").append(e).append("',");
+                    else
+                        s.append(e).append(",");
+                }
+
+                if(!array.isEmpty()) {
                     s.deleteCharAt(s.length()-1);
-                s.append("}'");
+                }
+                s.append("]");
+                if(array.get(0) instanceof String)
+                    s.append("::varchar[]");
                 break;
             case Types.DATE:
                 s.append("'").append(value).append("'");

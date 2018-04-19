@@ -3,8 +3,11 @@ package org.controller;
 import org.items.User;
 import org.storage.ItemSerializer;
 import org.storage.LibraryStorage;
+import org.storage.QueryParameters;
 import org.storage.Storage;
 import org.storage.resources.Resource;
+
+import java.util.Arrays;
 
 /**
  * This command adds a user to a storage
@@ -31,11 +34,19 @@ public class AddUserCommand implements Command {
         }
         try {
             storage.add(Resource.User, ItemSerializer.serialize(newUser));
+            storage.add(Resource.ActionLog, getLog());
             return Result.Success;
 
         } catch (Storage.QueryExecutionError e) {
             return Result.failure(e.getMessage()+e.getCause().getMessage());
         }
+    }
+
+    private QueryParameters getLog() {
+        return new QueryParameters()
+                .add("user_id", executor.getCardNumber())
+                .add("action_type", "AddUser")
+                .add("action_parameters", Arrays.asList("User {"+newUser.getCardNumber()+"}"));
     }
 
     private final User executor;

@@ -3,10 +3,12 @@ package org.controller;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.CheckoutEntry;
+import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 
 import java.time.LocalDate;
-
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -57,12 +59,27 @@ public class RenewCommand implements Command {
                 return Result.failure("Invalid user type: " +
                         checkout.getPatron().getUser().getType());
         }
-
+        storage.add(Resource.ActionLog, getLog());
         storage.updateAll(Resource.Checkout,
                 checkout.toQueryParameters(),
                 new QueryParameters().add("due_date", newDue).add("is_renewed", true));
         return Result.Success;
     }
+
+    private QueryParameters getLog() {
+        ItemEntry i = checkout.getItem();
+        List<String> parameters = Arrays.asList(
+                i.getResourceType().getTableName() +" {" + String.valueOf(i.getId()) + "}",
+                checkout.getDueDate().toString(),
+                checkout.isRenewed() ? "TRUE" : "FALSE",
+                renewDate.toString());
+
+        return new QueryParameters()
+                .add("user_id", checkout.getPatron().getId())
+                .add("action_type", "Renew")
+                .add("action_parameters", parameters);
+    }
+
 
     private CheckoutEntry checkout;
     private LocalDate renewDate;

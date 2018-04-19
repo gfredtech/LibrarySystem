@@ -10,7 +10,7 @@ import java.util.List;
  * @author Developed by Roberto Chavez
  * @author Reviewed by Vladimir Scherba
  */
-public class Book extends Item {
+public class Book extends Item implements Cloneable {
 
     /**
      * Constructor by default of the class

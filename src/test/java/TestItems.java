@@ -97,6 +97,10 @@ class TestItems {
         alice.setAddress("...");
         alice.setLogin("alice");
         alice.setPrivilege(User.Privilege.Addition, true);
+
+        alice.setPrivilege(User.Privilege.Addition, true);
+        alice.setPrivilege(User.Privilege.Deletion, true);
+        alice.setPrivilege(User.Privilege.Modification, true);
         users.put("alice", ItemSerializer.serialize(alice));
 
         s = new User(

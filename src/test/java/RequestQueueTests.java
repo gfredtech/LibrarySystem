@@ -48,9 +48,7 @@ class RequestQueueTests {
                 storage.find(Resource.Book, data.books.get("cormen")).get(0);
         UserEntry user =
                 storage.find(Resource.User, data.users.get("nadia")).get(0);
-        Command c = new CheckOutCommand(
-                user,
-                book);
+        Command c = new CheckOutCommand(user, book);
         manager.execute(c).validate();
 
         CheckoutEntry checkout = storage.find(Resource.Checkout,
