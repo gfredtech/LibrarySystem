@@ -2,6 +2,7 @@ package org.user_interface.ui;
 
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import java.util.HashMap;
@@ -29,6 +30,10 @@ public class Bot extends TelegramLongPollingBot {
 
     public Bot getBot() {
         return this;
+    }
+
+    public Bot(DefaultBotOptions options) {
+        super(options);
     }
 
     @Override

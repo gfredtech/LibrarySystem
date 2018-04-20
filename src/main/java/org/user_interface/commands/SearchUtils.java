@@ -7,9 +7,9 @@ import org.items.JournalIssue;
 
 import java.util.List;
 
-public class SearchUtils {
+class SearchUtils {
 
-    static int distance(String a, String b) {
+    private static int distance(String a, String b) {
         a = a.toLowerCase();
         b = b.toLowerCase();
         // i == 0

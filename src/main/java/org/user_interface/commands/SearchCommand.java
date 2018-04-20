@@ -3,7 +3,6 @@ package org.user_interface.commands;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,14 +26,45 @@ public class SearchCommand extends Command {
     }
 
     private void getIndex() {
-        //TODO:
+        int index;
+        try {
+            index = Integer.parseInt(update.getMessage().getText());
+        }catch (NumberFormatException e) {
+            e.printStackTrace();
+            index = -1;
+            sendMessage("Invalid input");
+        }
+
+        if(index != -1) {
+            int i = 0;
+            if(items.containsKey("book"))
+                i = items.get("book").size();
+
+            if(index <= i) {
+                sendMessage(items.get("book").get(index - 1).getItem().toString());
+                return;
+            }
+            if(items.containsKey("avmaterial"))
+            i += items.get("avmaterial").size();
+
+            if(index <= i) {
+                sendMessage(items.get("avmaterial").get(index - i).getItem().toString());
+                return;
+            }
+            if(items.containsKey("issue"))
+                i += items.get("issue").size();
+
+            if(index <= i) {
+                sendMessage(items.get("issue").get(index - i).getItem().toString());
+            }
+
+        }
     }
 
 
     private <T extends ItemEntry>
     String displaySearchResults(int i, List<T> entries) {
         StringBuilder builder = new StringBuilder();
-        if(i == 0) i += 1;
 
         for (T e : entries) {
             builder.append(i).append(". ");
@@ -86,35 +116,31 @@ public class SearchCommand extends Command {
         if(issueQueries.size() > 0) items.put("issue", issueQueries);
 
 
-        String bookResults = displaySearchResults(1, bookQueries);
-        String avMaterialResults = displaySearchResults(bookQueries.size() == 0 ? 1 : bookQueries.size(), avMaterialQueries);
-        String issueResults = displaySearchResults(avMaterialQueries.size() == 0 ? bookQueries.size()
-                : avMaterialQueries.size(), issueQueries);
+        int i = 1;
+        String bookResults = displaySearchResults(i, bookQueries);
+
+        i += bookQueries.size();
+        String avMaterialResults = displaySearchResults(i, avMaterialQueries);
+        i += avMaterialQueries.size();
+        String issueResults = displaySearchResults(i, issueQueries);
 
         if(bookResults.length() + avMaterialResults.length() + issueResults.length()<= 0) {
             sendMessage("Sorry, no items matched your query.");
         } else {
 
-            if (bookResults.length() > 0)
-                sendMessage("Here are books matching your query:\n" + bookResults);
-            if (avMaterialResults.length() > 0)
-                sendMessage("Here are Av materials matching your query:\n" + avMaterialResults);
-            if (issueResults.length() > 0)
-                sendMessage("Here are Journal Issues matching your query:\n" + issueResults);
+            if (bookResults.length() > 0 || avMaterialResults.length() > 0 || issueResults.length() > 0)
+                sendMessage("Here are items matching your query:\n" + bookResults
+                + avMaterialResults + issueResults);
         }
 
     }
 
     private void showSearchExample() {
-        String message = "Welcome to the search page. Enter your query.\n" +
-                "Remember that you can also build advanced queries. For example. if you want to query all " +
-                " items documents created by Alan Turing before 1970, type `author: Alan Turing date: 1970`" +
-                " The search parameters are shown below\n" +
-                "";
+        String message = "Welcome to the search page. Enter your query.\n";
         sendMessage(message);
 
     }
 
 
-    static HashMap<String, List<? extends ItemEntry>> items = new HashMap<>();
+    private static HashMap<String, List<? extends ItemEntry>> items = new HashMap<>();
 }
