@@ -30,7 +30,7 @@ public class AddCommand extends Command{
                     return "add_documenttype";
                 } else if (message != null && message.equals("Add User")) {
                     System.out.println("user add executed");
-                    return new Interface().handleMessageUpdate(update, "signup_startnext");
+                    return new Interface().handleMessageUpdate(sender, update, "signup_startnext");
                 }
 
             case "documenttype":

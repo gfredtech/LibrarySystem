@@ -1,6 +1,7 @@
 package org.user_interface.ui;
 
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.bots.AbsSender;
 import org.user_interface.commands.*;
 
 import java.util.HashMap;
@@ -26,11 +27,11 @@ public class Interface {
 
     }
 
-   public String handleMessageUpdate(Update update, String currentState) {
+   public String handleMessageUpdate(AbsSender sender, Update update, String currentState) {
         String message = update.hasMessage() ? update.getMessage().getText()
                 :update.getCallbackQuery().getData();
 
-        if(currentState == null) return new ErrorCommand().run(update, message);
+        if(currentState == null) return new ErrorCommand().run(sender, update, message);
 
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
@@ -38,21 +39,21 @@ public class Interface {
        if(message.equals("/login") || message.equals("/start")) {
            message = message.substring(message.lastIndexOf("/") + 1);
 
-           return initialize().get(message).run(update, "start");
+           return initialize().get(message).run(sender, update, "start");
        } else {
            System.out.println(userCommand + " from " + userState);
-           return initialize().getOrDefault(userState, new ErrorCommand()).run(update, userCommand);
+           return initialize().getOrDefault(userState, new ErrorCommand()).run(sender, update, userCommand);
        }
     }
 
-    String handleCallbackUpdate(Update update, String currentState) {
+    String handleCallbackUpdate(AbsSender sender, Update update, String currentState) {
 
         if(currentState.equals("error")) return initialize().getOrDefault(
-                "error", new ErrorCommand()).run(update, "error");
+                "error", new ErrorCommand()).run(sender, update, "error");
 
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
 
-        return initialize().getOrDefault(userState, new ErrorCommand()).run(update, userCommand);
+        return initialize().getOrDefault(userState, new ErrorCommand()).run(sender, update, userCommand);
     }
 }

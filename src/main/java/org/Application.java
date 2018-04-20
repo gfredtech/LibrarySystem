@@ -24,37 +24,32 @@ import org.user_interface.ui.Bot;
 
 public class Application {
 
-    private static String PROXY_HOST = "socks5.svoi-an.us" /* proxy host */;
-    private static Integer PROXY_PORT = 1080 /* proxy port */;
-    private static String PROXY_USER = "privet" /* proxy user */;
-    private static String PROXY_PASSWORD = "roskomnadzor" /* proxy password */;
-
     public static void main(String[] args) {
         String databaseName = args[0];
         String userName = args[1];
         String password = args[2];
 
-        ApiContextInitializer.init();
-        TelegramBotsApi botsApi = new TelegramBotsApi();
-
-        DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
-
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(PROXY_HOST, PROXY_PORT),
-                new UsernamePasswordCredentials(PROXY_USER, PROXY_PASSWORD));
-
-        HttpHost httpHost = new HttpHost(PROXY_HOST, PROXY_PORT);
-
-        RequestConfig requestConfig = RequestConfig.custom().setProxy(httpHost).setAuthenticationEnabled(true).build();
-        botOptions.setRequestConfig(requestConfig);
-        botOptions.setCredentialsProvider(credsProvider);
-        botOptions.setHttpProxy(httpHost);
-
         try {
 
+            ApiContextInitializer.init();
+
+
+            TelegramBotsApi botsApi = new TelegramBotsApi();
+
+            // Set up Http proxy
+            DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
+            /* proxy port */
+            Integer PROXY_PORT = 3128;
+            /* proxy host */
+            String PROXY_HOST = "159.192.235.72";
+            HttpHost httpHost = new HttpHost(PROXY_HOST, PROXY_PORT);
+
+            RequestConfig requestConfig = RequestConfig.custom().setProxy(httpHost).setAuthenticationEnabled(false).build();
+            botOptions.setRequestConfig(requestConfig);
+            botOptions.setHttpProxy(httpHost);
+
             LibraryStorage.connect(databaseName, userName, password);
-            Bot bot  = new Bot(botOptions);
+            Bot bot = new Bot(botOptions);
             botsApi.registerBot(bot);
 
         } catch (TelegramApiException e) {

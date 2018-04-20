@@ -3,11 +3,13 @@ package org.user_interface.commands;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.*;
+import org.telegram.telegrambots.ApiContext;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.user_interface.ui.Bot;
 import org.user_interface.ui.KeyboardUtils;
@@ -19,11 +21,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 
-public abstract class Command {
+public abstract class Command{
 
     public static KeyboardUtils keyboardUtils;
     static HashMap<Long, UserEntry> currentUser = new HashMap<>();
-    private AbsSender sender = new Bot();
+    public AbsSender sender;
     public Update update;
 
     static HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
@@ -31,9 +33,10 @@ public abstract class Command {
 
     //executes an action, then returns an object that contains some
     //information back to the Bot class
-    public String run(Update update, String info) {
+    public String run(AbsSender sender, Update update, String info) {
         this.update = update;
-        keyboardUtils = new KeyboardUtils(update);
+        this.sender = sender;
+        keyboardUtils = new KeyboardUtils(update, sender);
         return run(info);
     }
 
@@ -55,8 +58,7 @@ public abstract class Command {
         message.setReplyMarkup(new ReplyKeyboardRemove()); // hides keyboard in case it's showing already
 
         try {
-
-            sender.execute(message);
+           sender.execute(message);
         }catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -164,4 +166,11 @@ public abstract class Command {
         }
         else return null;
     }
+
+    DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
+    /* proxy port */
+    Integer PROXY_PORT = 3128;
+    /* proxy host */
+    String PROXY_HOST = "159.192.235.72";
+
 }

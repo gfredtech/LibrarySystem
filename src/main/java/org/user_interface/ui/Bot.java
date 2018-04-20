@@ -20,20 +20,20 @@ public class Bot extends TelegramLongPollingBot {
             Long chatId = update.getMessage().getChatId();
             String userState = currentState.getOrDefault(chatId, "start_start");
 
-            currentState.put(chatId, handler.handleMessageUpdate(update, userState));
+            currentState.put(chatId, handler.handleMessageUpdate(this, update, userState));
 
         } else if(update.hasCallbackQuery()) {
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
-            currentState.put(chatId, handler.handleCallbackUpdate(update, currentState.getOrDefault(chatId, "error")));
+            currentState.put(chatId, handler.handleCallbackUpdate(this, update, currentState.getOrDefault(chatId, "error")));
         }
-    }
-
-    public Bot getBot() {
-        return this;
     }
 
     public Bot(DefaultBotOptions options) {
         super(options);
+    }
+
+    public Bot() {
+        super();
     }
 
     @Override
@@ -45,5 +45,8 @@ public class Bot extends TelegramLongPollingBot {
     public String getBotToken() { return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";  }
 
     private static HashMap<Long, String> currentState = new HashMap<>();
+
+
+
 }
 

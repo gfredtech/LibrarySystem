@@ -16,7 +16,7 @@ import java.util.List;
 public class KeyboardUtils {
 
 
-    private static AbsSender sender = new Bot();
+    private static AbsSender sender;
     private Long chatId;
 
 
@@ -144,8 +144,11 @@ public class KeyboardUtils {
         }
     }
 
-    public KeyboardUtils(Update update) {
+    public KeyboardUtils(Update update, AbsSender sender) {
         this.chatId = update.hasMessage() ? update.getMessage().getChatId()
                 : update.getCallbackQuery().getMessage().getChatId();
+        KeyboardUtils.sender = sender;
     }
+
+
 }

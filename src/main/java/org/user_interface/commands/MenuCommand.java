@@ -14,29 +14,29 @@ public class MenuCommand extends Command {
             if(update.hasMessage()) {
                 switch (message) {
                     case "checkout":
-                        return new Interface().handleMessageUpdate(update, "checkout_startnext");
+                        return new Interface().handleMessageUpdate(sender, update, "checkout_startnext");
                     case "return":
-                        return new Interface().handleMessageUpdate(update, "return_startnext");
+                        return new Interface().handleMessageUpdate(sender, update, "return_startnext");
                     case "edit":
-                        return new Interface().handleMessageUpdate(update, "edit_startnext");
+                        return new Interface().handleMessageUpdate(sender, update, "edit_startnext");
                     case "add":
-                        return new Interface().handleMessageUpdate(update, "add_startnext");
+                        return new Interface().handleMessageUpdate(sender, update, "add_startnext");
                     case "renew":
-                        return new Interface().handleMessageUpdate(update, "renew_startnext");
+                        return new Interface().handleMessageUpdate(sender, update, "renew_startnext");
                     case "fine":
-                        return new Interface().handleMessageUpdate(update, "fine_startnext");
+                        return new Interface().handleMessageUpdate(sender, update, "fine_startnext");
                     case "search":
-                        return new Interface().handleMessageUpdate(update, "search_startnext");
+                        return new Interface().handleMessageUpdate(sender, update, "search_startnext");
                     case "logout":
-                        return new Interface().handleMessageUpdate(update, "login_logout");
+                        return new Interface().handleMessageUpdate(sender, update, "login_logout");
                     case "outstanding":
-                        return new Interface().handleMessageUpdate(update, "outstanding_start");
+                        return new Interface().handleMessageUpdate(sender, update, "outstanding_start");
                     default:
-                        return new ErrorCommand().run(update, null);
+                        return new ErrorCommand().run(sender, update, null);
                 }
 
             } else {
-                return new Interface().handleMessageUpdate(update, null);
+                return new Interface().handleMessageUpdate(sender, update, null);
             }
         }
         return null;
