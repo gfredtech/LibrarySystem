@@ -42,6 +42,7 @@ public class Application {
             Integer PROXY_PORT = 3128;
             /* proxy host */
             String PROXY_HOST = "159.192.235.72";
+
             HttpHost httpHost = new HttpHost(PROXY_HOST, PROXY_PORT);
 
             RequestConfig requestConfig = RequestConfig.custom().setProxy(httpHost).setAuthenticationEnabled(false).build();

@@ -3,15 +3,12 @@ package org.user_interface.commands;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
 import org.storage.resources.*;
-import org.telegram.telegrambots.ApiContext;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.bots.AbsSender;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-import org.user_interface.ui.Bot;
 import org.user_interface.ui.KeyboardUtils;
 
 import java.text.DateFormat;
@@ -25,7 +22,7 @@ public abstract class Command{
 
     public static KeyboardUtils keyboardUtils;
     static HashMap<Long, UserEntry> currentUser = new HashMap<>();
-    public AbsSender sender;
+    AbsSender sender;
     public Update update;
 
     static HashMap<Long, ItemEntry> documentCursor = new HashMap<>();
@@ -166,11 +163,5 @@ public abstract class Command{
         }
         else return null;
     }
-
-    DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
-    /* proxy port */
-    Integer PROXY_PORT = 3128;
-    /* proxy host */
-    String PROXY_HOST = "159.192.235.72";
 
 }
