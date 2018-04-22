@@ -6,7 +6,7 @@ public class MenuCommand extends Command {
 
     @Override
     public String run(String info) {
-        if (info.equals("main")) {
+        if (info.equals("main") || info.equals("start")) {
             String message = update.hasMessage() ? update.getMessage().getText()
                     : update.getCallbackQuery().getData();
 
@@ -31,10 +31,13 @@ public class MenuCommand extends Command {
                         return new Interface().handleMessageUpdate(sender, update, "login_logout");
                     case "outstanding":
                         return new Interface().handleMessageUpdate(sender, update, "outstanding_start");
+                    case "action":
+                        return new Interface().handleMessageUpdate(sender, update, "action_start");
+                    case "/menu":
+                        return new Interface().handleMessageUpdate(sender, update, "menu_start");
                     default:
                         return new ErrorCommand().run(sender, update, null);
                 }
-
             } else {
                 return new Interface().handleMessageUpdate(sender, update, null);
             }

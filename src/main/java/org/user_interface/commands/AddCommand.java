@@ -26,7 +26,7 @@ public class AddCommand extends Command{
             case "main":
                 String message = update.getMessage().getText();
                 if (message != null && message.equals("Add Document")) {
-                    keyboardUtils.showEditDocumentKeyboard();
+                    keyboardUtils.showDocumentKeyboard();
                     return "add_documenttype";
                 } else if (message != null && message.equals("Add User")) {
                     System.out.println("user add executed");

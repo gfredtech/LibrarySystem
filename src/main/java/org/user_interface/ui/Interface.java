@@ -23,6 +23,7 @@ public class Interface {
         commandHashMap.put("error", new ErrorCommand());
         commandHashMap.put("outstanding", new OutstandingCommand());
         commandHashMap.put("search", new SearchCommand());
+        commandHashMap.put("action", new ActionLogCommand());
         return commandHashMap;
 
     }
@@ -36,7 +37,7 @@ public class Interface {
         String userState = currentState.substring(0, currentState.lastIndexOf("_"));
         String userCommand = currentState.substring(currentState.lastIndexOf("_") + 1);
 
-       if(message.equals("/login") || message.equals("/start")) {
+       if(message.equals("/login") || message.equals("/start") || message.equals("/menu")) {
            message = message.substring(message.lastIndexOf("/") + 1);
 
            return initialize().get(message).run(sender, update, "start");

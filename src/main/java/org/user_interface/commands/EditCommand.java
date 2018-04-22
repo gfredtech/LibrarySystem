@@ -27,7 +27,7 @@ public class EditCommand extends Command {
             case "main":
                 String message = update.getMessage().getText();
                 if (message != null && message.equals("Edit Document")) {
-                    keyboardUtils.showEditDocumentKeyboard();
+                    keyboardUtils.showDocumentKeyboard();
                     return "edit_documenttype";
                 } else if (message != null && message.equals("Edit User")) {
                     showUsersInDatabase();

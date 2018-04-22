@@ -41,7 +41,10 @@ public class KeyboardUtils {
             row = new KeyboardRow();
             row.add("Edit");
             row.add("Add");
+            keyboard.add(row);
+            row = new KeyboardRow();
             row.add("Fine");
+            row.add("Action Log");
             row.add("Outstanding Request");
             keyboard.add(row);
         }
@@ -102,6 +105,10 @@ public class KeyboardUtils {
         row.add(type + " User");
         keyboard.add(row);
 
+        row = new KeyboardRow();
+        row.add("Menu");
+        keyboard.add(row);
+
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(keyboard);
 
@@ -116,7 +123,7 @@ public class KeyboardUtils {
     }
 
 
-    public void showEditDocumentKeyboard() {
+    public void showDocumentKeyboard() {
 
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
 
@@ -131,6 +138,9 @@ public class KeyboardUtils {
         row.add("Journal Article");
         row.add("Journal Issue");
         keyb.add(row);
+
+        row = new KeyboardRow();
+        row.add("Menu");
 
         markup.setResizeKeyboard(true);
         markup.setKeyboard(keyb);

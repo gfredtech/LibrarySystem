@@ -39,7 +39,6 @@ public abstract class Command{
 
     protected abstract String run(String info);
 
-
     void sendMessage(String text) {
         Chat chat;
         if (update.hasMessage()) {

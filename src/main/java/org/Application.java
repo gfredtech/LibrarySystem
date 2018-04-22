@@ -2,11 +2,7 @@ package org;
 
 
 import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.storage.LibraryStorage;
 import org.telegram.telegrambots.ApiContext;
 import org.telegram.telegrambots.ApiContextInitializer;
@@ -41,7 +37,7 @@ public class Application {
             /* proxy port */
             Integer PROXY_PORT = 3128;
             /* proxy host */
-            String PROXY_HOST = "159.192.235.72";
+            String PROXY_HOST = "153.149.169.201";
 
             HttpHost httpHost = new HttpHost(PROXY_HOST, PROXY_PORT);
 

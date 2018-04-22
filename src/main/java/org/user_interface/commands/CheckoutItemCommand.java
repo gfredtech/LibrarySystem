@@ -30,12 +30,10 @@ public class CheckoutItemCommand extends Command {
                 return "checkout_select" + type;
 
             case "selectbook":
-                selectBookForCheckout(chatId);
-                return "checkout_final";
+                return selectBookForCheckout(chatId);
 
             case "selectavmaterial":
-                selectAvMaterialForCheckout(chatId);
-                return "checkout_final";
+                return selectAvMaterialForCheckout(chatId);
 
             case "selectjournalissue":
                 selectJournalIssueForCheckout(chatId);
@@ -57,7 +55,7 @@ public class CheckoutItemCommand extends Command {
                 }});
     }
 
-    private void selectBookForCheckout(Long chatId) {
+    private String selectBookForCheckout(Long chatId) {
         BookEntry bookSelected;
         String msg = update.getMessage().getText();
         int position;
@@ -65,7 +63,7 @@ public class CheckoutItemCommand extends Command {
             position = Integer.parseInt(msg);
         } catch (NumberFormatException e) {
             sendMessage("Input is not a number.");
-            return;
+            return "checkout_selectbook";
         }
         bookSelected = LibraryStorage.getInstance().find(Resource.Book, new QueryParameters()).get(position - 1);
 
@@ -73,9 +71,10 @@ public class CheckoutItemCommand extends Command {
             showDocumentDetails(bookSelected);
             documentCursor.put(chatId, bookSelected);
         }
+        return "checkout_final";
     }
 
-    private void selectAvMaterialForCheckout(Long chatId) {
+    private String selectAvMaterialForCheckout(Long chatId) {
         AvMaterialEntry selected;
         String msg1 = update.getMessage().getText();
         int position1;
@@ -84,7 +83,7 @@ public class CheckoutItemCommand extends Command {
         } catch (NumberFormatException e) {
             e.printStackTrace();
             sendMessage("Input is not a number");
-            return;
+            return "checkout_selectavmaterial";
         }
 
         selected = LibraryStorage.getInstance().find(Resource.AvMaterial, new QueryParameters()).get(position1 - 1);
@@ -93,6 +92,7 @@ public class CheckoutItemCommand extends Command {
             showDocumentDetails(selected);
             documentCursor.put(chatId, selected);
         }
+        return "checkout_final";
     }
 
     private void selectJournalIssueForCheckout(Long chatId) {
