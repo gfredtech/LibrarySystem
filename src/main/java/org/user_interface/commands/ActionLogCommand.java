@@ -24,7 +24,6 @@ public class ActionLogCommand extends Command {
                 StringBuilder builder = new StringBuilder();
                 int i = 1;
                 for(ActionLogEntry e: entries) {
-                    if(i == 3) break;
                     builder.append(i).append(". ");
                     builder.append(getUserNameFromId(e.getUserId())).append(" ");
                     builder.append(parseActionParameters(e.getActionType(),
