@@ -18,6 +18,7 @@ public class ActionLogCommand extends Command {
     @Override
     protected String run(String info) {
         switch (info){
+            // Displays the action log
             case "start":
                 List<ActionLogEntry> entries = LibraryStorage.
                         getInstance().find(Resource.ActionLog, new QueryParameters());
@@ -38,6 +39,7 @@ public class ActionLogCommand extends Command {
         return null;
     }
 
+    // Return Patron's name from User Id
     String getUserNameFromId(int userId) {
         User user = LibraryStorage.getInstance().
                 find(Resource.User, new QueryParameters().
@@ -45,6 +47,12 @@ public class ActionLogCommand extends Command {
         return user.getName();
     }
 
+    /**
+     * Parses the parameters for an action log entry
+     * @param actionType action log type
+     * @param actionParameters the parameters of the action log
+     * @return string description of the action
+     */
    private String parseActionParameters(String actionType, String[] actionParameters) {
         switch (actionType){
             case "CheckOut":
@@ -61,6 +69,7 @@ public class ActionLogCommand extends Command {
         return null;
     }
 
+    // checkout parsing
     private String checkOutParams(String[] actionParameters) {
         System.out.println("does this execute");
         HashMap<String, String> types = new HashMap<>();
@@ -97,6 +106,7 @@ public class ActionLogCommand extends Command {
         return stringify;
     }
 
+    //outstanding request parameters
     private String outstandingRequestParams(String [] actionParameters) {
         String [] params = actionParameters[0].split("\\s");
         int itemId = Integer.valueOf(params[1].substring(1, params[1].length() - 1));
@@ -125,6 +135,7 @@ public class ActionLogCommand extends Command {
         return stringify;
     }
 
+    // add user parameter parser
     private String addUserParams(String[] actionParameters) {
         String[] params = actionParameters[0].split("\\s");
         int userId = Integer.valueOf(params[1].substring(1, params[1].length() - 1));
@@ -133,6 +144,7 @@ public class ActionLogCommand extends Command {
         return "added the user " + u.getName();
     }
 
+    // add item parameter parser
     private String addItemParams(String[] actionParameters) {
         HashMap<String, String> types = new HashMap<>();
         types.put("book", "the Book");
@@ -147,6 +159,7 @@ public class ActionLogCommand extends Command {
         return "added the " + types.get(type) + " " + params;
     }
 
+    // renew parameters parser
     private String renewParams(String[] actionParameters) {
         String item = actionParameters[0];
         String checkOutDate = actionParameters[1];

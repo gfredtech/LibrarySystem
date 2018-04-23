@@ -30,7 +30,7 @@ public class KeyboardUtils {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        if(!user.getType().equals("Librarian")) {
+        if(!user.getType().equals("Librarian") && user.getType().equals("Admin")) {
             row.add("Checkout");
             row.add("Return");
             keyboard.add(row);
@@ -40,7 +40,7 @@ public class KeyboardUtils {
             keyboard.add(row);
         }
 
-        if(user.getType().equals("Librarian")) {
+        if(user.getType().equals("Librarian") || user.getType().equals("Admin")) {
             row = new KeyboardRow();
             row.add("Edit");
             row.add("Add");

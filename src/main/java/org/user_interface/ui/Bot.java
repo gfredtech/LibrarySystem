@@ -38,11 +38,11 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "makiddie_bot";
+        return "konyvtar_bot";
     }
 
     @Override
-    public String getBotToken() { return "558359834:AAHlTmxghDuGFlvAomJE-STjZhcPnjeo3kI";  }
+    public String getBotToken() { return "404457992:AAE0dHw07sHw8woSFiMJSebrQCK2aUyN8CM";  }
 
     private static HashMap<Long, String> currentState = new HashMap<>();
 

@@ -39,6 +39,7 @@ public abstract class Command{
 
     protected abstract String run(String info);
 
+    // message sender
     void sendMessage(String text) {
         Chat chat;
         if (update.hasMessage()) {
@@ -60,6 +61,7 @@ public abstract class Command{
         }
     }
 
+    // displays books in library
     void listBooks() {
         StringBuilder builder = new StringBuilder();
         List<BookEntry> books = LibraryStorage.getInstance().find(Resource.Book, new QueryParameters());
@@ -78,6 +80,7 @@ public abstract class Command{
         } else sendMessage("There are no books in the library.");
     }
 
+    // displays av materials
     void listAvMaterials() {
         StringBuilder builder = new StringBuilder();
         List<AvMaterialEntry> avMaterials = LibraryStorage.getInstance().find(Resource.AvMaterial, new QueryParameters());
@@ -96,6 +99,7 @@ public abstract class Command{
         } else sendMessage("There are no AV Materials in the library.");
     }
 
+    // list journal issues
     void listJournalIssues() {
         StringBuilder builder = new StringBuilder();
         List<JournalIssueEntry> journalIssues = LibraryStorage.getInstance().find(Resource.JournalIssue, new QueryParameters());
@@ -113,6 +117,7 @@ public abstract class Command{
         } else sendMessage("There are no Journal Issues in the library.");
     }
 
+    // list journal articles
     void listJournalArticles() {
         StringBuilder builder = new StringBuilder();
         List<JournalArticleEntry> articles = LibraryStorage.getInstance().find(Resource.JournalArticle, new QueryParameters());
@@ -142,6 +147,7 @@ public abstract class Command{
     }
 
 
+    // date parser for adding/editing documents
     LocalDate parseDate(String a) {
         DateFormat df = new SimpleDateFormat("MMddyyyy", Locale.ENGLISH);
         Date result = null;
@@ -154,6 +160,7 @@ public abstract class Command{
         return null;
     }
 
+    // authorization checker for admin.librarian
     String authorizationChecker(UserEntry e) {
         if(!e.getUser().getType().equals("Librarian")) {
             keyboardUtils.showMainMenuKeyboard(e.getUser(),
