@@ -29,6 +29,19 @@ public class ActionLogEntry extends DatabaseEntry {
     }
 
     private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public String getActionType() {
+        return actionType;
+    }
+
+    public String[] getActionParameters() {
+        return actionParameters;
+    }
+
     private String actionType;
     private String[] actionParameters;
 }

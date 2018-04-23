@@ -33,7 +33,10 @@ public class KeyboardUtils {
         if(!user.getType().equals("Librarian")) {
             row.add("Checkout");
             row.add("Return");
+            keyboard.add(row);
+            row = new KeyboardRow();
             row.add("Renew");
+            row.add("Search");
             keyboard.add(row);
         }
 
@@ -45,13 +48,14 @@ public class KeyboardUtils {
             row = new KeyboardRow();
             row.add("Fine");
             row.add("Action Log");
+            keyboard.add(row);
+            row = new KeyboardRow();
+            row.add("Search");
             row.add("Outstanding Request");
             keyboard.add(row);
         }
 
         row = new KeyboardRow();
-        row.add("Search");
-        //row.add("️Settings");
         row.add("Logout");
         keyboard.add(row);
 
@@ -127,23 +131,23 @@ public class KeyboardUtils {
 
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
 
-        List<KeyboardRow> keyb = new ArrayList<>();
+        List<KeyboardRow> key = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
         row.add("Book");
         row.add("AV Material");
-        keyb.add(row);
+        key.add(row);
 
         row = new KeyboardRow();
         row.add("Journal Article");
         row.add("Journal Issue");
-        keyb.add(row);
+        key.add(row);
 
         row = new KeyboardRow();
         row.add("Menu");
 
         markup.setResizeKeyboard(true);
-        markup.setKeyboard(keyb);
+        markup.setKeyboard(key);
 
         SendMessage message = new SendMessage().setChatId(chatId).setText("Choose an option");
         message.setReplyMarkup(markup);

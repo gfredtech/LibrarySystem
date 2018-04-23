@@ -33,8 +33,6 @@ public class MenuCommand extends Command {
                         return new Interface().handleMessageUpdate(sender, update, "outstanding_start");
                     case "action":
                         return new Interface().handleMessageUpdate(sender, update, "action_start");
-                    case "/menu":
-                        return new Interface().handleMessageUpdate(sender, update, "menu_start");
                     default:
                         return new ErrorCommand().run(sender, update, null);
                 }
