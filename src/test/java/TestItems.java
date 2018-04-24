@@ -17,7 +17,7 @@ class TestItems {
     Map<String, QueryParameters> articles = new HashMap<>();
 
     User alice, p1, p2, p3, v, s;
-    Book b1, b2, b3;
+    Book b1, b2, b3, d1, d2, d3;
     AvMaterial av1, av2;
 
     TestItems() {
@@ -29,7 +29,8 @@ class TestItems {
                 .title("Introduction to Algorithms, Third edition")
                 .copiesNum(3)
                 .price(5000)
-                .keywords(Collections.emptyList()).build();
+                .keywords(Arrays.asList("Algorithms", "Data Structures", "Complexity", "Computational Theory"))
+                .build();
         books.put("cormen", ItemSerializer.serialize(b1));
 
         b2 = new BookFactory()
@@ -53,6 +54,24 @@ class TestItems {
                 .copiesNum(2)
                 .keywords(Collections.emptyList()).build();
         books.put("brooks", ItemSerializer.serialize(b3));
+
+        d1 = b1;
+        d2 = new BookFactory()
+                .title("Algorithms + Data Structures = Programs, First Edition")
+                .authors(Arrays.asList("Niklaus Wirth"))
+                .publisher("Prentice Hall PTR")
+                .publicationDate(LocalDate.of(1978, 1, 1))
+                .price(5000)
+                .keywords(Arrays.asList("Algorithms", "Data Structures", "Search Algorithms", "Pascal"))
+                .build();
+        d3 = new BookFactory()
+                .title("The Art of Computer Programming")
+                .authors(Arrays.asList("Donald E. Knuth"))
+                .publisher("Addison Wesley Longman Publishing Co., Inc")
+                .publicationDate(LocalDate.of(1997, 1, 1))
+                .price(5000)
+                .keywords(Arrays.asList("Algorithms", "Combinatorial Algorithms", "Recursion"))
+                .build();
 
         av1 = new AvMaterialFactory()
                 .title("Null References: The Billion Dollar Mistake")

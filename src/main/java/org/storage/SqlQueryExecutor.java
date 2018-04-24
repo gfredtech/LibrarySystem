@@ -28,10 +28,15 @@ class SqlQueryExecutor {
      * The returned set will be closed upon a new call to the statement or closing it
      */
     Query select(String tableName, QueryParameters searchParameters) throws SQLException {
-        return select(tableName, searchParameters, Collections.singletonList("*"));
+        return select(tableName, searchParameters, Collections.singletonList("*"), false);
     }
 
-    Query select(String tableName, QueryParameters searchParameters, List<String> columns) throws SQLException {
+
+    Query select(String tableName, QueryParameters searchParameters, boolean withRegex) throws SQLException {
+        return select(tableName, searchParameters, Collections.singletonList("*"), withRegex);
+    }
+
+    Query select(String tableName, QueryParameters searchParameters, List<String> columns, boolean withRegex) throws SQLException {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         for(String col: columns) {
@@ -43,7 +48,7 @@ class SqlQueryExecutor {
         query.append(tableName);
         if(!searchParameters.isEmpty()) {
             query.append(" WHERE ");
-            query.append(searchParameters.toWhereCondition());
+            query.append(searchParameters.toWhereCondition(withRegex));
         }
         query.append(";");
 
@@ -74,7 +79,7 @@ class SqlQueryExecutor {
         query.append(" SET ");
         query.append(updateParameters.toUpdateParameters());
         query.append(" WHERE ");
-        query.append(whatToUpdate.toWhereCondition());
+        query.append(whatToUpdate.toWhereCondition(false));
         query.append(";");
         System.out.println(query.toString());
         try(Statement s = connection.createStatement()) {
@@ -115,7 +120,7 @@ class SqlQueryExecutor {
         query.append("DELETE FROM ");
         query.append(tableName);
         query.append(" WHERE ");
-        query.append(parameters.toWhereCondition());
+        query.append(parameters.toWhereCondition(false));
         query.append(";");
         System.out.println(query.toString());
         try(Statement s = connection.createStatement()) {

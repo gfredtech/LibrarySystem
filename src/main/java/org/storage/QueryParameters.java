@@ -141,7 +141,7 @@ public class QueryParameters {
     /**
      * @return parameters in the format required by WHERE SQL clause
      */
-    public String toWhereCondition() {
+    public String toWhereCondition(boolean stringAreRegex) {
         StringBuilder condition = new StringBuilder();
 
         for(Map.Entry<String, Pair<Integer, ?>>
@@ -153,6 +153,10 @@ public class QueryParameters {
             int type = value.getKey();
             if(type == Types.NULL) {
                 condition.append(" IS ");
+            } else if(type == Types.VARCHAR && stringAreRegex){
+                condition.append(" ~ ");
+            } else if(type == Types.ARRAY && stringAreRegex){
+                condition.append(" && ");
             } else {
                 condition.append(" = ");
             }

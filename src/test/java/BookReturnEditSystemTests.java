@@ -1,3 +1,4 @@
+import org.controller.AddItemCommand;
 import org.controller.CheckOutCommand;
 import org.controller.Command;
 import org.controller.LibraryManager;
@@ -27,7 +28,6 @@ class BookReturnEditSystemTests {
     }
 
     private void initStorage() {
-        storage.add(Resource.Book, data.books.get("cormen"));
         storage.add(Resource.Book, data.books.get("patterns"));
         storage.add(Resource.Book, data.books.get("brooks"));
         storage.add(Resource.AvMaterial, data.av.get("null"));
@@ -35,6 +35,7 @@ class BookReturnEditSystemTests {
         storage.add(Resource.User, data.users.get("sergey"));
         storage.add(Resource.User, data.users.get("elvira"));
         storage.add(Resource.User, data.users.get("nadia"));
+        manager.execute(new AddItemCommand(data.b1, data.alice));
     }
 
     private void modifyStorage() {

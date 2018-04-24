@@ -1,8 +1,10 @@
 package org.controller;
 
+
 import org.items.User;
 import org.storage.LibraryStorage;
 import org.storage.QueryParameters;
+import org.storage.resources.ItemEntry;
 import org.storage.resources.Resource;
 import org.storage.resources.UserEntry;
 
@@ -10,26 +12,22 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 
-public class RemoveUserCommand implements Command {
+public class RemoveItemCommand<T extends ItemEntry> implements Command {
 
-    public RemoveUserCommand(UserEntry executor, UserEntry toRemove) {
+    public RemoveItemCommand(UserEntry executor, T toRemove) {
         this.executor = executor;
         this.removed = toRemove;
     }
 
     @Override
     public Command.Result execute(LibraryStorage storage) {
-        if(removed.getUser().getType().equals("Librarian") &&
-                !executor.getUser().getType().equals("Admin")) {
-            return Result.failure("Only admin can remove a librarian");
-        }
         if(executor.getUser().getType().equals("Librarian") &&
-            !executor.getUser().hasPrivilege(User.Privilege.Deletion)) {
+                !executor.getUser().hasPrivilege(User.Privilege.Deletion)) {
             return Result.failure("Deletion privilege is required");
         }
-        storage.removeAll(Resource.Checkout, new QueryParameters().add("user_id", removed.getId()));
-        storage.removeAll(Resource.PendingRequest, new QueryParameters().add("user_id", removed.getId()));
-        storage.removeAll(Resource.User, removed.toQueryParameters());
+        storage.removeAll(Resource.Checkout, new QueryParameters().add("item_id", removed.getId()));
+        storage.removeAll(Resource.PendingRequest, new QueryParameters().add("item_id", removed.getId()));
+        storage.removeAll(removed.getResourceType(), removed.toQueryParameters());
         storage.add(Resource.ActionLog, getLog());
         return Result.Success;
     }
@@ -46,6 +44,8 @@ public class RemoveUserCommand implements Command {
     }
 
 
-    private final UserEntry removed;
+
+    private final T removed;
     private final UserEntry executor;
+
 }

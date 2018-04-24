@@ -31,7 +31,7 @@ public class AddItemCommand<T extends Item> implements Command {
             storage.add(Resource.ActionLog, getLog());
             return Result.Success;
         } catch (Storage.QueryExecutionError e) {
-            return Result.failure(e.getMessage());
+            return Result.failure(e.getMessage()+"\n"+e.getCause().getMessage());
         }
     }
 

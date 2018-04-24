@@ -64,6 +64,22 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
         return result;
     }
 
+    public <T extends DatabaseEntry> List<T> searchFor(Resource<T> resourceType, QueryParameters params) {
+        List<T> result = new LinkedList<>();
+        try (Query q = select(resourceType.getTableName(), params, true)) {
+            ResultSet rs = q.getResult();
+            while (rs.next()) {
+                T t = initEntry(resourceType.entryClass(), rs);
+                result.add(t);
+            }
+        } catch (SQLException e) {
+            final String errorMessage = "Error performing search in the table '" + resourceType.getTableName()
+                    + "' with parameters: " + params;
+            throw new QueryExecutionError(errorMessage, e);
+        }
+        return result;
+    }
+
     @Override
     public <T extends DatabaseEntry>
     Optional<T> get(Resource<T> type, int id) {
@@ -80,7 +96,7 @@ public class SqlStorage extends SqlQueryExecutor implements Storage {
     @Override
     public int getNumOfEntries(Resource resource, QueryParameters params) {
         try (Query q = select(resource.getTableName(), params,
-                Collections.singletonList("count(*)"))){
+                Collections.singletonList("count(*)"), false)){
             ResultSet rs = q.getResult();
             rs.next();
             return rs.getInt(1);

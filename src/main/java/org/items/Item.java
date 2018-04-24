@@ -25,6 +25,10 @@ public abstract class Item {
         return String.format("Item{title: %s}", title);
     }
 
+    public void setCopiesNum(int copiesNum) {
+        this.copiesNum = copiesNum;
+    }
+
     String title;
     int copiesNum;
     boolean reference;
