@@ -109,9 +109,6 @@ public class KeyboardUtils {
         row.add(type + " User");
         keyboard.add(row);
 
-        row = new KeyboardRow();
-        row.add("Menu");
-        keyboard.add(row);
 
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(keyboard);
