@@ -2,7 +2,6 @@ package org.user_interface.commands;
 
 import org.items.AvMaterial;
 import org.items.Book;
-import org.items.JournalArticle;
 import org.items.JournalIssue;
 import org.storage.resources.UserEntry;
 
@@ -31,12 +30,41 @@ class SearchUtils {
     }
 
     static boolean filterBasedOnDistance(String text, Book e) {
-        String[] titles = e.getTitle().split("\\s");
+
+        if(text.contains("and")) {
+            String titles[] = e.getTitle().split("\\s");
+            text = text.replace("and", "");
+            int totality = text.length();
+            String[] tokens = text.split("\\s");
+            for(String a: titles) {
+                for(String b: tokens) {
+                    if(distance(a, b) <= 3) {
+                        --totality;
+                        break;
+                    }
+                }
+
+                if(totality == 0)
+                    return true;
+            }
+        }
+
+
+        String bookTitle = e.getTitle();
+        if(e.getTitle().contains("or")) bookTitle = bookTitle.replace("or", "");
+        String[] titles = bookTitle.split("\\s");
+        String[] textTokens = text.split("\\s");
         for (String t : titles) {
-            if (distance(t, text) <= 3)
+            if(t.length() <= 3) continue;
+            for(String tt: textTokens)
+            if (distance(t, tt) <= 3) {
+                System.out.println("someshits");
                 return true;
+            }
         }
         if(distance(text,e.getTitle()) <= 3) return true;
+
+        System.out.println("codebranch");
 
         if (distance(e.getPublisher(), text) <= 3)
             return true;
@@ -49,7 +77,9 @@ class SearchUtils {
                 }
             }
 
+
             List<String> keywords = e.getKeywords();
+            text = text.replaceAll("\\s", "");
             for (String k : keywords) {
                 if (distance(k, text) <= 3)
                     return true;
@@ -60,6 +90,7 @@ class SearchUtils {
     }
 
     static boolean filterBasedOnDistance(String text, AvMaterial e) {
+
         String[] titles = e.getTitle().split("\\s");
         for (String t : titles) {
             if (distance(t, text) <= 3)

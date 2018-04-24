@@ -102,14 +102,16 @@ public class SearchCommand extends Command {
 
     private String showSearchType() {
         String message = update.getMessage().getText();
-        if(message.equals("Search Document")) {
-            keyboardUtils.showDocumentKeyboard();
-            return "search_type";
-        } else if(message.equals("Search User")) {
-            searchUser();
-            return "search_user";
-        } else {
-            sendMessage("Invalid input.");
+        switch (message) {
+            case "Search Document":
+                keyboardUtils.showDocumentKeyboard();
+                return "search_type";
+            case "Search User":
+                searchUser();
+                return "search_user";
+            default:
+                sendMessage("Invalid input.");
+                break;
         }
         return "search_main";
     }
@@ -158,7 +160,7 @@ public class SearchCommand extends Command {
             case "Book":
                 List<BookEntry> books = LibraryStorage.getInstance().find(Resource.Book, new QueryParameters());
                 List<BookEntry> bookQueries = new ArrayList<>();
-                for (BookEntry e : books) {
+                for (BookEntry e : books) { ;
                     if (SearchUtils.filterBasedOnDistance(message, e.getItem())) {
                         bookQueries.add(e);
                     }
@@ -225,6 +227,6 @@ public class SearchCommand extends Command {
 
 
     private static HashMap<String, List<? extends ItemEntry>> items = new HashMap<>();
-    static List<UserEntry> userQueries;
+    private static List<UserEntry> userQueries;
     private static String type = "";
 }
