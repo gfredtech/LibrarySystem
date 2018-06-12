@@ -25,5 +25,5 @@ db_dump
 hs_err_pid*
 
 target/
-.idea
+.idea/
  LibrarySystem.iml
